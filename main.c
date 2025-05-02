@@ -24,57 +24,65 @@ int main()
     const int screen_height = SCREEN_HEIGHT;
 
     InitWindow(screen_width, screen_height, "Snake Quiz Game");
-    Set
+    SetTagetFPS(60);
 
     init_game();
 
     GAME_STATE state = STATE_RUNNING;
     char currentAnswer[2]="";
 
+    while(!WindowShouldClose())
+    {
+        BeginDrawing();
+        ClearBackground(RAYWHITE);
 
-    switch(state){
-        case STATE_RUNNING:     handle_input();
-                                update_game(&state);
-                                draw_game();
-                                break;
-
-        case STATE_QUESTION:    handle_text_input(currentAnswer, sizeof(currentAnswer));
-                                draw_text("Choose the answer: ", 100, 200, 20, BLACK);
-                                draw_text(currentAnswer, 100, 230, 20, DARKBLUE);
-                                draw_text("Press ENTER to validate your answer.", 100, 270, 20, RED);
-                                
-                                if()
-                                {
-                                    if(validate_answer(currentAnswer))
+        switch(state){
+            case STATE_RUNNING:     handle_input();
+                                    update_game(&state);
+                                    draw_game();
+                                    break;
+    
+            case STATE_QUESTION:    handle_text_input(currentAnswer, sizeof(currentAnswer));
+                                    DrawText("Choose the answer: ", 100, 200, 20, BLACK);
+                                    DrawText(currentAnswer, 100, 230, 20, DARKBLUE);
+                                    DrawText("Press ENTER to validate your answer.", 100, 270, 20, RED);
+                                    
+                                    if(IsKeyPressed(KEY_ENTER))
                                     {
-                                        question_result(true);
+                                        if(validate_answer(currentAnswer))
+                                        {
+                                            question_result(true);
+                                        }
+                                        else
+                                        {
+                                            question_result(false);
+                                        }
+    
+                                        currentAnswer[0] = '\0';
+                                        state = STATE_RUNNING;
                                     }
-                                    else
+    
+                                    break;
+    
+            case STATE_GAME_OVER:   DrawText("GAME OVER!", 300, 250, 50, RED);
+                                    DrawText("Press R to restart the game.", 270, 300, 20, GRAY);
+    
+                                    if(IsKeyPressed(KEY_R))
                                     {
-                                        question_result(false);
+                                        reset_game();
+                                        state = STATE_RUNNING;
                                     }
-
-                                    currentAnswer[0] = '\0';
-                                    state = STATE_RUNNING;
-                                }
-
-                                break;
-
-        case STATE_GAME_OVER:   draw_text("GAME OVER!", 300, 250, 50, RED);
-                                draw_text("Press R to restart the game.", 270, 300, 20, GRAY);
-
-                                if(pressed(KEY_R))
-                                {
-                                    reset_game();
-                                    state = STATE_RUNNING;
-                                }
-
-                                break;
+    
+                                    break;
+        }
+    
+        EndDrawing();
     }
 
-    end_drawing();
+    CloseWindow();
+    return 0;
 }
 
-//init_game(), update_game(), reset_game(), apply_question_result() - game.c.
-//handle_input() și handle_text_input() - input.c
-//validate_answer() - question.c
+//init_game(), update_game(), reset_game(), apply_question_result() in game.c.
+//handle_input() și handle_text_input() in input.c
+//validate_answer() in question.c
