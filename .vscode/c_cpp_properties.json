@@ -3,6 +3,8 @@
         {
             "name": "Win32",
             "includePath": [
+                "${workspaceFolder}/Raylib",
+                "C:/MinGW/include",
                 "${workspaceFolder}/**"
             ],
             "defines": [
