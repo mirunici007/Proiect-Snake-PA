@@ -1,1 +1,3 @@
 # Proiect-Snake-PA
+  This project is a modern reinterpretation of the classic game Snake, implemented in C and it is using the Raylib graphics library. Also, the project is designed to run on desktop systems.
+  The game consists of controlling a sanke that grows larger as it eats food, but it also includes a new interactive element: questions and answers that have a direct impact on the snake's size and score. The player must choose the correct answer to the question shown on the screen. While giving the wrong anwers results in penalties, giving the right answer results in increasing the score and the size of the snake. 
