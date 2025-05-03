@@ -6,17 +6,10 @@
 #include "input.h"
 #include "raylib.h"
 
-#define SCREEN_WIDTH 1000
-#define SCREEN_HEIGHT 700
 
 //declaring the variables
 
-typedef enum
-{
-    STATE_RUNNING,
-    STATE_QUESTION,
-    STATE_GAME_OVER
-}GAME_STATE;
+int score;
 
 int main()
 {
@@ -26,7 +19,7 @@ int main()
     InitWindow(screen_width, screen_height, "Snake Quiz Game");
     SetTagetFPS(60);
 
-    init_game();
+    init_game(&score);
 
     GAME_STATE state = STATE_RUNNING;
     char currentAnswer[2]="";
@@ -86,3 +79,4 @@ int main()
 //init_game(), update_game(), reset_game(), apply_question_result() in game.c.
 //handle_input() și handle_text_input() in input.c
 //validate_answer() in question.c
+//asta e o propunere de implementare, mai schimbam
