@@ -5,6 +5,8 @@
 #include "snake.h"
 #include "raylib.h"
 
+#define SEGMENT_SIZE 20 // Dimensiunea segmentelor șarpelui
+
 //declaring the functions
 
 //function for creating a new snake segment
@@ -38,6 +40,10 @@ SNAKE *create_snake(int start_x, int start_y)
     snake->tail = snake->head;
     snake->length = 1;
     snake->direction = 'D'; // initial direction is right
+    snake->head_texture = LoadTexture("textures/head.png");
+    snake->body_texture = LoadTexture("textures/body.png"); 
+
+
 
     return snake;
 }
@@ -59,44 +65,35 @@ int check_food_collision(SNAKE *snake, int food_x, int food_y)
     return (snake->head->coord_x == food_x && snake->head->coord_y == food_y);
 }
 
-void move_snake(SNAKE *snake, int food_x, int food_y)
-{
-    int new_x = snake->head->coord_x;
-    int new_y = snake->head->coord_y;
+void move_snake(SNAKE *snake, int food_x, int food_y) {
+    // Salvează poziția anterioară a capului
+    int prev_x = snake->head->coord_x;
+    int prev_y = snake->head->coord_y;
 
-    //adjust the new position based on the direction
-    switch(snake->direction)
-    {
-        case 'W': new_y -= 1; break; //up
-        case 'S': new_y += 1; break; //down
-        case 'A': new_x -= 1; break; //left
-        case 'D': new_x += 1; break; //right
+    // Actualizează poziția capului în funcție de direcție
+    switch (snake->direction) {
+        case 'W': snake->head->coord_y -= 1; break; // sus
+        case 'S': snake->head->coord_y += 1; break; // jos
+        case 'A': snake->head->coord_x -= 1; break; // stânga
+        case 'D': snake->head->coord_x += 1; break; // dreapta
         default: break;
     }
 
-    // create a new head
-    SEGM *new_head = create_segment(new_x, new_y);
-    new_head->next = snake->head;
-    snake->head = new_head;
+    // Mută corpul șarpelui
+    SEGM *current = snake->head->next;
+    while (current != NULL) {
+        int temp_x = current->coord_x;
+        int temp_y = current->coord_y;
 
-    //checkif the snake eats food
-    if(check_food_collision(snake, food_x, food_y))
-    {
-        snake->length++;
-    }
-    else
-    {
-        //remove the tail segment
-        SEGM *temp = snake->head;
-        while(temp->next && temp->next != snake->tail)
-        {
-            temp = temp->next;
-        }
+        current->coord_x = prev_x;
+        current->coord_y = prev_y;
 
-        free(snake->tail);
-        temp->next = NULL;
-        snake->tail = temp;
+        prev_x = temp_x;
+        prev_y = temp_y;
+
+        current = current->next;
     }
+
 }
 
 int check_self_collision(SNAKE *snake)
@@ -135,6 +132,8 @@ void free_snake(SNAKE *snake)
         current = current->next;
         free(temp);
     }
+    UnloadTexture(snake->head_texture); // Unload the texture
+    UnloadTexture(snake->body_texture);
     free(snake);
 }
 
@@ -152,9 +151,14 @@ void set_snake_direction(SNAKE *snake, char direction)
 void draw_snake(SNAKE *snake) {
     SEGM *current = snake->head;
 
+    DrawTexture(snake->head_texture, current->coord_x*SEGMENT_SIZE, current->coord_y*SEGMENT_SIZE, WHITE);
+    current = current->next;
+
+
     while (current != NULL) {
         // Desenează fiecare segment al șarpelui ca un dreptunghi verde
-        DrawRectangle(current->coord_x, current->coord_y, 20, 20, GREEN);
+        DrawTexture(snake->body_texture, current->coord_x * SEGMENT_SIZE, current->coord_y * SEGMENT_SIZE, WHITE);
+        
         current = current->next; // Treci la următorul segment
     }
 }

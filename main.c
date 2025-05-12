@@ -8,7 +8,7 @@
 int main(void)
 {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Snake Game");
-    SetTargetFPS(60);
+    SetTargetFPS(10);
 
     //create the snake
     SNAKE *snake = create_snake((SCREEN_WIDTH / 2) / 20, (SCREEN_HEIGHT / 2) / 20);
