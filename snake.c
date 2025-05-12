@@ -38,6 +38,9 @@ SNAKE *create_snake(int start_x, int start_y)
     snake->length = 1;
     snake->direction = 'D'; // initial direction is right
 
+    snake->head_texture = LoadTexture("textures/head.png");
+    snake->body_texture = LoadTexture("textures/body.png"); 
+
     return snake;
 }
 
@@ -74,7 +77,8 @@ void shrink_snake(SNAKE *snake)
 //1 for collision
 int check_food_collision(SNAKE *snake, int food_x, int food_y)
 {
-    return (snake->head->coord_x == food_x && snake->head->coord_y == food_y);
+    return (snake->head->coord_x == food_x && 
+            snake->head->coord_y == food_y);
 }
 
 void move_snake(SNAKE *snake, int food_x, int food_y)
@@ -153,6 +157,10 @@ void free_snake(SNAKE *snake)
         current = current->next;
         free(temp);
     }
+
+    UnloadTexture(snake->head_texture); // Unload the head texture
+    UnloadTexture(snake->body_texture); // Unload the body texture
+
     free(snake);
 }
 
@@ -164,5 +172,20 @@ void set_snake_direction(SNAKE *snake, char direction)
         (direction == 'D' && snake->direction != 'A'))
     {
         snake->direction = direction;
+    }
+}
+
+void draw_snake(SNAKE *snake) {
+    SEGM *current = snake->head;
+
+    DrawTexture(snake->head_texture, current->coord_x*SEGMENT_SIZE,
+         current->coord_y*SEGMENT_SIZE, WHITE);
+    current = current->next;
+
+    while (current != NULL) {
+        DrawTexture(snake->body_texture, current->coord_x * SEGMENT_SIZE,
+             current->coord_y * SEGMENT_SIZE, WHITE);
+
+        current = current->next; // Treci la următorul segment
     }
 }
