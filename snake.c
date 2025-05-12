@@ -3,7 +3,6 @@
 #include <string.h>
 
 #include "snake.h"
-#include "raylib.h"
 
 //declaring the functions
 
@@ -55,11 +54,31 @@ void grow_snake(SNAKE *snake)
     snake->length++;
 }
 
+void shrink_snake(SNAKE *snake)
+{
+    if (snake->length <= 1)
+    {
+        printf("Snake is already at minimum length\n");
+        return;
+    }
+    SEGM *current = snake->head;
+
+    while (current->next != snake->tail)
+    {
+        current = current->next;
+    }
+    free(snake->tail);
+    current->next = NULL;
+    snake->tail = current;
+    snake->length--;
+}
+
 //function to check if the sbake's head collides with the food
 //1 for collision
 int check_food_collision(SNAKE *snake, int food_x, int food_y)
 {
-    return (snake->head->coord_x == food_x && snake->head->coord_y == food_y);
+    return (snake->head->coord_x == food_x && 
+            snake->head->coord_y == food_y);
 }
 
 void move_snake(SNAKE *snake, int food_x, int food_y)

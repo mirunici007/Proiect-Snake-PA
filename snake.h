@@ -41,6 +41,8 @@ SNAKE *create_snake(int start_x, int start_y);
 // Adds a new segment to the tail of the snake
 void grow_snake(SNAKE *snake);
 
+void shrink_snake(SNAKE *snake);
+
 // Checks if the snake's head collides with the food
 int check_food_collision(SNAKE *snake, int food_x, int food_y);
 
@@ -53,13 +55,14 @@ int check_self_collision(SNAKE *snake);
 // Checks if the snake collides with the boundaries of the screen
 int check_boundary_collision(SNAKE *snake, int width, int height);
 
-// Sets the direction of the snake
+//Checks if the snake collides with the walls or itself
+int check_collisions(SNAKE *snake);
+
+//Sets the direction of the snake
 void set_snake_direction(SNAKE *snake, char direction);
 
 // Frees the memory allocated for the snake
 void free_snake(SNAKE *snake);
-
-void draw_snake(SNAKE *snake);
 
 
 #endif //SNAKE_H
