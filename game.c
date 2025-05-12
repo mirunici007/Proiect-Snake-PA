@@ -2,9 +2,9 @@
 #include <stdlib.h>
 #include <time.h>
 
-// #include "game.h"
-// #include "question.h"
-// #include "snake.h"
+#include "game.h"
+#include "question.h"
+#include "snake.h"
 
 //external variables
 int score; // initialize the score
