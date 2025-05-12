@@ -26,8 +26,20 @@ typedef struct snake
     int length;
     char direction; //directions: UP, DOWN, LEFT, RIGHT
 
-    Texture2D head_texture; //texture for the head
+    Texture2D head_up_texture;    // Textura pentru cap (sus)
+    Texture2D head_down_texture;  // Textura pentru cap (jos)
+    Texture2D head_left_texture;  // Textura pentru cap (stânga)
+    Texture2D head_right_texture; // Textura pentru cap (dreapta)
     Texture2D body_texture; //texture for the body
+
+    Texture2D body_horizontal_texture; // Textura pentru corp (orizontal: stânga/dreapta)
+    Texture2D body_vertical_texture;   // Textura pentru corp (vertical: sus/jos)
+
+    // Texturi pentru colțuri
+    Texture2D corner_top_left_texture;     // colț stânga sus
+    Texture2D corner_top_right_texture;    // colț dreapta sus
+    Texture2D corner_bottom_left_texture;  // colț stânga jos
+    Texture2D corner_bottom_right_texture; // colț dreapta jos
 }SNAKE;
 
 //function prtotypes
