@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "snake.h"
+#include "raylib.h"
 
 //declaring the functions
 
