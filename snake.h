@@ -64,5 +64,6 @@ void set_snake_direction(SNAKE *snake, char direction);
 // Frees the memory allocated for the snake
 void free_snake(SNAKE *snake);
 
+void draw_snake(SNAKE *snake);
 
 #endif //SNAKE_H
