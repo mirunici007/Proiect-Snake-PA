@@ -4,9 +4,11 @@
 
 // #include "game.h"
 // #include "question.h"
+// #include "snake.h"
 
 // //external variables
 // int score; // initialize the score
+
 
 // // Initializes the game with initial values (score, positions, etc.)
 // void init_game(SNAKE **snake, int *score)
