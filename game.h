@@ -21,7 +21,7 @@ typedef enum{
 //function declarations
 
 //initializes the score to 0
-void init_game(int *score);
+void init_game(SNAKE **snake, int *score);
 
 // Updates the game state (movement, collisions, etc.)
 void update_game(SNAKE *snake, int *score, GAME_STATE *state, int *food_x, int *food_y);
