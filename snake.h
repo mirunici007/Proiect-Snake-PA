@@ -1,6 +1,8 @@
 #ifndef SNAKE_H
 #define SNAKE_H
 
+#include "raylib.h"
+
 //directions for the snake
 #define UP 'W'
 #define DOWN 'S'
@@ -50,7 +52,10 @@ int check_boundary_collision(SNAKE *snake, int width, int height);
 void set_snake_direction(SNAKE *snake, char direction);
 
 // Frees the memory allocated for the snake
-void free_snake(SNAKE snake);
+void free_snake(SNAKE *snake);
+
+//functions for grafic interface
+void draw_snake(SNAKE *snake);
 
 
 #endif //SNAKE_H

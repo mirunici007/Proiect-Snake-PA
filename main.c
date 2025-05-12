@@ -1,29 +1,65 @@
+#include <time.h>
+
 #include "raylib.h"
+#include "snake.h"
+#include "game.h"
 
-int main(void) {
-    // Inițializează fereastra
-    InitWindow(800, 450, "Test Raylib");
+#define SCREEN_WIDTH 1000
+#define SCREEN_HEIGHT 700
 
-    // Setează FPS-ul țintă
+int main(void)
+{
+    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Snake Game");
     SetTargetFPS(60);
 
-    // Bucla principală
-    while (!WindowShouldClose()) {
-        // Începe desenarea
-        BeginDrawing();
+    //create the snake
+    SNAKE *snake = create_snake((SCREEN_WIDTH / 2) / 20, (SCREEN_HEIGHT / 2) / 20);
 
-        // Setează fundalul
-        ClearBackground(RAYWHITE);
-
-        // Afișează text
-        DrawText("Raylib este configurat corect!", 190, 200, 20, DARKGRAY);
-
-        // Termină desenarea
-        EndDrawing();
+    for(int i = 0; i < 100; i++)
+    {
+        grow_snake(snake);
     }
 
-    // Închide fereastra
-    CloseWindow();
 
-    return 0;
+    int food_x = (GetRandomValue(0, 39) * 20);
+    int food_y = (GetRandomValue(0, 22) * 20);
+
+    while(!WindowShouldClose())
+    {
+        if(IsKeyPressed(KEY_W) && snake->direction != DOWN)
+        {
+            set_snake_direction(snake, UP);
+        }
+        if(IsKeyPressed(KEY_S) && snake->direction != UP)
+        {
+            set_snake_direction(snake, DOWN);
+        }
+        if(IsKeyPressed(KEY_A) && snake->direction != RIGHT)
+        {
+            set_snake_direction(snake, LEFT);
+        }
+        if(IsKeyPressed(KEY_D) && snake->direction != LEFT)
+        {
+            set_snake_direction(snake, RIGHT);
+        }
+
+        //move snake
+        move_snake(snake, food_x, food_y);
+
+        //check for collision with food
+        if(check_food_collision(snake, food_x, food_y))
+        {
+            //functie pt intrebare
+            //fctie pt verificare raspuns
+        }
+
+        //draw game
+        BeginDrawing();
+        ClearBackground(BLACK);
+        draw_snake(snake);
+
+        EndDrawing();
+    }
+    free_snake(snake);
+    CloseWindow();
 }

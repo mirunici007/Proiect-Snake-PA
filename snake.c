@@ -119,8 +119,15 @@ int check_self_collision(SNAKE *snake)
 //function for collision with the boundaries
 int check_boundary_collision(SNAKE *snake, int screen_width, int screen_height)
 {
-    return (snake->head->coord_x < 0 || snake->head->coord_x >= screen_width ||
-            snake->head->coord_y < 0 || snake->head->coord_y >= screen_height); 
+    int head_x = snake->head->coord_x;
+    int head_y = snake->head->coord_y;
+
+    if(head_x < 0 || head_x >= screen_width || 
+       head_y < 0 || head_y >= screen_height)
+    {
+        return 1; //collision detected
+    }
+    return 0; // no collision
 }
 
 //function for freeing the snake
@@ -145,5 +152,16 @@ void set_snake_direction(SNAKE *snake, char direction)
         (direction == 'D' && snake->direction != 'A'))
     {
         snake->direction = direction;
+    }
+}
+
+void draw_snake(SNAKE *snake)
+{
+    SEGM *current = snake->head;
+
+    while(current)
+    {
+        DrawRectangle(current->coord_x, current->coord_y, 20, 20, GREEN);
+        current = current->next;
     }
 }
