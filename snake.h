@@ -7,6 +7,9 @@
 #define LEFT 'A'
 #define RIGHT 'D'
 
+#include "raylib.h"
+
+#define SEGMENT_SIZE 10 // Dimensiunea segmentelor șarpelui
 
 //declaring the variables
 typedef struct segment
@@ -22,6 +25,9 @@ typedef struct snake
     SEGM *tail;
     int length;
     char direction; //directions: UP, DOWN, LEFT, RIGHT
+
+    Texture2D head_texture; //texture for the head
+    Texture2D body_texture; //texture for the body
 }SNAKE;
 
 //function prtotypes

@@ -39,6 +39,9 @@ SNAKE *create_snake(int start_x, int start_y)
     snake->length = 1;
     snake->direction = 'D'; // initial direction is right
 
+    snake->head_texture = LoadTexture("textures/head.png");
+    snake->body_texture = LoadTexture("textures/body.png"); 
+
     return snake;
 }
 
@@ -135,6 +138,10 @@ void free_snake(SNAKE *snake)
         current = current->next;
         free(temp);
     }
+
+    UnloadTexture(snake->head_texture); // Unload the head texture
+    UnloadTexture(snake->body_texture); // Unload the body texture
+
     free(snake);
 }
 
@@ -152,9 +159,14 @@ void set_snake_direction(SNAKE *snake, char direction)
 void draw_snake(SNAKE *snake) {
     SEGM *current = snake->head;
 
+    DrawTexture(snake->head_texture, current->coord_x*SEGMENT_SIZE,
+         current->coord_y*SEGMENT_SIZE, WHITE);
+    current = current->next;
+
     while (current != NULL) {
-        // Desenează fiecare segment al șarpelui ca un dreptunghi verde
-        DrawRectangle(current->coord_x, current->coord_y, 20, 20, GREEN);
+        DrawTexture(snake->body_texture, current->coord_x * SEGMENT_SIZE,
+             current->coord_y * SEGMENT_SIZE, WHITE);
+
         current = current->next; // Treci la următorul segment
     }
 }
