@@ -20,6 +20,7 @@ int main(void)
 
     int food_x = (GetRandomValue(0, 39) * 20);
     int food_y = (GetRandomValue(0, 22) * 20);
+    GAME_STATE state = STATE_RUNNING;
 
     while(!WindowShouldClose())
     {
@@ -50,14 +51,43 @@ int main(void)
             //fctie pt verificare raspuns
         }*/
 
-        //draw game
-        BeginDrawing();
+        update_game(snake, &score, &state, &food_x, &food_y);
 
-        ClearBackground(BLACK);
-        draw_snake(snake);
+        if (state == STATE_PAUSED)
+        {
+            draw_pause_page();
+        }
+        else if(state == STATE_RUNNING)
+        {
+            draw_pause_button();
+
+           //draw game
+            BeginDrawing();
+
+            ClearBackground(BLACK);
+            draw_snake(snake);
 
         // Termină desenarea
-        EndDrawing();
+            EndDrawing();
+        }
+        if (state == STATE_GAME_OVER)
+        {
+            BeginDrawing();
+            ClearBackground(BLACK);
+            DrawText("Game Over", SCREEN_WIDTH / 2 - 50, SCREEN_HEIGHT / 2 - 20, 20, RED);
+            DrawText("Press R to restart", SCREEN_WIDTH / 2 - 50, SCREEN_HEIGHT / 2 + 20, 20, WHITE);
+            EndDrawing();
+
+            if (IsKeyPressed(KEY_R))
+            {
+                reset_game(&snake, &score);
+                state = STATE_RUNNING;
+                int food_x = (GetRandomValue(0, 39) * 20);
+                int food_y = (GetRandomValue(0, 22) * 20);
+                continue;
+            }
+        }
+
     }
     free_snake(snake);
     // Închide fereastra

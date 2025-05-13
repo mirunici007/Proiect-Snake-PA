@@ -15,7 +15,8 @@ typedef enum{
     STATE_QUESTION,     //game paused for a wuestion
     STATE_PAUSE,        //game paused
     STATE_MENU,         //game menu
-    STATE_GAME_OVER     //game over
+    STATE_GAME_OVER,     //game over
+    STATE_PAUSED    //game paused
 }GAME_STATE;
 
 //function declarations
@@ -39,7 +40,9 @@ int check_collisions(SNAKE *snake);
 // void generate_food(SNAKE *snake, int *food_x, int *food_y);
 
 // // Renders the game state (snake, food, score, etc.)
-// void render_game(SNAKE *snake, int food_x, int food_y, int score);
+void draw_pause_page();
+
+void draw_pause_button();
 
 // // Handles user input for controlling the snake
 // void handle_input(SNAKE *snake, GAME_STATE *state);

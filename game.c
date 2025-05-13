@@ -9,6 +9,8 @@
 //external variables
 int score; // initialize the score
 
+#define CELL_SIZE 20 
+
 // Initializes the game with initial values (score, positions, etc.)
 void init_game(SNAKE **snake, int *score)
 {
@@ -21,6 +23,20 @@ void init_game(SNAKE **snake, int *score)
 //updates the game(state, position, score, etc.)
 void update_game(SNAKE *snake, int *score, GAME_STATE *state, int *food_x, int *food_y)
 {
+    Rectangle pausebutton = {SCREEN_WIDTH - 110, 10, 100, 40};
+
+    if (IsKeyPressed(KEY_P) || (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && CheckCollisionPointRec(GetMousePosition(), pausebutton)))
+    {
+        if (*state == STATE_RUNNING)
+        {
+            *state = STATE_PAUSED;
+        }
+        else if (*state == STATE_PAUSED)
+        {
+            *state = STATE_RUNNING;
+        }
+    }
+
     if(*state == STATE_RUNNING)
     {
         move_snake(snake, *food_x, *food_y);
@@ -53,6 +69,7 @@ void update_game(SNAKE *snake, int *score, GAME_STATE *state, int *food_x, int *
         {
             *state = STATE_GAME_OVER;
             printf("Game over! Final score: %d\n", *score);
+            return;
         }
     }
 }
@@ -80,7 +97,33 @@ int check_collisions(SNAKE *snake)
     return 0; //no collision
 }
 
-// void render_game(SNAKE *snake, int food_x, int foor_y, int score)
-// {
+void draw_pause_page()
+{
+    BeginDrawing();
+    ClearBackground(RAYWHITE);
 
-// }
+    Vector2 v1 = {SCREEN_WIDTH / 2 - 10, SCREEN_HEIGHT / 2 - 10};
+    Vector2 v2 = {SCREEN_WIDTH / 2 + 10, SCREEN_HEIGHT / 2};
+    Vector2 v3 = {SCREEN_WIDTH / 2 - 10, SCREEN_HEIGHT / 2 + 10};
+
+    DrawTriangle(v1, v2, v3, RED);
+
+
+    DrawRectangle(SCREEN_WIDTH / 2 - 150, SCREEN_HEIGHT / 2 - 50, 300, 120, LIGHTGRAY); // Fundalul ferestrei
+    DrawText("PAUSED", SCREEN_WIDTH / 2 - MeasureText("PAUSED", 60) / 2, SCREEN_HEIGHT / 2 - 20, 60, BLACK);        
+    DrawText("Press P to Resume", SCREEN_WIDTH / 2 - MeasureText("Press P to Resume", 20) / 2, SCREEN_HEIGHT / 2 + 35, 20, DARKGRAY); 
+
+    EndDrawing();
+}
+
+void draw_pause_button()
+{
+    int bar_width = 10;
+    int bar_height = 20;
+    int bar_spacing = 5;
+    int bar_x = SCREEN_WIDTH - 90;
+    int bar_y = 20;
+
+    DrawRectangle(bar_x, bar_y, bar_width, bar_height, DARKGREEN);
+    DrawRectangle(bar_x + bar_width + bar_spacing, bar_y, bar_width, bar_height, DARKGREEN);
+}
