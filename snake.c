@@ -44,7 +44,7 @@ SNAKE *create_snake(int start_x, int start_y)
     snake->head_left_texture = LoadTexture("textures/head_left.png");
     snake->head_right_texture = LoadTexture("textures/head_right.png");
     // Load the body texture
-    snake->body_horizontal_texture = LoadTexture("textures/body_orizontal.png");
+    snake->body_horizontal_texture = LoadTexture("textures/body_horizontal.png");
     snake->body_vertical_texture = LoadTexture("textures/body_vertical.png");
 
     // Load corner textures
