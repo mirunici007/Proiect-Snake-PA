@@ -99,21 +99,23 @@ int check_collisions(SNAKE *snake)
 
 void draw_pause_page()
 {
-    BeginDrawing();
-    ClearBackground(RAYWHITE);
-
-    Vector2 v1 = {SCREEN_WIDTH / 2 - 10, SCREEN_HEIGHT / 2 - 10};
-    Vector2 v2 = {SCREEN_WIDTH / 2 + 10, SCREEN_HEIGHT / 2};
-    Vector2 v3 = {SCREEN_WIDTH / 2 - 10, SCREEN_HEIGHT / 2 + 10};
-
-    DrawTriangle(v1, v2, v3, RED);
-
 
     DrawRectangle(SCREEN_WIDTH / 2 - 150, SCREEN_HEIGHT / 2 - 50, 300, 120, LIGHTGRAY); // Fundalul ferestrei
     DrawText("PAUSED", SCREEN_WIDTH / 2 - MeasureText("PAUSED", 60) / 2, SCREEN_HEIGHT / 2 - 20, 60, BLACK);        
     DrawText("Press P to Resume", SCREEN_WIDTH / 2 - MeasureText("Press P to Resume", 20) / 2, SCREEN_HEIGHT / 2 + 35, 20, DARKGRAY); 
 
-    EndDrawing();
+    int margin = 20;
+    int size = 20;
+
+    Vector2 v1 = {SCREEN_WIDTH - margin - size, margin};
+    Vector2 v2 = {SCREEN_WIDTH - margin, margin + size / 2};
+    Vector2 v3 = {SCREEN_WIDTH - margin - size, margin + size};
+
+    DrawTriangle(v1, v2, v3, RED);
+    DrawLineV(v1, v2, RED);
+    DrawLineV(v2, v3, RED);
+    DrawLineV(v3, v1, RED);
+
 }
 
 void draw_pause_button()

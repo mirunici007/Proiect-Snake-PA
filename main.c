@@ -55,7 +55,10 @@ int main(void)
 
         if (state == STATE_PAUSED)
         {
+            BeginDrawing();
+            ClearBackground(RAYWHITE);
             draw_pause_page();
+            EndDrawing();
         }
         else if(state == STATE_RUNNING)
         {
