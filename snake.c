@@ -168,6 +168,12 @@ void free_snake(SNAKE *snake)
     UnloadTexture(snake->head_down_texture);
     UnloadTexture(snake->head_left_texture);
     UnloadTexture(snake->head_right_texture);
+    UnloadTexture(snake->body_horizontal_texture);
+    UnloadTexture(snake->body_vertical_texture);
+    UnloadTexture(snake->corner_top_left_texture);
+    UnloadTexture(snake->corner_top_right_texture);
+    UnloadTexture(snake->corner_bottom_left_texture);
+    UnloadTexture(snake->corner_bottom_right_texture);
 
     free(snake);
 }
