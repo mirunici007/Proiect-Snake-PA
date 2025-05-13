@@ -7,7 +7,6 @@
 #include "snake.h"
 
 //external variables
-int score; // initialize the score
 
 #define CELL_SIZE 20 
 
@@ -81,6 +80,7 @@ void reset_game(SNAKE **snake, int *score)
 
     *snake = create_snake(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2); // CREATE A NEW SNAKE
     *score = 0; //reset the score
+
 }
 
 int check_collisions(SNAKE *snake)

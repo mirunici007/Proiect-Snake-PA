@@ -4,6 +4,7 @@
 
 #define SCREEN_WIDTH 1000
 #define SCREEN_HEIGHT 700
+int score = 0; // initialize the score
 
 int main(void)
 {
@@ -85,8 +86,13 @@ int main(void)
             {
                 reset_game(&snake, &score);
                 state = STATE_RUNNING;
-                int food_x = (GetRandomValue(0, 39) * 20);
-                int food_y = (GetRandomValue(0, 22) * 20);
+                snake = create_snake((SCREEN_WIDTH / 2) / 20, (SCREEN_HEIGHT / 2) / 20);
+                for(int i = 0; i < 10; i++)
+                {
+                    grow_snake(snake);
+                }
+                food_x = (GetRandomValue(0, 39) * 20);
+                food_y = (GetRandomValue(0, 22) * 20);
                 continue;
             }
         }
