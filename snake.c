@@ -97,12 +97,12 @@ void move_snake(SNAKE *snake, int food_x, int food_y) {
     int prev_x = snake->head->coord_x;
     int prev_y = snake->head->coord_y;
 
-    // Ajustează poziția capului în funcție de direcție
+    // Mută capul
     switch (snake->direction) {
-        case 'W': prev_y -= 2; break; // sus (deplasare cu 2 unități)
-        case 'S': prev_y += 2; break; // jos (deplasare cu 2 unități)
-        case 'A': prev_x -= 2; break; // stânga (deplasare cu 2 unități)
-        case 'D': prev_x += 2; break; // dreapta (deplasare cu 2 unități)
+        case UP: prev_y -= SEGMENT_SIZE; break;
+        case DOWN: prev_y += SEGMENT_SIZE; break;
+        case LEFT: prev_x -= SEGMENT_SIZE; break;
+        case RIGHT: prev_x += SEGMENT_SIZE; break;
         default: break;
     }
 
@@ -111,19 +111,22 @@ void move_snake(SNAKE *snake, int food_x, int food_y) {
     new_head->next = snake->head;
     snake->head = new_head;
 
-    // Verifică dacă șarpele mănâncă mâncarea
+    // Dacă mănâncă mâncarea, crește lungimea
     if (check_food_collision(snake, food_x, food_y)) {
         snake->length++;
     } else {
-        // Elimină segmentul cozii
+        // Elimină coada DOAR dacă numărul de segmente depășește snake->length
+        int count = 1;
         SEGM *temp = snake->head;
-        while (temp->next && temp->next != snake->tail) {
+        while (temp->next && count < snake->length) {
             temp = temp->next;
+            count++;
         }
-
-        free(snake->tail);
-        temp->next = NULL;
-        snake->tail = temp;
+        if (temp->next) {
+            free(temp->next);
+            temp->next = NULL;
+            snake->tail = temp;
+        }
     }
 }
 
@@ -148,8 +151,8 @@ int check_self_collision(SNAKE *snake)
 //function for collision with the boundaries
 int check_boundary_collision(SNAKE *snake, int screen_width, int screen_height)
 {
-    return (snake->head->coord_x < 0 || snake->head->coord_x >= screen_width ||
-            snake->head->coord_y < 0 || snake->head->coord_y >= screen_height); 
+    return (snake->head->coord_x < -19 || snake->head->coord_x >= screen_width ||
+            snake->head->coord_y < 0 || snake->head->coord_y >= screen_height-10); 
 }
 
 //function for freeing the snake
@@ -205,8 +208,8 @@ void draw_snake(SNAKE *snake) {
     // Desenează capul șarpelui
     DrawTexture(
         head_texture,
-        current->coord_x * SEGMENT_SIZE,
-        current->coord_y * SEGMENT_SIZE,
+        current->coord_x,
+        current->coord_y,
         WHITE
     );
 
@@ -232,32 +235,32 @@ void draw_snake(SNAKE *snake) {
                 (prev->coord_y < current->coord_y && next->coord_x < current->coord_x)) { // sus stânga
                 DrawTexture(
                     snake->corner_top_left_texture,
-                    current->coord_x * SEGMENT_SIZE,
-                    current->coord_y * SEGMENT_SIZE,
+                    current->coord_x,
+                    current->coord_y,
                     WHITE
                 );
             } else if ((prev->coord_x > current->coord_x && next->coord_y < current->coord_y) || // stânga sus
                        (prev->coord_y < current->coord_y && next->coord_x > current->coord_x)) { // sus dreapta
                 DrawTexture(
                     snake->corner_top_right_texture,
-                    current->coord_x * SEGMENT_SIZE,
-                    current->coord_y * SEGMENT_SIZE,
+                    current->coord_x,
+                    current->coord_y,
                     WHITE
                 );
             } else if ((prev->coord_x < current->coord_x && next->coord_y > current->coord_y) || // dreapta jos
                        (prev->coord_y > current->coord_y && next->coord_x < current->coord_x)) { // jos stânga
                 DrawTexture(
                     snake->corner_bottom_left_texture,
-                    current->coord_x * SEGMENT_SIZE,
-                    current->coord_y * SEGMENT_SIZE,
+                    current->coord_x,
+                    current->coord_y,
                     WHITE
                 );
             } else if ((prev->coord_x > current->coord_x && next->coord_y > current->coord_y) || // stânga jos
                        (prev->coord_y > current->coord_y && next->coord_x > current->coord_x)) { // jos dreapta
                 DrawTexture(
                     snake->corner_bottom_right_texture,
-                    current->coord_x * SEGMENT_SIZE,
-                    current->coord_y * SEGMENT_SIZE,
+                    current->coord_x,
+                    current->coord_y,
                     WHITE
                 );
             }
@@ -266,8 +269,8 @@ void draw_snake(SNAKE *snake) {
         // Desenează segmentul corpului
         DrawTexture(
             body_texture,
-            current->coord_x * SEGMENT_SIZE,
-            current->coord_y * SEGMENT_SIZE,
+            current->coord_x,
+            current->coord_y,
             WHITE
         );
 

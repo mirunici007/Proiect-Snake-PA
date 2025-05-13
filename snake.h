@@ -9,7 +9,7 @@
 
 #include "raylib.h"
 
-#define SEGMENT_SIZE 10 // Dimensiunea segmentelor șarpelui
+#define SEGMENT_SIZE 20 // Dimensiunea segmentelor șarpelui
 
 //declaring the variables
 typedef struct segment

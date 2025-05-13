@@ -8,16 +8,16 @@ int score = 0; // initialize the score
 
 int main(void)
 {
-    InitWindow(SCREEN_WIDTH+100, SCREEN_HEIGHT+100, "Snake Game");
+    InitWindow(SCREEN_WIDTH+25, SCREEN_HEIGHT+25, "Snake Game");
     SetTargetFPS(10);
 
     //create the snake
-    SNAKE *snake = create_snake((SCREEN_WIDTH / 2) / 20, (SCREEN_HEIGHT / 2) / 20);
+    SNAKE *snake = create_snake((SCREEN_WIDTH / 2), (SCREEN_HEIGHT / 2));
 
     for(int i = 0; i < 10; i++)
-    {
-        grow_snake(snake);
-    }
+        {
+            grow_snake(snake);
+        }
 
     int food_x = (GetRandomValue(0, 39) * 20);
     int food_y = (GetRandomValue(0, 22) * 20);
@@ -83,7 +83,6 @@ int main(void)
             {
                 reset_game(&snake, &score);
                 state = STATE_RUNNING;
-                snake = create_snake((SCREEN_WIDTH / 2) / 20, (SCREEN_HEIGHT / 2) / 20);
                 for(int i = 0; i < 10; i++)
                 {
                     grow_snake(snake);
