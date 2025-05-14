@@ -9,8 +9,10 @@ int main(void)
 {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Snake Game");
     SetTargetFPS(60);  // FPS mare pentru input corect
-    SetWindowState(FLAG_WINDOW_RESIZABLE);
     SetExitKey(KEY_NULL);
+
+    // Nu mai facem fereastra redimensionabilă:
+    // SetWindowState(FLAG_WINDOW_RESIZABLE); <-- eliminat
 
     GAME_STATE state = STATE_MENU;
 
@@ -58,7 +60,7 @@ int main(void)
                     food_y = GetRandomValue(0, 22) * 20;
                     score = 0;
                     state = STATE_RUNNING;
-                    moveTimer = 0.0f;  // Resetăm timerul
+                    moveTimer = 0.0f;
                 }
                 if (CheckCollisionPointRec(mouse, menuBtn))
                 {
@@ -87,7 +89,6 @@ int main(void)
                 state = STATE_PAUSED;
             }
 
-            // Direcție
             if (IsKeyPressed(KEY_W) && snake->direction != DOWN) set_snake_direction(snake, UP);
             if (IsKeyPressed(KEY_S) && snake->direction != UP) set_snake_direction(snake, DOWN);
             if (IsKeyPressed(KEY_A) && snake->direction != RIGHT) set_snake_direction(snake, LEFT);
@@ -114,7 +115,8 @@ int main(void)
             DrawRectangleRec(backBtn, GRAY);
             DrawText("Inapoi la meniu", backBtn.x + 10, backBtn.y + 10, 20, BLACK);
 
-            if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+            // Folosim IsMouseButtonReleased pentru răspuns mai precis
+            if (IsMouseButtonReleased(MOUSE_LEFT_BUTTON))
             {
                 Vector2 mouse = GetMousePosition();
                 if (CheckCollisionPointRec(mouse, backBtn))
@@ -131,7 +133,7 @@ int main(void)
             if (IsKeyPressed(KEY_ENTER) || IsKeyPressed(KEY_ESCAPE) || IsKeyPressed(KEY_P))
             {
                 state = STATE_RUNNING;
-                moveTimer = 0.0f; // Resetăm timerul la reluare
+                moveTimer = 0.0f;
             }
         }
 
