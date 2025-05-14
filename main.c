@@ -98,6 +98,7 @@ int main(void)
         }
 
     }
+
     free_snake(snake);
     // Închide fereastra
     CloseWindow();
