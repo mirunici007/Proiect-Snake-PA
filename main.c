@@ -1,107 +1,217 @@
-#include "snake.h"
 #include "raylib.h"
+#include "snake.h"
 #include "game.h"
+#include <stddef.h>
 
-#define SCREEN_WIDTH 1000
-#define SCREEN_HEIGHT 700
-int score = 0; // initialize the score
+int score = 0;
 
 int main(void)
 {
-    InitWindow(SCREEN_WIDTH+100, SCREEN_HEIGHT+100, "Snake Game");
-    SetTargetFPS(10);
+    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Snake Game");
+    SetTargetFPS(60);  // FPS mare pentru input corect
+    SetExitKey(KEY_NULL);
 
-    //create the snake
-    SNAKE *snake = create_snake((SCREEN_WIDTH / 2) / 20, (SCREEN_HEIGHT / 2) / 20);
+    // Nu mai facem fereastra redimensionabilă:
+    // SetWindowState(FLAG_WINDOW_RESIZABLE); <-- eliminat
 
-    for(int i = 0; i < 10; i++)
+    GAME_STATE state = STATE_MENU;
+
+    SNAKE *snake = NULL;
+    int food_x = 0;
+    int food_y = 0;
+
+    float moveTimer = 0.0f;
+    float moveInterval = 0.15f; // Snake se mișcă la fiecare 150 ms (~6.66 FPS)
+
+    bool showExitConfirmation = false; // To track the exit confirmation tab
+
+    while (!WindowShouldClose())
     {
-        grow_snake(snake);
-    }
+        int currentWidth = GetScreenWidth();
+        int currentHeight = GetScreenHeight();
 
-    int food_x = (GetRandomValue(0, 39) * 20);
-    int food_y = (GetRandomValue(0, 22) * 20);
-    GAME_STATE state = STATE_RUNNING;
+        BeginDrawing();
+        ClearBackground(BLACK);
 
-    while(!WindowShouldClose())
-    {
-        if(IsKeyPressed(KEY_W) && snake->direction != DOWN)
+        // ------------------ MENU ------------------
+        if (state == STATE_MENU)
         {
-            set_snake_direction(snake, UP);
+            DrawText("Snake Game", currentWidth / 2 - MeasureText("Snake Game", 40) / 2, 100, 40, GREEN);
+
+            Rectangle startBtn = {currentWidth / 2 - 150, 250, 300, 50};
+            Rectangle menuBtn  = {currentWidth / 2 - 150, 320, 300, 50};
+            Rectangle exitBtn  = {currentWidth / 2 - 150, 390, 300, 50};
+
+            DrawRectangleRec(startBtn, DARKGREEN);
+            DrawText("START", startBtn.x + startBtn.width / 2 - MeasureText("START", 20) / 2, startBtn.y + 15, 20, RAYWHITE);
+
+            DrawRectangleRec(menuBtn, DARKBLUE);
+            DrawText("MENU", menuBtn.x + menuBtn.width / 2 - MeasureText("MENU", 20) / 2, menuBtn.y + 15, 20, RAYWHITE);
+
+            DrawRectangleRec(exitBtn, RED);
+            DrawText("EXIT", exitBtn.x + exitBtn.width / 2 - MeasureText("EXIT", 20) / 2, exitBtn.y + 15, 20, RAYWHITE);
+
+            if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+            {
+                Vector2 mouse = GetMousePosition();
+                if (CheckCollisionPointRec(mouse, startBtn))
+                {
+                    int midX = currentWidth / 2;
+                    int midY = currentHeight / 2;
+
+                    snake = create_snake((midX / 20), (midY / 20));
+                    for (int i = 0; i < 10; i++) grow_snake(snake);
+
+                    food_x = GetRandomValue(0, 39) * 20;
+                    food_y = GetRandomValue(0, 22) * 20;
+                    score = 0;
+                    state = STATE_RUNNING;
+                    moveTimer = 0.0f;
+                }
+                if (CheckCollisionPointRec(mouse, menuBtn))
+                {
+                    state = STATE_QUESTION;
+                }
+                if (CheckCollisionPointRec(mouse, exitBtn))
+                {
+                    showExitConfirmation = true; // Show confirmation tab
+                }
+            }
+
+            // Exit confirmation tab
+            if (showExitConfirmation)
+            {
+                Rectangle tab = {currentWidth / 2 - 150, currentHeight / 2 - 100, 300, 200};
+                DrawRectangleRec(tab, GRAY);
+                DrawText("Are you sure you want to exit?", tab.x + tab.width / 2 - MeasureText("Are you sure you want to exit?", 20) / 2, tab.y + 30, 20, BLACK);
+
+                Rectangle yesBtn = {tab.x + 30, tab.y + 120, 100, 40};
+                Rectangle noBtn = {tab.x + 170, tab.y + 120, 100, 40};
+
+                DrawRectangleRec(yesBtn, DARKGREEN);
+                DrawText("YES", yesBtn.x + yesBtn.width / 2 - MeasureText("YES", 20) / 2, yesBtn.y + 10, 20, RAYWHITE);
+
+                DrawRectangleRec(noBtn, RED);
+                DrawText("NO", noBtn.x + noBtn.width / 2 - MeasureText("NO", 20) / 2, noBtn.y + 10, 20, RAYWHITE);
+
+                if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+                {
+                    Vector2 mouse = GetMousePosition();
+                    if (CheckCollisionPointRec(mouse, yesBtn))
+                    {
+                        CloseWindow(); // Exit the game
+                        return 0;
+                    }
+                    if (CheckCollisionPointRec(mouse, noBtn))
+                    {
+                        showExitConfirmation = false; // Hide confirmation tab
+                    }
+                }
+            }
         }
-        if(IsKeyPressed(KEY_S) && snake->direction != UP)
+
+        // ------------------ "NEATA" ------------------
+        else if (state == STATE_QUESTION)
         {
-            set_snake_direction(snake, DOWN);
-        }
-        if(IsKeyPressed(KEY_A) && snake->direction != RIGHT)
-        {
-            set_snake_direction(snake, LEFT);
-        }
-        if(IsKeyPressed(KEY_D) && snake->direction != LEFT)
-        {
-            set_snake_direction(snake, RIGHT);
+            DrawText("neata", currentWidth / 2 - MeasureText("neata", 40) / 2, currentHeight / 2 - 20, 40, YELLOW);
+            DrawText("Apasa ESC pentru a reveni", currentWidth / 2 - MeasureText("Apasa ESC pentru a reveni", 20) / 2, currentHeight / 2 + 40, 20, GRAY);
+
+            if (IsKeyPressed(KEY_ESCAPE))
+            {
+                state = STATE_MENU;
+            }
         }
 
-        //move snake
-        move_snake(snake, food_x, food_y);
-
-        //check for collision with food
-        /*if(check_food_collision(snake, food_x, food_y))
+        // ------------------ GAME ------------------
+        else if (state == STATE_RUNNING)
         {
-            //functie pt intrebare
-            //fctie pt verificare raspuns
-        }*/
+            if (IsKeyPressed(KEY_P))
+            {
+                state = STATE_PAUSED;
+            }
 
-        update_game(snake, &score, &state, &food_x, &food_y);
+            if (IsKeyPressed(KEY_W) && snake->direction != DOWN) set_snake_direction(snake, UP);
+            if (IsKeyPressed(KEY_S) && snake->direction != UP) set_snake_direction(snake, DOWN);
+            if (IsKeyPressed(KEY_A) && snake->direction != RIGHT) set_snake_direction(snake, LEFT);
+            if (IsKeyPressed(KEY_D) && snake->direction != LEFT) set_snake_direction(snake, RIGHT);
 
-        if (state == STATE_PAUSED)
-        {
-            BeginDrawing();
-            ClearBackground(RAYWHITE);
-            draw_pause_page();
-            EndDrawing();
-        }
-        else if(state == STATE_RUNNING)
-        {
+            moveTimer += GetFrameTime();
+            if (moveTimer >= moveInterval)
+            {
+                move_snake(snake, food_x, food_y);
+                update_game(snake, &score, &state, &food_x, &food_y);
+                moveTimer = 0.0f;
+            }
+
             draw_pause_button();
-
-           //draw game
-            BeginDrawing();
-
-            ClearBackground(BLACK);
             draw_snake(snake);
-
-        // Termină desenarea
-            EndDrawing();
         }
-        if (state == STATE_GAME_OVER)
+
+        // ------------------ PAUSED ------------------
+        else if (state == STATE_PAUSED)
         {
-            BeginDrawing();
-            ClearBackground(BLACK);
-            DrawText("Game Over", SCREEN_WIDTH / 2 - 50, SCREEN_HEIGHT / 2 - 20, 20, RED);
-            DrawText("Press R to restart", SCREEN_WIDTH / 2 - 50, SCREEN_HEIGHT / 2 + 20, 20, WHITE);
-            EndDrawing();
+            draw_pause_page();
+
+            Rectangle backBtn = {currentWidth / 2 - 75, currentHeight / 2 + 150, 150, 40};
+            DrawRectangleRec(backBtn, GRAY);
+            DrawText("Inapoi la meniu", backBtn.x + backBtn.width / 2 - MeasureText("Inapoi la meniu", 20) / 2, backBtn.y + 10, 20, BLACK);
+
+            // Folosim IsMouseButtonReleased pentru răspuns mai precis
+            if (IsMouseButtonReleased(MOUSE_LEFT_BUTTON))
+            {
+                Vector2 mouse = GetMousePosition();
+                if (CheckCollisionPointRec(mouse, backBtn))
+                {
+                    state = STATE_MENU;
+                    if (snake != NULL)
+                    {
+                        free_snake(snake);
+                        snake = NULL;
+                    }
+                }
+            }
+
+            if (IsKeyPressed(KEY_ENTER) || IsKeyPressed(KEY_ESCAPE) || IsKeyPressed(KEY_P))
+            {
+                state = STATE_RUNNING;
+                moveTimer = 0.0f;
+            }
+        }
+
+        // ------------------ GAME OVER ------------------
+        else if (state == STATE_GAME_OVER)
+        {
+            DrawText("Game Over", currentWidth / 2 - MeasureText("Game Over", 30) / 2, currentHeight / 2 - 30, 30, RED);
+            DrawText("Press R to restart", currentWidth / 2 - MeasureText("Press R to restart", 20) / 2, currentHeight / 2 + 10, 20, WHITE);
+            DrawText("Press ESC to return to menu", currentWidth / 2 - MeasureText("Press ESC to return to menu", 20) / 2, currentHeight / 2 + 40, 20, GRAY);
 
             if (IsKeyPressed(KEY_R))
             {
                 reset_game(&snake, &score);
+                for (int i = 0; i < 10; i++) grow_snake(snake);
+                food_x = GetRandomValue(0, 39) * 20;
+                food_y = GetRandomValue(0, 22) * 20;
                 state = STATE_RUNNING;
-                snake = create_snake((SCREEN_WIDTH / 2) / 20, (SCREEN_HEIGHT / 2) / 20);
-                for(int i = 0; i < 10; i++)
+                moveTimer = 0.0f;
+            }
+
+            if (IsKeyPressed(KEY_ESCAPE))
+            {
+                state = STATE_MENU;
+                if (snake != NULL)
                 {
-                    grow_snake(snake);
+                    free_snake(snake);
+                    snake = NULL;
                 }
-                food_x = (GetRandomValue(0, 39) * 20);
-                food_y = (GetRandomValue(0, 22) * 20);
-                continue;
             }
         }
 
+        EndDrawing();
     }
 
-    free_snake(snake);
-    // Închide fereastra
-    CloseWindow();
+    if (snake != NULL)
+        free_snake(snake);
 
+    CloseWindow();
     return 0;
 }
