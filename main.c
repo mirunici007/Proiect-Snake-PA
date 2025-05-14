@@ -23,6 +23,8 @@ int main(void)
     float moveTimer = 0.0f;
     float moveInterval = 0.15f; // Snake se mișcă la fiecare 150 ms (~6.66 FPS)
 
+    bool showExitConfirmation = false; // To track the exit confirmation tab
+
     while (!WindowShouldClose())
     {
         int currentWidth = GetScreenWidth();
@@ -34,16 +36,20 @@ int main(void)
         // ------------------ MENU ------------------
         if (state == STATE_MENU)
         {
-            DrawText("Snake Game", currentWidth / 2 - 100, 100, 40, GREEN);
+            DrawText("Snake Game", currentWidth / 2 - MeasureText("Snake Game", 40) / 2, 100, 40, GREEN);
 
-            Rectangle startBtn = {currentWidth / 2 - 100, 250, 200, 50};
-            Rectangle menuBtn  = {currentWidth / 2 - 100, 320, 200, 50};
+            Rectangle startBtn = {currentWidth / 2 - 150, 250, 300, 50};
+            Rectangle menuBtn  = {currentWidth / 2 - 150, 320, 300, 50};
+            Rectangle exitBtn  = {currentWidth / 2 - 150, 390, 300, 50};
 
             DrawRectangleRec(startBtn, DARKGREEN);
-            DrawText("START", startBtn.x + 60, startBtn.y + 15, 20, RAYWHITE);
+            DrawText("START", startBtn.x + startBtn.width / 2 - MeasureText("START", 20) / 2, startBtn.y + 15, 20, RAYWHITE);
 
             DrawRectangleRec(menuBtn, DARKBLUE);
-            DrawText("MENIU", menuBtn.x + 60, menuBtn.y + 15, 20, RAYWHITE);
+            DrawText("MENU", menuBtn.x + menuBtn.width / 2 - MeasureText("MENU", 20) / 2, menuBtn.y + 15, 20, RAYWHITE);
+
+            DrawRectangleRec(exitBtn, RED);
+            DrawText("EXIT", exitBtn.x + exitBtn.width / 2 - MeasureText("EXIT", 20) / 2, exitBtn.y + 15, 20, RAYWHITE);
 
             if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
             {
@@ -66,14 +72,49 @@ int main(void)
                 {
                     state = STATE_QUESTION;
                 }
+                if (CheckCollisionPointRec(mouse, exitBtn))
+                {
+                    showExitConfirmation = true; // Show confirmation tab
+                }
+            }
+
+            // Exit confirmation tab
+            if (showExitConfirmation)
+            {
+                Rectangle tab = {currentWidth / 2 - 150, currentHeight / 2 - 100, 300, 200};
+                DrawRectangleRec(tab, GRAY);
+                DrawText("Are you sure you want to exit?", tab.x + tab.width / 2 - MeasureText("Are you sure you want to exit?", 20) / 2, tab.y + 30, 20, BLACK);
+
+                Rectangle yesBtn = {tab.x + 30, tab.y + 120, 100, 40};
+                Rectangle noBtn = {tab.x + 170, tab.y + 120, 100, 40};
+
+                DrawRectangleRec(yesBtn, DARKGREEN);
+                DrawText("YES", yesBtn.x + yesBtn.width / 2 - MeasureText("YES", 20) / 2, yesBtn.y + 10, 20, RAYWHITE);
+
+                DrawRectangleRec(noBtn, RED);
+                DrawText("NO", noBtn.x + noBtn.width / 2 - MeasureText("NO", 20) / 2, noBtn.y + 10, 20, RAYWHITE);
+
+                if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+                {
+                    Vector2 mouse = GetMousePosition();
+                    if (CheckCollisionPointRec(mouse, yesBtn))
+                    {
+                        CloseWindow(); // Exit the game
+                        return 0;
+                    }
+                    if (CheckCollisionPointRec(mouse, noBtn))
+                    {
+                        showExitConfirmation = false; // Hide confirmation tab
+                    }
+                }
             }
         }
 
         // ------------------ "NEATA" ------------------
         else if (state == STATE_QUESTION)
         {
-            DrawText("neata", currentWidth / 2 - 50, currentHeight / 2 - 20, 40, YELLOW);
-            DrawText("Apasa ESC pentru a reveni", currentWidth / 2 - 120, currentHeight / 2 + 40, 20, GRAY);
+            DrawText("neata", currentWidth / 2 - MeasureText("neata", 40) / 2, currentHeight / 2 - 20, 40, YELLOW);
+            DrawText("Apasa ESC pentru a reveni", currentWidth / 2 - MeasureText("Apasa ESC pentru a reveni", 20) / 2, currentHeight / 2 + 40, 20, GRAY);
 
             if (IsKeyPressed(KEY_ESCAPE))
             {
@@ -113,7 +154,7 @@ int main(void)
 
             Rectangle backBtn = {currentWidth / 2 - 75, currentHeight / 2 + 150, 150, 40};
             DrawRectangleRec(backBtn, GRAY);
-            DrawText("Inapoi la meniu", backBtn.x + 10, backBtn.y + 10, 20, BLACK);
+            DrawText("Inapoi la meniu", backBtn.x + backBtn.width / 2 - MeasureText("Inapoi la meniu", 20) / 2, backBtn.y + 10, 20, BLACK);
 
             // Folosim IsMouseButtonReleased pentru răspuns mai precis
             if (IsMouseButtonReleased(MOUSE_LEFT_BUTTON))
@@ -140,9 +181,9 @@ int main(void)
         // ------------------ GAME OVER ------------------
         else if (state == STATE_GAME_OVER)
         {
-            DrawText("Game Over", currentWidth / 2 - 60, currentHeight / 2 - 30, 30, RED);
-            DrawText("Press R to restart", currentWidth / 2 - 90, currentHeight / 2 + 10, 20, WHITE);
-            DrawText("Press ESC to return to menu", currentWidth / 2 - 120, currentHeight / 2 + 40, 20, GRAY);
+            DrawText("Game Over", currentWidth / 2 - MeasureText("Game Over", 30) / 2, currentHeight / 2 - 30, 30, RED);
+            DrawText("Press R to restart", currentWidth / 2 - MeasureText("Press R to restart", 20) / 2, currentHeight / 2 + 10, 20, WHITE);
+            DrawText("Press ESC to return to menu", currentWidth / 2 - MeasureText("Press ESC to return to menu", 20) / 2, currentHeight / 2 + 40, 20, GRAY);
 
             if (IsKeyPressed(KEY_R))
             {
