@@ -100,7 +100,7 @@ int check_collisions(SNAKE *snake)
 void draw_pause_page()
 {
 
-    DrawRectangle(SCREEN_WIDTH / 2 - 150, SCREEN_HEIGHT / 2 - 50, 300, 120, LIGHTGRAY); // Fundalul ferestrei
+    DrawRectangle(SCREEN_WIDTH / 2 - 150, SCREEN_HEIGHT / 2 - 50, 300, 120, LIGHTGRAY); 
     DrawText("PAUSED", SCREEN_WIDTH / 2 - MeasureText("PAUSED", 60) / 2, SCREEN_HEIGHT / 2 - 20, 60, BLACK);        
     DrawText("Press P to Resume", SCREEN_WIDTH / 2 - MeasureText("Press P to Resume", 20) / 2, SCREEN_HEIGHT / 2 + 35, 20, DARKGRAY); 
 

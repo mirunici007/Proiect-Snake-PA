@@ -81,12 +81,13 @@ int main(void)
             // Exit confirmation tab
             if (showExitConfirmation)
             {
-                Rectangle tab = {currentWidth / 2 - 150, currentHeight / 2 - 100, 300, 200};
+                Rectangle tab = {currentWidth / 2 - 150, currentHeight / 2 - 100, 340, 200};
                 DrawRectangleRec(tab, GRAY);
                 DrawText("Are you sure you want to exit?", tab.x + tab.width / 2 - MeasureText("Are you sure you want to exit?", 20) / 2, tab.y + 30, 20, BLACK);
 
-                Rectangle yesBtn = {tab.x + 30, tab.y + 120, 100, 40};
-                Rectangle noBtn = {tab.x + 170, tab.y + 120, 100, 40};
+                Rectangle yesBtn = {tab.x + tab.width / 2 - 110, tab.y + 120, 100, 40};
+                Rectangle noBtn  = {tab.x + tab.width / 2 + 10,  tab.y + 120, 100, 40};
+
 
                 DrawRectangleRec(yesBtn, DARKGREEN);
                 DrawText("YES", yesBtn.x + yesBtn.width / 2 - MeasureText("YES", 20) / 2, yesBtn.y + 10, 20, RAYWHITE);
@@ -130,6 +131,12 @@ int main(void)
                 state = STATE_PAUSED;
             }
 
+            Rectangle pausebutton = {SCREEN_WIDTH - 110, 10, 100, 40};
+            if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && CheckCollisionPointRec(GetMousePosition(), pausebutton))
+            {
+                state = STATE_PAUSED;
+            }
+
             if (IsKeyPressed(KEY_W) && snake->direction != DOWN) set_snake_direction(snake, UP);
             if (IsKeyPressed(KEY_S) && snake->direction != UP) set_snake_direction(snake, DOWN);
             if (IsKeyPressed(KEY_A) && snake->direction != RIGHT) set_snake_direction(snake, LEFT);
@@ -151,6 +158,14 @@ int main(void)
         else if (state == STATE_PAUSED)
         {
             draw_pause_page();
+
+            Rectangle triangleHitbox = {SCREEN_WIDTH - 40, 20, 20, 20}; 
+
+            if (IsMouseButtonReleased(MOUSE_LEFT_BUTTON) && CheckCollisionPointRec(GetMousePosition(), triangleHitbox)) 
+            {
+                state = STATE_RUNNING;
+                moveTimer = 0.0f;
+            }
 
             Rectangle backBtn = {currentWidth / 2 - 75, currentHeight / 2 + 150, 150, 40};
             DrawRectangleRec(backBtn, GRAY);
