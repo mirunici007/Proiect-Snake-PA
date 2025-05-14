@@ -14,7 +14,7 @@ typedef enum {
 typedef struct food_node {
     int x, y;
     FOOD_TYPE type;
-    struct food_node* next;
+    struct food_node* next; 
 } FOOD;
 
 FOOD* food_list = NULL;
