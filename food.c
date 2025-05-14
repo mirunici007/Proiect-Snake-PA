@@ -111,7 +111,7 @@ void draw_food() {
                 break;
         }
 
-        curr = curr->next;
+        curr = curr->next; 
     }
 }
 
