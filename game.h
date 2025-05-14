@@ -12,11 +12,11 @@ extern int score;
 
 typedef enum{
     STATE_RUNNING,      //game running
-    STATE_QUESTION,     //game paused for a wuestion
-    STATE_PAUSE,        //game paused
-    STATE_MENU,         //game menu
+    STATE_MENU,     //game menu
+    STATE_START_PAGE,         //game start page
     STATE_GAME_OVER,     //game over
-    STATE_PAUSED    //game paused
+    STATE_PAUSED,    //game paused
+    STATE_INSTRUCTIONS //game instructions
 }GAME_STATE;
 
 //function declarations

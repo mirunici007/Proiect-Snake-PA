@@ -1,6 +1,7 @@
 #include "raylib.h"
 #include "snake.h"
 #include "game.h"
+#include "menu.h"
 #include <stddef.h>
 
 int score = 0;
@@ -14,7 +15,7 @@ int main(void)
     // Nu mai facem fereastra redimensionabilă:
     // SetWindowState(FLAG_WINDOW_RESIZABLE); <-- eliminat
 
-    GAME_STATE state = STATE_MENU;
+    GAME_STATE state = STATE_START_PAGE;
 
     SNAKE *snake = NULL;
     int food_x = 0;
@@ -33,8 +34,8 @@ int main(void)
         BeginDrawing();
         ClearBackground(BLACK);
 
-        // ------------------ MENU ------------------
-        if (state == STATE_MENU)
+        // ------------------ START PAGE ------------------
+        if (state == STATE_START_PAGE)
         {
             DrawText("Snake Game", currentWidth / 2 - MeasureText("Snake Game", 40) / 2, 100, 40, GREEN);
 
@@ -70,7 +71,7 @@ int main(void)
                 }
                 if (CheckCollisionPointRec(mouse, menuBtn))
                 {
-                    state = STATE_QUESTION;
+                    state = STATE_MENU;
                 }
                 if (CheckCollisionPointRec(mouse, exitBtn))
                 {
@@ -111,16 +112,17 @@ int main(void)
             }
         }
 
-        // ------------------ "NEATA" ------------------
-        else if (state == STATE_QUESTION)
+        // ------------------ MENU ------------------
+        else if (state == STATE_MENU)
         {
-            DrawText("neata", currentWidth / 2 - MeasureText("neata", 40) / 2, currentHeight / 2 - 20, 40, YELLOW);
-            DrawText("Apasa ESC pentru a reveni", currentWidth / 2 - MeasureText("Apasa ESC pentru a reveni", 20) / 2, currentHeight / 2 + 40, 20, GRAY);
-
-            if (IsKeyPressed(KEY_ESCAPE))
-            {
-                state = STATE_MENU;
-            }
+            draw_menu(&state);
+            handle_menu_input(&state, &snake, &food_x, &food_y, &score); 
+        
+        }
+        // ------------------ INSTRUCTIONS ------------------
+        else if (state == STATE_INSTRUCTIONS)
+        {
+            draw_instructions(&state); 
         }
 
         // ------------------ GAME ------------------
@@ -177,7 +179,7 @@ int main(void)
                 Vector2 mouse = GetMousePosition();
                 if (CheckCollisionPointRec(mouse, backBtn))
                 {
-                    state = STATE_MENU;
+                    state = STATE_START_PAGE;
                     if (snake != NULL)
                     {
                         free_snake(snake);
@@ -212,7 +214,7 @@ int main(void)
 
             if (IsKeyPressed(KEY_ESCAPE))
             {
-                state = STATE_MENU;
+                state = STATE_START_PAGE;
                 if (snake != NULL)
                 {
                     free_snake(snake);
