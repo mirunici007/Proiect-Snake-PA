@@ -8,15 +8,18 @@ int score = 0;
 int main(void)
 {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Snake Game");
-    SetTargetFPS(10);
+    SetTargetFPS(60);  // FPS mare pentru input corect
     SetWindowState(FLAG_WINDOW_RESIZABLE);
-    SetExitKey(KEY_NULL);  // ESC NU mai închide aplicația automat
+    SetExitKey(KEY_NULL);
 
     GAME_STATE state = STATE_MENU;
 
     SNAKE *snake = NULL;
     int food_x = 0;
     int food_y = 0;
+
+    float moveTimer = 0.0f;
+    float moveInterval = 0.15f; // Snake se mișcă la fiecare 150 ms (~6.66 FPS)
 
     while (!WindowShouldClose())
     {
@@ -55,6 +58,7 @@ int main(void)
                     food_y = GetRandomValue(0, 22) * 20;
                     score = 0;
                     state = STATE_RUNNING;
+                    moveTimer = 0.0f;  // Resetăm timerul
                 }
                 if (CheckCollisionPointRec(mouse, menuBtn))
                 {
@@ -78,19 +82,24 @@ int main(void)
         // ------------------ GAME ------------------
         else if (state == STATE_RUNNING)
         {
-            // Comută între pauză și continuare joc la apăsarea tastei P
             if (IsKeyPressed(KEY_P))
             {
-                state = STATE_PAUSED;  // Pune jocul pe pauză
+                state = STATE_PAUSED;
             }
 
+            // Direcție
             if (IsKeyPressed(KEY_W) && snake->direction != DOWN) set_snake_direction(snake, UP);
             if (IsKeyPressed(KEY_S) && snake->direction != UP) set_snake_direction(snake, DOWN);
             if (IsKeyPressed(KEY_A) && snake->direction != RIGHT) set_snake_direction(snake, LEFT);
             if (IsKeyPressed(KEY_D) && snake->direction != LEFT) set_snake_direction(snake, RIGHT);
 
-            move_snake(snake, food_x, food_y);
-            update_game(snake, &score, &state, &food_x, &food_y);
+            moveTimer += GetFrameTime();
+            if (moveTimer >= moveInterval)
+            {
+                move_snake(snake, food_x, food_y);
+                update_game(snake, &score, &state, &food_x, &food_y);
+                moveTimer = 0.0f;
+            }
 
             draw_pause_button();
             draw_snake(snake);
@@ -119,10 +128,10 @@ int main(void)
                 }
             }
 
-            // La apăsarea tastei P sau ENTER, jocul se reia
             if (IsKeyPressed(KEY_ENTER) || IsKeyPressed(KEY_ESCAPE) || IsKeyPressed(KEY_P))
             {
-                state = STATE_RUNNING;  // Revine în joc
+                state = STATE_RUNNING;
+                moveTimer = 0.0f; // Resetăm timerul la reluare
             }
         }
 
@@ -140,6 +149,7 @@ int main(void)
                 food_x = GetRandomValue(0, 39) * 20;
                 food_y = GetRandomValue(0, 22) * 20;
                 state = STATE_RUNNING;
+                moveTimer = 0.0f;
             }
 
             if (IsKeyPressed(KEY_ESCAPE))
