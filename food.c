@@ -1,6 +1,7 @@
 
 #include "food.h"
 
+
 int is_position_occupied(SEGM* snake, int x, int y) {
     while (snake) {
         if (snake->coord_x == x && snake->coord_y == y)

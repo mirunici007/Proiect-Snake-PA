@@ -1,10 +1,12 @@
-#ifndef GAME_H
-#define GAME_H
+#ifndef FOOD_H
+#define FOOD_H
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 #include "raylib.h"
+
+#include "snake.h"
 
 typedef enum {
     FOOD_1P = 2,
