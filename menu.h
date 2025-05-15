@@ -7,6 +7,14 @@ void draw_menu(GAME_STATE *state);
 
 void draw_instructions(GAME_STATE *state);
 
-void handle_menu_input(GAME_STATE *state, SNAKE **snake, int *food_x, int *food_y, int *score);
+void handle_menu_input(GAME_STATE *state);
+
+void load_highscores();
+
+void save_highscores();
+
+void update_highscores(int new_score);
+
+void draw_highscores(GAME_STATE *state);
 
 #endif

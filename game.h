@@ -16,7 +16,8 @@ typedef enum{
     STATE_START_PAGE,         //game start page
     STATE_GAME_OVER,     //game over
     STATE_PAUSED,    //game paused
-    STATE_INSTRUCTIONS //game instructions
+    STATE_INSTRUCTIONS, //game instructions
+    STATE_HIGHSCORES //game highscores
 }GAME_STATE;
 
 //function declarations
