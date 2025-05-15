@@ -9,11 +9,8 @@ int score = 0;
 int main(void)
 {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Snake Game");
-    SetTargetFPS(60);  // FPS mare pentru input corect
+    SetTargetFPS(60); 
     SetExitKey(KEY_NULL);
-
-    // Nu mai facem fereastra redimensionabilă:
-    // SetWindowState(FLAG_WINDOW_RESIZABLE); <-- eliminat
 
     GAME_STATE state = STATE_START_PAGE;
 
@@ -22,9 +19,9 @@ int main(void)
     int food_y = 0;
 
     float moveTimer = 0.0f;
-    float moveInterval = 0.15f; // Snake se mișcă la fiecare 150 ms (~6.66 FPS)
+    float moveInterval = 0.15f; 
 
-    bool showExitConfirmation = false; // To track the exit confirmation tab
+    bool showExitConfirmation = false; 
 
     while (!WindowShouldClose())
     {
@@ -39,9 +36,9 @@ int main(void)
         {
             DrawText("Snake Game", currentWidth / 2 - MeasureText("Snake Game", 40) / 2, 100, 40, GREEN);
 
-            Rectangle startBtn = {currentWidth / 2 - 150, 250, 300, 50};
-            Rectangle menuBtn  = {currentWidth / 2 - 150, 320, 300, 50};
-            Rectangle exitBtn  = {currentWidth / 2 - 150, 390, 300, 50};
+            Rectangle startBtn = {currentWidth / 2 - 100, 250, 150, 50};
+            Rectangle menuBtn  = {currentWidth / 2 - 100, 320, 150, 50};
+            Rectangle exitBtn  = {currentWidth / 2 - 100, 390, 150, 50};
 
             DrawRectangleRec(startBtn, DARKGREEN);
             DrawText("START", startBtn.x + startBtn.width / 2 - MeasureText("START", 20) / 2, startBtn.y + 15, 20, RAYWHITE);
@@ -82,12 +79,12 @@ int main(void)
             // Exit confirmation tab
             if (showExitConfirmation)
             {
-                Rectangle tab = {currentWidth / 2 - 150, currentHeight / 2 - 100, 340, 200};
+                Rectangle tab = {currentWidth / 2 - 150, currentHeight / 2 - 100, 340, 150};
                 DrawRectangleRec(tab, GRAY);
                 DrawText("Are you sure you want to exit?", tab.x + tab.width / 2 - MeasureText("Are you sure you want to exit?", 20) / 2, tab.y + 30, 20, BLACK);
 
-                Rectangle yesBtn = {tab.x + tab.width / 2 - 110, tab.y + 120, 100, 40};
-                Rectangle noBtn  = {tab.x + tab.width / 2 + 10,  tab.y + 120, 100, 40};
+                Rectangle yesBtn = {tab.x + tab.width / 2 - 110, tab.y + 100, 80, 40};
+                Rectangle noBtn  = {tab.x + tab.width / 2 + 10,  tab.y + 100, 80, 40};
 
 
                 DrawRectangleRec(yesBtn, DARKGREEN);
@@ -169,11 +166,10 @@ int main(void)
                 moveTimer = 0.0f;
             }
 
-            Rectangle backBtn = {currentWidth / 2 - 75, currentHeight / 2 + 150, 150, 40};
+            Rectangle backBtn = {currentWidth / 2 - 75, currentHeight / 2 + 150, 160, 40};
             DrawRectangleRec(backBtn, GRAY);
-            DrawText("Inapoi la meniu", backBtn.x + backBtn.width / 2 - MeasureText("Inapoi la meniu", 20) / 2, backBtn.y + 10, 20, BLACK);
+            DrawText("Back to menu", backBtn.x + backBtn.width / 2 - MeasureText("Back to menu", 20) / 2, backBtn.y + 10, 20, BLACK);
 
-            // Folosim IsMouseButtonReleased pentru răspuns mai precis
             if (IsMouseButtonReleased(MOUSE_LEFT_BUTTON))
             {
                 Vector2 mouse = GetMousePosition();
