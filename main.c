@@ -139,6 +139,7 @@ int main(void)
         else if (state == STATE_MENU)
         {
             draw_menu(&state);
+
             handle_menu_input(&state, &snake, &food_x, &food_y, &score);
 
             // Poziționarea butonului pentru schimbarea temei sub celelalte butoane
@@ -158,6 +159,10 @@ int main(void)
                     updateColorsBasedOnTheme();
                 }
             }
+
+            handle_menu_input(&state); 
+        
+
         }
         // ------------------ INSTRUCTIONS ------------------
         else if (state == STATE_INSTRUCTIONS)
@@ -234,6 +239,8 @@ int main(void)
         // ------------------ GAME OVER ------------------
         else if (state == STATE_GAME_OVER)
         {
+            update_highscores(score);
+
             DrawText("Game Over", currentWidth / 2 - MeasureText("Game Over", 30) / 2, currentHeight / 2 - 30, 30, RED);
             DrawText("Press R to restart", currentWidth / 2 - MeasureText("Press R to restart", 20) / 2, currentHeight / 2 + 10, 20, WHITE);
             DrawText("Press ESC to return to menu", currentWidth / 2 - MeasureText("Press ESC to return to menu", 20) / 2, currentHeight / 2 + 40, 20, GRAY);
@@ -257,6 +264,12 @@ int main(void)
                     snake = NULL;
                 }
             }
+        }
+
+            // ------------------ HIGHSCORES ------------------
+        if (state == STATE_HIGHSCORES) 
+        {
+            draw_highscores(&state);
         }
 
         EndDrawing();
