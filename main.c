@@ -3,7 +3,7 @@
 #include "game.h"
 #include "menu.h"
 #include <stddef.h>
-#include <stdio.h>   // pentru snprintf
+#include <stdio.h>   
 
 int score = 0;
 
@@ -140,7 +140,7 @@ int main(void)
         {
             draw_menu(&state);
 
-            handle_menu_input(&state, &snake, &food_x, &food_y, &score);
+            //handle_menu_input(&state, &snake, &food_x, &food_y, &score);         
 
             // Poziționarea butonului pentru schimbarea temei sub celelalte butoane
             Rectangle themeBtn = {currentWidth / 2 - 150, 460, 300, 50}; // Aceeași dimensiune ca celelalte butoane

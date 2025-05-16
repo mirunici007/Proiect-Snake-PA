@@ -1,9 +1,9 @@
-#ifndef INPUT_H
-#define INPUT_H
+// #ifndef INPUT_H
+// #define INPUT_H
 
-#include "game.h"
+// #include "game.h"
 
-void handle_input(GameState* game);
-int handle_input_text();
+// void handle_input(GameState* game);
+// int handle_input_text();
 
-#endif
+// #endif
