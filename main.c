@@ -36,9 +36,9 @@ int main(void)
         {
             DrawText("Snake Game", currentWidth / 2 - MeasureText("Snake Game", 40) / 2, 100, 40, GREEN);
 
-            Rectangle startBtn = {currentWidth / 2 - 100, 250, 150, 50};
-            Rectangle menuBtn  = {currentWidth / 2 - 100, 320, 150, 50};
-            Rectangle exitBtn  = {currentWidth / 2 - 100, 390, 150, 50};
+            Rectangle startBtn = {currentWidth / 2 - 150, 320, 300, 50};
+            Rectangle menuBtn  = {currentWidth / 2 - 150, 390, 300, 50};
+            Rectangle exitBtn  = {currentWidth / 2 - 150, 460, 300, 50};
 
             DrawRectangleRec(startBtn, DARKGREEN);
             DrawText("START", startBtn.x + startBtn.width / 2 - MeasureText("START", 20) / 2, startBtn.y + 15, 20, RAYWHITE);

@@ -140,9 +140,9 @@ void handle_menu_input(GAME_STATE *state) {
     int width = GetScreenWidth();
     Vector2 mouse = GetMousePosition();
 
-    Rectangle instructions_button = {width / 2 - 150, 300, 300, 50};
-    Rectangle highscores_button = {width / 2 - 150, 370, 300, 50};
-    Rectangle back_to_start_page = {width / 2 - 150, 440, 300, 50};
+    Rectangle instructions_button = {width / 2 - 150, 320, 300, 50};
+    Rectangle highscores_button = {width / 2 - 150, 390, 300, 50};
+    Rectangle back_to_start_page = {width / 2 - 150, 460, 300, 50};
 
     if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
         if (CheckCollisionPointRec(mouse, instructions_button)) {
