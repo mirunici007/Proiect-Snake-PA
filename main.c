@@ -7,6 +7,10 @@
 
 int score = 0;
 
+char feedbackMessage[64] = "";
+float feedbackTimer = 0.0f;
+Color feedbackColor = WHITE;
+
 typedef enum {
     THEME_LIGHT,
     THEME_DARK
@@ -194,10 +198,28 @@ int main(void)
                 move_snake(snake, food_x, food_y);
                 update_game(snake, &score, &state, &food_x, &food_y);
                 moveTimer = 0.0f;
+
+                // Countdown the feedback message timer
+            if (feedbackTimer > 0.0f) {
+              feedbackTimer -= GetFrameTime();
+            if (feedbackTimer <= 0.0f) {
+             feedbackMessage[0] = '\0'; // Clear the message
+    }
+}
             }
 
             draw_pause_button();
             draw_snake(snake);
+
+            if (feedbackTimer > 0.0f && feedbackMessage[0] != '\0') {
+                int fontSize = 24;
+                 int textWidth = MeasureText(feedbackMessage, fontSize);
+                DrawText(feedbackMessage,
+                 SCREEN_WIDTH / 2 - textWidth / 2,
+                SCREEN_HEIGHT - 60,
+                fontSize,
+                feedbackColor);
+}
         }
         // ------------------ PAUSED ------------------
         else if (state == STATE_PAUSED)

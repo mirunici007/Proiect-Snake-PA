@@ -36,7 +36,7 @@ void reset_game(SNAKE **snake, int *score);
 int check_collisions(SNAKE *snake);
 
 // Applies the result of a question (score changes, game state updates, etc.)
-// void apply_question_result(SNAKE *snake, int *score, int result);
+ void apply_question_result(SNAKE *snake, int *score, int result);
 
 // // Generates food at a random position
 // void generate_food(SNAKE *snake, int *food_x, int *food_y);
@@ -47,6 +47,6 @@ void draw_pause_page();
 void draw_pause_button();
 
 // // Handles user input for controlling the snake
-// void handle_input(SNAKE *snake, GAME_STATE *state);
+void handle_input(SNAKE *snake, GAME_STATE *state, int *score);
 
 #endif // GAME_H

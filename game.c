@@ -10,6 +10,14 @@
 
 #define CELL_SIZE 20 
 
+// Feedback display state
+static int feedbackColor = DARKGREEN;
+static const float FEEDBACK_DURATION = 4.0f; // 4 seconds
+
+extern char feedbackMessage[64];
+extern float feedbackTimer;
+extern Color feedbackColor;
+
 // Initializes the game with initial values (score, positions, etc.)
 void init_game(SNAKE **snake, int *score)
 {
@@ -128,4 +136,48 @@ void draw_pause_button()
 
     DrawRectangle(bar_x, bar_y, bar_width, bar_height, DARKGREEN);
     DrawRectangle(bar_x + bar_width + bar_spacing, bar_y, bar_width, bar_height, DARKGREEN);
+}
+
+void handle_input(SNAKE *snake, GAME_STATE *state, int *score) {
+ int answerIndex = handle_input_text();  // se asteapta input de la jucator
+
+    int result;
+    if (answerIndex == -1) {
+        result = -1;  // input invalid
+    } else {
+        const char* userAnswer = currentQuestion->data.correctAnswers[answerIndex];
+        result = checkAnswer(userAnswer) ? 1 : 0;
+    }
+
+    apply_question_result(snake, score, result);
+
+    //resume game after question
+    *state = STATE_RUNNING;
+}
+
+void apply_question_result(SNAKE *snake, int *score, int result)
+{
+    switch (result) {
+        case 1: // right answer
+            *score += 10;
+            grow_snake(snake);
+            snprintf(feedbackMessage, sizeof(feedbackMessage), "Raspuns corect! +10 puncte.");
+            feedbackColor = GREEN;
+            feedbackTimer = 2.0f;
+            break;
+        case 0: // wrong answer
+            *score -= 5;
+            snprintf(feedbackMessage, sizeof(feedbackMessage), "Raspuns gresit! -5 puncte.");
+            feedbackColor = RED;
+            feedbackTimer = 2.0f;
+            break;
+        case -1: // invalid input
+            *score -= 5;
+            snprintf(feedbackMessage, sizeof(feedbackMessage), "Raspuns invalid. -5 puncte.");
+            feedbackColor = ORANGE;
+            feedbackTimer = 2.0f;
+            break;
+    }
+
+    if (*score < 0) *score = 0;
 }
