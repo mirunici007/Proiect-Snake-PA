@@ -10,13 +10,14 @@
 
 #define CELL_SIZE 20 
 
+//extern QuestionNode* currentQuestion;
+void apply_question_result(SNAKE *snake, int *score, int result);
+
 // Feedback display state
-static int feedbackColor = DARKGREEN;
-static const float FEEDBACK_DURATION = 4.0f; // 4 seconds
+extern Color feedbackColor;
 
 extern char feedbackMessage[64];
 extern float feedbackTimer;
-extern Color feedbackColor;
 
 // Initializes the game with initial values (score, positions, etc.)
 void init_game(SNAKE **snake, int *score)
@@ -55,7 +56,6 @@ void update_game(SNAKE *snake, int *score, GAME_STATE *state, int *food_x, int *
 
             //load a random question
             char question[256];
-            char correct_answer;
             //load_random_question(question, correct_answer);
 
             //ask the questions and get the player's answer
@@ -138,8 +138,18 @@ void draw_pause_button()
     DrawRectangle(bar_x + bar_width + bar_spacing, bar_y, bar_width, bar_height, DARKGREEN);
 }
 
+int get_answer_index() {
+    int answerIndex;
+    printf("Enter answer index (0-3): ");
+    if (scanf("%d", &answerIndex) != 1 || answerIndex < 0 || answerIndex > 3) {
+        while (getchar() != '\n'); // clear input buffer
+        return -1;  // Invalid input
+    }
+    return answerIndex;
+}
+
 void handle_input(SNAKE *snake, GAME_STATE *state, int *score) {
- int answerIndex = handle_input_text();  // se asteapta input de la jucator
+    int answerIndex = get_answer_index();  // Call the correct input function
 
     int result;
     if (answerIndex == -1) {
@@ -150,11 +160,8 @@ void handle_input(SNAKE *snake, GAME_STATE *state, int *score) {
     }
 
     apply_question_result(snake, score, result);
-
-    //resume game after question
     *state = STATE_RUNNING;
 }
-
 void apply_question_result(SNAKE *snake, int *score, int result)
 {
     switch (result) {
@@ -181,3 +188,4 @@ void apply_question_result(SNAKE *snake, int *score, int result)
 
     if (*score < 0) *score = 0;
 }
+    

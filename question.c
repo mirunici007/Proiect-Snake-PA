@@ -8,7 +8,7 @@ static QuestionNode* easyHead = NULL;
 static int easyCount = 0;
 static QuestionNode* hardHead = NULL;
 static int hardCount = 0;
-static QuestionNode* currentQuestion = NULL;
+ QuestionNode* currentQuestion = NULL;
 
 
 static void addEasyQuestion(const char* q, const char* a) {

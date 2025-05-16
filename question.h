@@ -15,6 +15,8 @@ typedef struct QuestionNode {
     struct QuestionNode* next;
 } QuestionNode;
 
+extern QuestionNode* currentQuestion;
+
 void initQuestions();                      // Inițializează întrebările (din fișier)
 void showRandomQuestion();                // Afișează o întrebare aleatoare
 int checkAnswer(const char* userAnswer);  // Verifică răspunsul
