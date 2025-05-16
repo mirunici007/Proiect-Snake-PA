@@ -3,8 +3,37 @@
 #include "game.h"
 #include "menu.h"
 #include <stddef.h>
+#include <stdio.h>   
 
 int score = 0;
+
+char feedbackMessage[64] = "";
+float feedbackTimer = 0.0f;
+Color feedbackColor = WHITE;
+
+typedef enum {
+    THEME_LIGHT,
+    THEME_DARK
+} THEME;
+
+THEME currentTheme = THEME_DARK;
+
+Color bgColor = BLACK;
+Color textColor = RAYWHITE;
+Color buttonColor = DARKGREEN;
+Color menuButtonColor = DARKBLUE; // Fixed color for the menu button
+
+void updateColorsBasedOnTheme() {
+    if (currentTheme == THEME_DARK) {
+        bgColor = BLACK;
+        textColor = RAYWHITE;
+        buttonColor = DARKGREEN;
+    } else {
+        bgColor = RAYWHITE;
+        textColor = BLACK;
+        buttonColor = SKYBLUE;
+    }
+}
 
 int main(void)
 {
@@ -23,28 +52,30 @@ int main(void)
 
     bool showExitConfirmation = false; 
 
+    updateColorsBasedOnTheme();
+
     while (!WindowShouldClose())
     {
         int currentWidth = GetScreenWidth();
         int currentHeight = GetScreenHeight();
 
         BeginDrawing();
-        ClearBackground(BLACK);
+        ClearBackground(bgColor);
 
         // ------------------ START PAGE ------------------
         if (state == STATE_START_PAGE)
         {
-            DrawText("Snake Game", currentWidth / 2 - MeasureText("Snake Game", 40) / 2, 100, 40, GREEN);
+            DrawText("Snake Game", currentWidth / 2 - MeasureText("Snake Game", 40) / 2, 100, 40, textColor);
 
             Rectangle startBtn = {currentWidth / 2 - 150, 320, 300, 50};
             Rectangle menuBtn  = {currentWidth / 2 - 150, 390, 300, 50};
             Rectangle exitBtn  = {currentWidth / 2 - 150, 460, 300, 50};
 
-            DrawRectangleRec(startBtn, DARKGREEN);
-            DrawText("START", startBtn.x + startBtn.width / 2 - MeasureText("START", 20) / 2, startBtn.y + 15, 20, RAYWHITE);
+            DrawRectangleRec(startBtn, buttonColor);
+            DrawText("START", startBtn.x + startBtn.width / 2 - MeasureText("START", 20) / 2, startBtn.y + 15, 20, textColor);
 
-            DrawRectangleRec(menuBtn, DARKBLUE);
-            DrawText("MENU", menuBtn.x + menuBtn.width / 2 - MeasureText("MENU", 20) / 2, menuBtn.y + 15, 20, RAYWHITE);
+            DrawRectangleRec(menuBtn, menuButtonColor); // Use fixed menu button color
+            DrawText("MENU", menuBtn.x + menuBtn.width / 2 - MeasureText("MENU", 20) / 2, menuBtn.y + 15, 20, textColor);
 
             DrawRectangleRec(exitBtn, RED);
             DrawText("EXIT", exitBtn.x + exitBtn.width / 2 - MeasureText("EXIT", 20) / 2, exitBtn.y + 15, 20, RAYWHITE);
@@ -66,11 +97,11 @@ int main(void)
                     state = STATE_RUNNING;
                     moveTimer = 0.0f;
                 }
-                if (CheckCollisionPointRec(mouse, menuBtn))
+                else if (CheckCollisionPointRec(mouse, menuBtn))
                 {
                     state = STATE_MENU;
                 }
-                if (CheckCollisionPointRec(mouse, exitBtn))
+                else if (CheckCollisionPointRec(mouse, exitBtn))
                 {
                     showExitConfirmation = true; // Show confirmation tab
                 }
@@ -86,7 +117,6 @@ int main(void)
                 Rectangle yesBtn = {tab.x + tab.width / 2 - 110, tab.y + 100, 80, 40};
                 Rectangle noBtn  = {tab.x + tab.width / 2 + 10,  tab.y + 100, 80, 40};
 
-
                 DrawRectangleRec(yesBtn, DARKGREEN);
                 DrawText("YES", yesBtn.x + yesBtn.width / 2 - MeasureText("YES", 20) / 2, yesBtn.y + 10, 20, RAYWHITE);
 
@@ -101,7 +131,7 @@ int main(void)
                         CloseWindow(); // Exit the game
                         return 0;
                     }
-                    if (CheckCollisionPointRec(mouse, noBtn))
+                    else if (CheckCollisionPointRec(mouse, noBtn))
                     {
                         showExitConfirmation = false; // Hide confirmation tab
                     }
@@ -113,15 +143,36 @@ int main(void)
         else if (state == STATE_MENU)
         {
             draw_menu(&state);
+
+            //handle_menu_input(&state, &snake, &food_x, &food_y, &score);         
+
+            // Poziționarea butonului pentru schimbarea temei sub celelalte butoane
+            Rectangle themeBtn = {currentWidth / 2 - 150, 460, 300, 50}; // Aceeași dimensiune ca celelalte butoane
+            DrawRectangleRec(themeBtn, buttonColor);
+            DrawText(currentTheme == THEME_DARK ? "Switch to Light Mode" : "Switch to Dark Mode", 
+                themeBtn.x + themeBtn.width / 2 - MeasureText(currentTheme == THEME_DARK ? "Switch to Light Mode" : "Switch to Dark Mode", 20) / 2, 
+                themeBtn.y + 15, 20, textColor);
+
+            // Logica pentru schimbarea temei
+            if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+            {
+                Vector2 mouse = GetMousePosition();
+                if (CheckCollisionPointRec(mouse, themeBtn))
+                {
+                    currentTheme = (currentTheme == THEME_DARK) ? THEME_LIGHT : THEME_DARK;
+                    updateColorsBasedOnTheme();
+                }
+            }
+
             handle_menu_input(&state); 
         
+
         }
         // ------------------ INSTRUCTIONS ------------------
         else if (state == STATE_INSTRUCTIONS)
         {
             draw_instructions(&state); 
         }
-
         // ------------------ GAME ------------------
         else if (state == STATE_RUNNING)
         {
@@ -147,12 +198,29 @@ int main(void)
                 move_snake(snake, food_x, food_y);
                 update_game(snake, &score, &state, &food_x, &food_y);
                 moveTimer = 0.0f;
+
+                // Countdown the feedback message timer
+            if (feedbackTimer > 0.0f) {
+              feedbackTimer -= GetFrameTime();
+            if (feedbackTimer <= 0.0f) {
+             feedbackMessage[0] = '\0'; // Clear the message
+    }
+}
             }
 
             draw_pause_button();
             draw_snake(snake);
-        }
 
+            if (feedbackTimer > 0.0f && feedbackMessage[0] != '\0') {
+                int fontSize = 24;
+                 int textWidth = MeasureText(feedbackMessage, fontSize);
+                DrawText(feedbackMessage,
+                 SCREEN_WIDTH / 2 - textWidth / 2,
+                SCREEN_HEIGHT - 60,
+                fontSize,
+                feedbackColor);
+}
+        }
         // ------------------ PAUSED ------------------
         else if (state == STATE_PAUSED)
         {
@@ -190,7 +258,6 @@ int main(void)
                 moveTimer = 0.0f;
             }
         }
-
         // ------------------ GAME OVER ------------------
         else if (state == STATE_GAME_OVER)
         {
