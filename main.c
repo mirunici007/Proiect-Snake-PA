@@ -89,7 +89,7 @@ int main(void)
                     int midY = currentHeight / 2;
 
                     snake = create_snake((midX / 20), (midY / 20));
-                    for (int i = 0; i < 10; i++) grow_snake(snake);
+                    for (int i = 0; i < 20; i++) grow_snake(snake);
 
                     food_x = GetRandomValue(0, 39) * 20;
                     food_y = GetRandomValue(0, 22) * 20;
@@ -144,7 +144,7 @@ int main(void)
         {
             draw_menu(&state);
 
-            //handle_menu_input(&state, &snake, &food_x, &food_y, &score);         
+            handle_menu_input(&state);         
 
             // Poziționarea butonului pentru schimbarea temei sub celelalte butoane
             Rectangle themeBtn = {currentWidth / 2 - 150, 460, 300, 50}; // Aceeași dimensiune ca celelalte butoane
@@ -152,7 +152,7 @@ int main(void)
             DrawText(currentTheme == THEME_DARK ? "Switch to Light Mode" : "Switch to Dark Mode", 
                 themeBtn.x + themeBtn.width / 2 - MeasureText(currentTheme == THEME_DARK ? "Switch to Light Mode" : "Switch to Dark Mode", 20) / 2, 
                 themeBtn.y + 15, 20, textColor);
-
+            
             // Logica pentru schimbarea temei
             if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
             {
@@ -163,10 +163,6 @@ int main(void)
                     updateColorsBasedOnTheme();
                 }
             }
-
-            handle_menu_input(&state); 
-        
-
         }
         // ------------------ INSTRUCTIONS ------------------
         else if (state == STATE_INSTRUCTIONS)
@@ -270,7 +266,7 @@ int main(void)
             if (IsKeyPressed(KEY_R))
             {
                 reset_game(&snake, &score);
-                for (int i = 0; i < 10; i++) grow_snake(snake);
+                for (int i = 0; i < 20; i++) grow_snake(snake);
                 food_x = GetRandomValue(0, 39) * 20;
                 food_y = GetRandomValue(0, 22) * 20;
                 state = STATE_RUNNING;
