@@ -77,7 +77,7 @@ void draw_menu(GAME_STATE *state)
 
     Rectangle instructions_button = {width / 2 - 150, 320, 300, 50};
     Rectangle highscores_button = {width / 2 - 150, 390, 300, 50};
-    Rectangle back_to_start_page = {width / 2 - 150, 460, 300, 50};
+    Rectangle back_to_start_page = {width / 2 - 150, 530, 300, 50};
 
     DrawRectangleRec(instructions_button, DARKBLUE);
     DrawText("Instructions", instructions_button.x + instructions_button.width / 2 - MeasureText("Instructions", 20) / 2, instructions_button.y + 15, 20, RAYWHITE);
@@ -142,14 +142,19 @@ void handle_menu_input(GAME_STATE *state) {
 
     Rectangle instructions_button = {width / 2 - 150, 320, 300, 50};
     Rectangle highscores_button = {width / 2 - 150, 390, 300, 50};
-    Rectangle back_to_start_page = {width / 2 - 150, 460, 300, 50};
+    Rectangle back_to_start_page = {width / 2 - 150, 530, 300, 50};
 
     if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-        if (CheckCollisionPointRec(mouse, instructions_button)) {
+        if (CheckCollisionPointRec(mouse, instructions_button)) 
+        {
             *state = STATE_INSTRUCTIONS;
-        } else if (CheckCollisionPointRec(mouse, highscores_button)) {
+        } 
+        else if (CheckCollisionPointRec(mouse, highscores_button)) 
+        {
             *state = STATE_HIGHSCORES;
-        } else if (CheckCollisionPointRec(mouse, back_to_start_page)) {
+        } 
+        else if (CheckCollisionPointRec(mouse, back_to_start_page)) 
+        {
             *state = STATE_START_PAGE;
         }
     }

@@ -15,9 +15,16 @@ void apply_question_result(SNAKE *snake, int *score, int result);
 
 // Feedback display state
 extern Color feedbackColor;
-
 extern char feedbackMessage[64];
 extern float feedbackTimer;
+
+// static int feedbackColor = DARKGREEN;
+// static const float FEEDBACK_DURATION = 4.0f; // 4 seconds
+
+// extern char feedbackMessage[64];
+// extern float feedbackTimer;
+// extern Color feedbackColor;
+
 
 // Initializes the game with initial values (score, positions, etc.)
 void init_game(SNAKE **snake, int *score)
@@ -138,6 +145,7 @@ void draw_pause_button()
     DrawRectangle(bar_x + bar_width + bar_spacing, bar_y, bar_width, bar_height, DARKGREEN);
 }
 
+
 int get_answer_index() {
     int answerIndex;
     printf("Enter answer index (0-3): ");
@@ -188,4 +196,4 @@ void apply_question_result(SNAKE *snake, int *score, int result)
 
     if (*score < 0) *score = 0;
 }
-    
+
