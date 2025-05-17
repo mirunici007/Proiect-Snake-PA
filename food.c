@@ -1,4 +1,3 @@
-
 #include "game.h"
 #include "food.h"
 
@@ -20,8 +19,8 @@ int is_position_occupied(SNAKE *snake, int x, int y) {
 
 void spawn_food_1p(SNAKE *snake, int *x, int *y) {
     do {
-        *x = rand() % (SCREEN_WIDTH / CELL_SIZE);  // Coordonate aleatorii în grilă
-        *y = rand() % (SCREEN_HEIGHT / CELL_SIZE);
+        *x = (rand() % (SCREEN_WIDTH / CELL_SIZE)) * CELL_SIZE;  // Coordonate în pixeli!
+        *y = (rand() % (SCREEN_HEIGHT / CELL_SIZE)) * CELL_SIZE;
     } while (is_position_occupied(snake, *x, *y));
 
     FOOD *f = malloc(sizeof(FOOD));
@@ -34,8 +33,8 @@ void spawn_food_1p(SNAKE *snake, int *x, int *y) {
 
 void spawn_food_2p(SNAKE *snake, int *x, int *y) {
     do {
-        *x = rand() % (SCREEN_WIDTH / CELL_SIZE);  // Coordonate aleatorii în grilă
-        *y = rand() % (SCREEN_HEIGHT / CELL_SIZE);
+        *x = (rand() % (SCREEN_WIDTH / CELL_SIZE)) * CELL_SIZE;
+        *y = (rand() % (SCREEN_HEIGHT / CELL_SIZE)) * CELL_SIZE;
     } while (is_position_occupied(snake, *x, *y));
 
     FOOD *f = malloc(sizeof(FOOD));
@@ -46,27 +45,14 @@ void spawn_food_2p(SNAKE *snake, int *x, int *y) {
     food_list = f;
 }
 
-int check_food(SNAKE *snake, int x, int y, int *grow_value) {
-    FOOD *prev = NULL;
-    FOOD *curr = food_list;
-
-    while (curr) {
-        if (curr->x == x && curr->y == y) {
-            *grow_value = (curr->type == FOOD_1P) ? 1 : 2;
-
-
-            if (prev)
-                prev->next = curr->next;
-            else
-                food_list = curr->next;
-
-            free(curr);
-            return 1;
-        }
-        prev = curr;
-        curr = curr->next;
+int check_food(SNAKE *snake, int x, int y, int *grow_value)
+{
+    // x și y sunt în pixeli!
+    if (snake->head->coord_x == x && snake->head->coord_y == y)
+    {
+        *grow_value = 1;
+        return 1;
     }
-
     return 0;
 }
 
@@ -97,19 +83,28 @@ void spawn_food(SNAKE *snake) {
 void draw_food() {
     FOOD *curr = food_list;
     while (curr) {
-        int px = curr->x * CELL_SIZE;
-        int py = curr->y * CELL_SIZE;
+        int px = curr->x;
+        int py = curr->y;
 
         switch (curr->type) {
             case FOOD_1P:
-                DrawCircle(px + CELL_SIZE / 2, py + CELL_SIZE / 2, 6, GREEN); // măr mic verde
+                DrawCircle(px + CELL_SIZE / 2, py + CELL_SIZE / 2, 6, GREEN);
                 break;
             case FOOD_2P:
-                DrawCircle(px + CELL_SIZE / 2, py + CELL_SIZE / 2, 10, RED);  // măr mare roșu
+                DrawCircle(px + CELL_SIZE / 2, py + CELL_SIZE / 2, 10, RED);
                 break;
         }
-
         curr = curr->next;
     }
 }
 
+void clear_food()
+{
+    FOOD *curr = food_list;
+    while (curr) {
+        FOOD *temp = curr;
+        curr = curr->next;
+        free(temp);
+    }
+    food_list = NULL;
+}
