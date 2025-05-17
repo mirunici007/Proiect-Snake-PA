@@ -8,6 +8,8 @@
 
 #include "snake.h"
 
+#define CELL_SIZE 20  // dimensiunea unui pătrat din grid, în pixeli
+
 typedef enum {
     FOOD_1P = 2,
     FOOD_2P = 3,
@@ -21,13 +23,12 @@ typedef struct food_node {
 
 FOOD* food_list = NULL;
 
-void spawn_food_1p(SEGM* snake, int* x, int* y);
-void spawn_food_2p(SEGM* snake, int* x, int* y);
-void spawn_food_minus1p(SEGM* snake, int* x, int* y);
-int is_position_occupied(SEGM* snake, int x, int y);
-int check_food(int x, int y, int* grow_value);
-void spawn_food_random_points(SEGM* snake);
-void spawn_food(SEGM* snake);
-void draw_food();   
+void spawn_food_1p(SNAKE *snake, int *x, int *y);
+void spawn_food_2p(SNAKE *snake, int *x, int *y);
+int is_position_occupied(SNAKE *snake, int x, int y);
+int check_food(SNAKE *snake, int x, int y, int *grow_value);
+void spawn_food_random_points(SNAKE *snake);
+void spawn_food(SNAKE *snake);
+void draw_food();
 
 #endif
