@@ -11,6 +11,7 @@ int score = 0;
 char feedbackMessage[64] = "";
 float feedbackTimer = 0.0f;
 Color feedbackColor = WHITE;
+Color scoreColor = RAYWHITE; // Default color for score
 
 
 typedef enum {
@@ -30,10 +31,12 @@ void updateColorsBasedOnTheme() {
         bgColor = BLACK;
         textColor = RAYWHITE;
         buttonColor = DARKGREEN;
+        scoreColor = RAYWHITE; // White score for dark theme
     } else {
         bgColor = RAYWHITE;
         textColor = BLACK;
         buttonColor = SKYBLUE;
+        scoreColor = BLACK; // Black score for light theme
     }
 }
 
@@ -197,26 +200,31 @@ int main(void)
                 moveTimer = 0.0f;
 
                 // Countdown the feedback message timer
-            if (feedbackTimer > 0.0f) {
-              feedbackTimer -= GetFrameTime();
-            if (feedbackTimer <= 0.0f) {
-             feedbackMessage[0] = '\0'; // Clear the message
-    }
-}
+                if (feedbackTimer > 0.0f) {
+                    feedbackTimer -= GetFrameTime();
+                    if (feedbackTimer <= 0.0f) {
+                        feedbackMessage[0] = '\0'; // Clear the message
+                    }
+                }
             }
 
             draw_pause_button();
             draw_snake(snake);
 
+            // Afișează scorul în colțul din stânga sus
+            char scoreText[32];
+            sprintf(scoreText, "Score: %d", score);
+            DrawText(scoreText, 10, 10, 25, scoreColor); // Font size increased to 25
+
             if (feedbackTimer > 0.0f && feedbackMessage[0] != '\0') {
                 int fontSize = 24;
-                 int textWidth = MeasureText(feedbackMessage, fontSize);
+                int textWidth = MeasureText(feedbackMessage, fontSize);
                 DrawText(feedbackMessage,
-                 SCREEN_WIDTH / 2 - textWidth / 2,
-                SCREEN_HEIGHT - 60,
-                fontSize,
-                feedbackColor);
-}
+                    SCREEN_WIDTH / 2 - textWidth / 2,
+                    SCREEN_HEIGHT - 60,
+                    fontSize,
+                    feedbackColor);
+            }
         }
         // ------------------ PAUSED ------------------
         else if (state == STATE_PAUSED)
@@ -261,8 +269,10 @@ int main(void)
             update_highscores(score);
 
             DrawText("Game Over", currentWidth / 2 - MeasureText("Game Over", 30) / 2, currentHeight / 2 - 30, 30, RED);
-            DrawText("Press R to restart", currentWidth / 2 - MeasureText("Press R to restart", 20) / 2, currentHeight / 2 + 10, 20, WHITE);
-            DrawText("Press ESC to return to menu", currentWidth / 2 - MeasureText("Press ESC to return to menu", 20) / 2, currentHeight / 2 + 40, 20, GRAY);
+
+            // Actualizare culoare pentru textul "Press R to restart" și "Press ESC to return to menu"
+            DrawText("Press R to restart", currentWidth / 2 - MeasureText("Press R to restart", 20) / 2, currentHeight / 2 + 10, 20, scoreColor);
+            DrawText("Press ESC to return to menu", currentWidth / 2 - MeasureText("Press ESC to return to menu", 20) / 2, currentHeight / 2 + 40, 20, scoreColor);
 
             if (IsKeyPressed(KEY_R))
             {
@@ -285,7 +295,7 @@ int main(void)
             }
         }
 
-            // ------------------ HIGHSCORES ------------------
+        // ------------------ HIGHSCORES ------------------
         if (state == STATE_HIGHSCORES) 
         {
             draw_highscores(&state);
