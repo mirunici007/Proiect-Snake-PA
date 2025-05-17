@@ -9,6 +9,7 @@
 
 //external variables
 extern int score;
+extern Color feedbackColor;
 
 typedef enum{
     STATE_RUNNING,      //game running
@@ -20,6 +21,19 @@ typedef enum{
     STATE_INSTRUCTIONS, //game instructions
     STATE_HIGHSCORES //game highscores
 }GAME_STATE;
+
+typedef enum {
+    DIR_UP,
+    DIR_DOWN,
+    DIR_LEFT,
+    DIR_RIGHT
+} Direction;
+
+typedef struct {
+    GAME_STATE state;
+    Direction dir;
+    // add other fields like score, snake, etc.
+} Game;
 
 //function declarations
 
@@ -36,7 +50,7 @@ void reset_game(SNAKE **snake, int *score);
 int check_collisions(SNAKE *snake);
 
 // Applies the result of a question (score changes, game state updates, etc.)
- void apply_question_result(SNAKE *snake, int *score, int result);
+ //void apply_question_result(SNAKE *snake, int *score, int result);
 
 // // Generates food at a random position
 // void generate_food(SNAKE *snake, int *food_x, int *food_y);

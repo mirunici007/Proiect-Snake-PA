@@ -2,6 +2,7 @@
 #include "snake.h"
 #include "game.h"
 #include "menu.h"
+#include "question.h"
 #include <stddef.h>
 #include <stdio.h>   
 
@@ -10,6 +11,7 @@ int score = 0;
 char feedbackMessage[64] = "";
 float feedbackTimer = 0.0f;
 Color feedbackColor = WHITE;
+
 
 typedef enum {
     THEME_LIGHT,
@@ -53,7 +55,6 @@ int main(void)
     bool showExitConfirmation = false; 
 
     updateColorsBasedOnTheme();
-
     while (!WindowShouldClose())
     {
         int currentWidth = GetScreenWidth();

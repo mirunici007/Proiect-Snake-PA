@@ -10,13 +10,21 @@
 
 #define CELL_SIZE 20 
 
+//extern QuestionNode* currentQuestion;
+void apply_question_result(SNAKE *snake, int *score, int result);
+
 // Feedback display state
+extern Color feedbackColor;
+extern char feedbackMessage[64];
+extern float feedbackTimer;
+
 // static int feedbackColor = DARKGREEN;
 // static const float FEEDBACK_DURATION = 4.0f; // 4 seconds
 
 // extern char feedbackMessage[64];
 // extern float feedbackTimer;
 // extern Color feedbackColor;
+
 
 // Initializes the game with initial values (score, positions, etc.)
 void init_game(SNAKE **snake, int *score)
@@ -55,7 +63,6 @@ void update_game(SNAKE *snake, int *score, GAME_STATE *state, int *food_x, int *
 
             //load a random question
             char question[256];
-            char correct_answer;
             //load_random_question(question, correct_answer);
 
             //ask the questions and get the player's answer
@@ -138,46 +145,55 @@ void draw_pause_button()
     DrawRectangle(bar_x + bar_width + bar_spacing, bar_y, bar_width, bar_height, DARKGREEN);
 }
 
-// void handle_input(SNAKE *snake, GAME_STATE *state, int *score) {
-//  int answerIndex = handle_input_text();  // se asteapta input de la jucator
 
-//     int result;
-//     if (answerIndex == -1) {
-//         result = -1;  // input invalid
-//     } else {
-//         const char* userAnswer = currentQuestion->data.correctAnswers[answerIndex];
-//         result = checkAnswer(userAnswer) ? 1 : 0;
-//     }
+int get_answer_index() {
+    int answerIndex;
+    printf("Enter answer index (0-3): ");
+    if (scanf("%d", &answerIndex) != 1 || answerIndex < 0 || answerIndex > 3) {
+        while (getchar() != '\n'); // clear input buffer
+        return -1;  // Invalid input
+    }
+    return answerIndex;
+}
 
-//     apply_question_result(snake, score, result);
+void handle_input(SNAKE *snake, GAME_STATE *state, int *score) {
+    int answerIndex = get_answer_index();  // Call the correct input function
 
-//     //resume game after question
-//     *state = STATE_RUNNING;
-// }
+    int result;
+    if (answerIndex == -1) {
+        result = -1;  // input invalid
+    } else {
+        const char* userAnswer = currentQuestion->data.correctAnswers[answerIndex];
+        result = checkAnswer(userAnswer) ? 1 : 0;
+    }
 
-// void apply_question_result(SNAKE *snake, int *score, int result)
-// {
-//     switch (result) {
-//         case 1: // right answer
-//             *score += 10;
-//             grow_snake(snake);
-//             snprintf(feedbackMessage, sizeof(feedbackMessage), "Raspuns corect! +10 puncte.");
-//             feedbackColor = GREEN;
-//             feedbackTimer = 2.0f;
-//             break;
-//         case 0: // wrong answer
-//             *score -= 5;
-//             snprintf(feedbackMessage, sizeof(feedbackMessage), "Raspuns gresit! -5 puncte.");
-//             feedbackColor = RED;
-//             feedbackTimer = 2.0f;
-//             break;
-//         case -1: // invalid input
-//             *score -= 5;
-//             snprintf(feedbackMessage, sizeof(feedbackMessage), "Raspuns invalid. -5 puncte.");
-//             feedbackColor = ORANGE;
-//             feedbackTimer = 2.0f;
-//             break;
-//     }
+    apply_question_result(snake, score, result);
+    *state = STATE_RUNNING;
+}
+void apply_question_result(SNAKE *snake, int *score, int result)
+{
+    switch (result) {
+        case 1: // right answer
+            *score += 10;
+            grow_snake(snake);
+            snprintf(feedbackMessage, sizeof(feedbackMessage), "Raspuns corect! +10 puncte.");
+            feedbackColor = GREEN;
+            feedbackTimer = 2.0f;
+            break;
+        case 0: // wrong answer
+            *score -= 5;
+            snprintf(feedbackMessage, sizeof(feedbackMessage), "Raspuns gresit! -5 puncte.");
+            feedbackColor = RED;
+            feedbackTimer = 2.0f;
+            break;
+        case -1: // invalid input
+            *score -= 5;
+            snprintf(feedbackMessage, sizeof(feedbackMessage), "Raspuns invalid. -5 puncte.");
+            feedbackColor = ORANGE;
+            feedbackTimer = 2.0f;
+            break;
+    }
 
-//     if (*score < 0) *score = 0;
-// }
+    if (*score < 0) *score = 0;
+}
+
