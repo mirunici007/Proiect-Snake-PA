@@ -2,7 +2,7 @@
 #include "game.h"
 #include "food.h"
 
-
+FOOD* food_list = NULL;
 // Verifică dacă poziția este ocupată de șarpe sau mâncare
 int is_position_occupied(SNAKE *snake, int x, int y) {
     SEGM *segment = snake->head;

@@ -2,6 +2,7 @@
 #include "snake.h"
 #include "game.h"
 #include "menu.h"
+#include "food.h"
 #include "question.h"
 #include <stddef.h>
 #include <stdio.h>   
