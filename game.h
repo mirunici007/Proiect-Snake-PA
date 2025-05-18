@@ -2,6 +2,7 @@
 #define GAME_H
 
 #include "snake.h"
+#include "food.h"
 
 // screen size
 #define SCREEN_WIDTH 1000
@@ -41,7 +42,7 @@ typedef struct {
 void init_game(SNAKE **snake, int *score);
 
 // Updates the game state (movement, collisions, etc.)
-void update_game(SNAKE *snake, int *score, GAME_STATE *state);
+void update_game(SNAKE *snake, int *score, GAME_STATE *state, FOOD *food);
 
 // Resets the game after Game Over
 void reset_game(SNAKE **snake, int *score);

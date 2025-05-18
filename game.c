@@ -12,7 +12,7 @@
 extern Color feedbackColor;
 extern char feedbackMessage[64];
 extern float feedbackTimer;
-extern FOOD *food_list;
+extern FOOD food;
 
 void apply_question_result(SNAKE *snake, int *score, int result);
 
@@ -23,13 +23,12 @@ void init_game(SNAKE **snake, int *score)
     *score = 0;
     srand(time(NULL));
 
-    clear_food();
-    int food_x, food_y;
-    spawn_food_1p(*snake, &food_x, &food_y); // generare inițială
+    
+    food = spawn_food(*snake);
 }
 
 // Update
-void update_game(SNAKE *snake, int *score, GAME_STATE *state)
+void update_game(SNAKE *snake, int *score, GAME_STATE *state, FOOD *food)
 {
     Rectangle pausebutton = {SCREEN_WIDTH - 110, 10, 100, 40};
 
@@ -41,12 +40,15 @@ void update_game(SNAKE *snake, int *score, GAME_STATE *state)
 
     if (*state == STATE_RUNNING)
     {
-        move_snake(snake, food_list->x, food_list->y);
+        move_snake(snake, (*food).x, (*food).y);
 
         int grow_value = 0;
-        if (check_food(snake, food_list->x, food_list->y, &grow_value))
+        if (check_food_collision(snake, (*food).x, (*food).y))
         {
-            *state = STATE_QUESTION;
+            //*state = STATE_QUESTION;
+            grow_snake(snake);
+            *score += 10;
+            *food = spawn_food(snake);
 
             // aici te oprești până răspunde userul -> vezi handle_input()
         }
@@ -55,7 +57,6 @@ void update_game(SNAKE *snake, int *score, GAME_STATE *state)
         {
             *state = STATE_GAME_OVER;
             printf("Game over! Final score: %d\n", *score);
-            clear_food(); // elimină mâncarea
             return;
         }
     }
@@ -68,9 +69,7 @@ void reset_game(SNAKE **snake, int *score)
     *snake = create_snake(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
     *score = 0;
 
-    clear_food();
-    int food_x, food_y;
-    spawn_food_1p(*snake, &food_x, &food_y);
+    food = spawn_food(*snake);
 }
 
 // Coliziuni
@@ -137,9 +136,7 @@ void handle_input(SNAKE *snake, GAME_STATE *state, int *score) {
 
     apply_question_result(snake, score, result);
 
-    clear_food();
-    int food_x, food_y;
-    spawn_food_1p(snake, &food_x, &food_y);
+    food = spawn_food(snake);
 
     *state = STATE_RUNNING;
 }
