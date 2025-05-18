@@ -43,22 +43,17 @@ void update_game(SNAKE *snake, int *score, GAME_STATE *state, FOOD *food)
         move_snake(snake, (*food).x, (*food).y);
 
         int grow_value = 0;
-        if (check_food_collision(snake, (*food).x, (*food).y))
-        {
-            //*state = STATE_QUESTION;
-            grow_snake(snake);
-            *score += 10;
-            *food = spawn_food(snake);
+    
 
-            // aici te oprești până răspunde userul -> vezi handle_input()
-        }
-
-        if (check_collisions(snake))
-        {
-            *state = STATE_GAME_OVER;
-            printf("Game over! Final score: %d\n", *score);
-            return;
-        }
+if (check_food_collision(snake, food->x, food->y))
+{
+    grow_snake(snake);
+    *score += 10;
+    showRandomQuestion();
+    askingQuestion = true;
+    *food = spawn_food(snake); // spawn after asking question
+    *state = STATE_QUESTION;
+}
     }
 }
 
@@ -111,35 +106,36 @@ void draw_pause_button()
     DrawRectangle(bar_x + bar_width + bar_spacing, bar_y, bar_width, bar_height, DARKGREEN);
 }
 
-// input pentru întrebări
-int get_answer_index() {
-    int answerIndex;
-    printf("Enter answer index (0-3): ");
-    if (scanf("%d", &answerIndex) != 1 || answerIndex < 0 || answerIndex > 3) {
-        while (getchar() != '\n'); // curăță buffer
-        return -1;
-    }
-    return answerIndex;
-}
+void draw_game(SNAKE *snake, FOOD *food, int score, GAME_STATE state) {
+    BeginDrawing();
+    ClearBackground(RAYWHITE);
 
-// răspuns la întrebare
-void handle_input(SNAKE *snake, GAME_STATE *state, int *score) {
-    int answerIndex = get_answer_index();
-
-    int result;
-    if (answerIndex == -1) {
-        result = -1;
-    } else {
-        const char* userAnswer = currentQuestion->data.correctAnswers[answerIndex];
-        result = checkAnswer(userAnswer) ? 1 : 0;
+    if (state == STATE_RUNNING) {
+        draw_snake(snake);
+        draw_food(*food);
+        draw_score(score);
+        draw_pause_button();
+    } else if (state == STATE_PAUSED) {
+        draw_pause_page();
+    } else if (state == STATE_QUESTION) {
+        draw_question_screen(); // <--- ADD THIS HERE
     }
 
-    apply_question_result(snake, score, result);
-
-    food = spawn_food(snake);
-
-    *state = STATE_RUNNING;
+    EndDrawing();
 }
+
+
+void handle_question_input(SNAKE *snake, GAME_STATE *state, int *score) {
+    for (int i = 0; i < 4; i++) {
+        Rectangle answerBox = {100, 200 + i * 50, 600, 40};
+        if (CheckCollisionPointRec(GetMousePosition(), answerBox) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+            const char* userAnswer = currentQuestion->data.correctAnswers[i];
+            int result = checkAnswer(userAnswer) ? 1 : 0;
+            apply_question_result(snake, score, result);
+            *state = STATE_RUNNING;
+        }
+    }
+}*state = STATE_RUNNING;
 
 // aplică rezultat întrebare
 void apply_question_result(SNAKE *snake, int *score, int result)
