@@ -8,12 +8,14 @@
 #include <stdio.h>   
 
 int score = 0;
+int foodsEaten = 0;  // Număr mâncăruri mâncate
+
+FOOD food;
 
 char feedbackMessage[64] = "";
 float feedbackTimer = 0.0f;
 Color feedbackColor = WHITE;
 Color scoreColor = RAYWHITE; // Default color for score
-
 
 typedef enum {
     THEME_LIGHT,
@@ -50,13 +52,14 @@ int main(void)
     GAME_STATE state = STATE_START_PAGE;
 
     SNAKE *snake = NULL;
-    int food_x = 0;
-    int food_y = 0;
+    food.x = 0;
+    food.y = 0;
 
     float moveTimer = 0.0f;
     float moveInterval = 0.15f; 
 
     bool showExitConfirmation = false; 
+    bool foodJustEaten = false;  // Flag pentru a preveni dublarea mâncării
 
     updateColorsBasedOnTheme();
     while (!WindowShouldClose())
@@ -93,14 +96,16 @@ int main(void)
                     int midX = currentWidth / 2;
                     int midY = currentHeight / 2;
 
-                    snake = create_snake((midX / 20), (midY / 20));
-                    for (int i = 0; i < 20; i++) grow_snake(snake);
+                    snake = create_snake((midX / 20)* CELL_SIZE, (midY / 20)*CELL_SIZE);
+                    
 
-                    // food_x = GetRandomValue(0, 39) * 20;
-                    // food_y = GetRandomValue(0, 22) * 20;
+                    food.x = GetRandomValue(0, 39) * 20;
+                    food.y = GetRandomValue(0, 22) * 20;
                     score = 0;
+                    foodsEaten = 0;     // Resetare număr mâncăruri
                     state = STATE_RUNNING;
                     moveTimer = 0.0f;
+                    foodJustEaten = false;  // Reset flag
                 }
                 else if (CheckCollisionPointRec(mouse, menuBtn))
                 {
@@ -196,18 +201,25 @@ int main(void)
             moveTimer += GetFrameTime();
             if (moveTimer >= moveInterval)
             {
-                spawn_food(snake);
-                move_snake(snake, food_x, food_y);
-                int grow = 0;
-                if (check_food(snake, snake->head->coord_x, snake->head->coord_y, &grow)) {
-                    for (int i = 0; i < grow; i++) {
-                        grow_snake(snake);
-                        score += 10; // Sau cât vrei tu să crești scorul
+                move_snake(snake, food.x, food.y);
 
-                    }
+                // Verificare și procesare coliziune mâncare cu flag corect
+                if(check_food_collision(snake, food.x, food.y) && !foodJustEaten)
+                {
+                    grow_snake(snake);
+                    score += 10;
+                    foodsEaten++;           // Incrementare număr mâncăruri mâncate
+                    food = spawn_food(snake);
+
+                    foodJustEaten = true;   // Blocăm dubla detectare până la următoarea mișcare
+                }
+                else if (!check_food_collision(snake, food.x, food.y))
+                {
+                    // Resetăm flagul doar când nu mai suntem pe mâncare, pentru a putea detecta următoarea coliziune
+                    foodJustEaten = false;
                 }
 
-                update_game(snake, &score, &state, &food_x, &food_y);
+                update_game(snake, &score, &state, &food);
                 moveTimer = 0.0f;
                 
                 // Countdown the feedback message timer
@@ -222,11 +234,16 @@ int main(void)
             draw_pause_button();
             draw_food();
             draw_snake(snake);
+            draw_food(food);
 
-            // Afișează scorul în colțul din stânga sus
+            // Afișează scorul și numărul de mâncăruri mâncate în colțul din stânga sus
             char scoreText[32];
             sprintf(scoreText, "Score: %d", score);
             DrawText(scoreText, 10, 10, 25, scoreColor); // Font size increased to 25
+
+            char foodText[32];
+            sprintf(foodText, "Foods eaten: %d", foodsEaten);
+            DrawText(foodText, 10, 40, 20, ORANGE);
 
             if (feedbackTimer > 0.0f && feedbackMessage[0] != '\0') {
                 int fontSize = 24;
@@ -289,11 +306,13 @@ int main(void)
             if (IsKeyPressed(KEY_R))
             {
                 reset_game(&snake, &score);
-                for (int i = 0; i < 20; i++) grow_snake(snake);
-                // food_x = GetRandomValue(0, 39) * 20;
-                // food_y = GetRandomValue(0, 22) * 20;
+                foodsEaten = 0;  // Reset număr mâncăruri
+                
+                food.x = GetRandomValue(0, 39) * 20;
+                food.y = GetRandomValue(0, 22) * 20;
                 state = STATE_RUNNING;
                 moveTimer = 0.0f;
+                foodJustEaten = false;  // Reset flag
             }
 
             if (IsKeyPressed(KEY_ESCAPE))
@@ -306,19 +325,12 @@ int main(void)
                 }
             }
         }
-
-        // ------------------ HIGHSCORES ------------------
-        if (state == STATE_HIGHSCORES) 
-        {
-            draw_highscores(&state);
-        }
-
         EndDrawing();
     }
 
-    if (snake != NULL)
-        free_snake(snake);
+    if (snake != NULL) free_snake(snake);
 
     CloseWindow();
+
     return 0;
 }

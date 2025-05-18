@@ -93,10 +93,8 @@ void shrink_snake(SNAKE *snake)
 
 //function to check if the sbake's head collides with the food
 //1 for collision
-int check_food_collision(SNAKE *snake, int food_x, int food_y)
-{
-    return (snake->head->coord_x == food_x && 
-            snake->head->coord_y == food_y);
+int check_food_collision(SNAKE *snake, int food_x, int food_y) {
+    return (abs(snake->head->coord_x - food_x) <= SEGMENT_SIZE * 2 && abs(snake->head->coord_y - food_y) <= SEGMENT_SIZE * 2);
 }
 
 void move_snake(SNAKE *snake, int food_x, int food_y) {

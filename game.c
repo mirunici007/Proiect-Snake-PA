@@ -5,81 +5,55 @@
 #include "game.h"
 #include "question.h"
 #include "snake.h"
+#include "food.h" // adăugat
 
-//external variables
+#define CELL_SIZE 20
 
-#define CELL_SIZE 20 
-
-//extern QuestionNode* currentQuestion;
-void apply_question_result(SNAKE *snake, int *score, int result);
-
-// Feedback display state
 extern Color feedbackColor;
 extern char feedbackMessage[64];
 extern float feedbackTimer;
+extern FOOD food;
 
-// static int feedbackColor = DARKGREEN;
-// static const float FEEDBACK_DURATION = 4.0f; // 4 seconds
+void apply_question_result(SNAKE *snake, int *score, int result);
 
-// extern char feedbackMessage[64];
-// extern float feedbackTimer;
-// extern Color feedbackColor;
-
-
-// Initializes the game with initial values (score, positions, etc.)
+// Init
 void init_game(SNAKE **snake, int *score)
 {
     *snake = create_snake(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
     *score = 0;
+    srand(time(NULL));
 
-    srand(time(NULL)); // seed random number generator
+    
+    food = spawn_food(*snake);
 }
 
-//updates the game(state, position, score, etc.)
-void update_game(SNAKE *snake, int *score, GAME_STATE *state, int *food_x, int *food_y)
+// Update
+void update_game(SNAKE *snake, int *score, GAME_STATE *state, FOOD *food)
 {
     Rectangle pausebutton = {SCREEN_WIDTH - 110, 10, 100, 40};
 
-    if (IsKeyPressed(KEY_P) || (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && CheckCollisionPointRec(GetMousePosition(), pausebutton)))
+    if (IsKeyPressed(KEY_P) || 
+       (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && CheckCollisionPointRec(GetMousePosition(), pausebutton)))
     {
-        if (*state == STATE_RUNNING)
-        {
-            *state = STATE_PAUSED;
-        }
-        else if (*state == STATE_PAUSED)
-        {
-            *state = STATE_RUNNING;
-        }
+        *state = (*state == STATE_RUNNING) ? STATE_PAUSED : STATE_RUNNING;
     }
 
-    if(*state == STATE_RUNNING)
+    if (*state == STATE_RUNNING)
     {
-        move_snake(snake, *food_x, *food_y);
+        move_snake(snake, (*food).x, (*food).y);
 
-        //check for food collision 
-        if(check_food_collision(snake, *food_x, *food_y))
+        int grow_value = 0;
+        if (check_food_collision(snake, (*food).x, (*food).y))
         {
-            *state = STATE_QUESTION;
+            //*state = STATE_QUESTION;
+            grow_snake(snake);
+            *score += 10;
+            *food = spawn_food(snake);
 
-            //load a random question
-            char question[256];
-            //load_random_question(question, correct_answer);
-
-            //ask the questions and get the player's answer
-            printf("QUESTION:\n%s", question);
-            char player_answer;
-            printf("YOUR ANSWER: ");
-            scanf("%c", &player_answer);
-
-            //validate the player's answer
-            // int result = validate_answer(player_answer, correct_answer);
-            // apply_question_result(snake, score, result);
-            //generate_food(snake, food_x, food_y);
-            *state = STATE_RUNNING;
+            // aici te oprești până răspunde userul -> vezi handle_input()
         }
 
-        //check for collision
-        if(check_collisions(snake))
+        if (check_collisions(snake))
         {
             *state = STATE_GAME_OVER;
             printf("Game over! Final score: %d\n", *score);
@@ -88,40 +62,33 @@ void update_game(SNAKE *snake, int *score, GAME_STATE *state, int *food_x, int *
     }
 }
 
-//resets game after Game Over
+// Reset
 void reset_game(SNAKE **snake, int *score)
 {
     free_snake(*snake);
+    *snake = create_snake(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
+    *score = 0;
 
-    *snake = create_snake(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2); // CREATE A NEW SNAKE
-    *score = 0; //reset the score
-
+    food = spawn_food(*snake);
 }
 
+// Coliziuni
 int check_collisions(SNAKE *snake)
 {
-    if (check_self_collision(snake))
-    {
-        return 1; //the snake collided with itself
-    }
-    if(check_boundary_collision(snake, SCREEN_WIDTH, SCREEN_HEIGHT))
-    {
-        return 1; //the snake collided with the boundaries
-    }
-
-    return 0; //no collision
+    if (check_self_collision(snake)) return 1;
+    if (check_boundary_collision(snake, SCREEN_WIDTH, SCREEN_HEIGHT)) return 1;
+    return 0;
 }
 
+// UI: pauză
 void draw_pause_page()
 {
-
     DrawRectangle(SCREEN_WIDTH / 2 - 150, SCREEN_HEIGHT / 2 - 50, 300, 120, LIGHTGRAY); 
     DrawText("PAUSED", SCREEN_WIDTH / 2 - MeasureText("PAUSED", 60) / 2, SCREEN_HEIGHT / 2 - 20, 60, BLACK);        
     DrawText("Press P to Resume", SCREEN_WIDTH / 2 - MeasureText("Press P to Resume", 20) / 2, SCREEN_HEIGHT / 2 + 35, 20, DARKGRAY); 
 
     int margin = 20;
     int size = 20;
-
     Vector2 v1 = {SCREEN_WIDTH - margin - size, margin};
     Vector2 v2 = {SCREEN_WIDTH - margin, margin + size / 2};
     Vector2 v3 = {SCREEN_WIDTH - margin - size, margin + size};
@@ -130,7 +97,6 @@ void draw_pause_page()
     DrawLineV(v1, v2, RED);
     DrawLineV(v2, v3, RED);
     DrawLineV(v3, v1, RED);
-
 }
 
 void draw_pause_button()
@@ -145,55 +111,58 @@ void draw_pause_button()
     DrawRectangle(bar_x + bar_width + bar_spacing, bar_y, bar_width, bar_height, DARKGREEN);
 }
 
-
+// input pentru întrebări
 int get_answer_index() {
     int answerIndex;
     printf("Enter answer index (0-3): ");
     if (scanf("%d", &answerIndex) != 1 || answerIndex < 0 || answerIndex > 3) {
-        while (getchar() != '\n'); // clear input buffer
-        return -1;  // Invalid input
+        while (getchar() != '\n'); // curăță buffer
+        return -1;
     }
     return answerIndex;
 }
 
+// răspuns la întrebare
 void handle_input(SNAKE *snake, GAME_STATE *state, int *score) {
-    int answerIndex = get_answer_index();  // Call the correct input function
+    int answerIndex = get_answer_index();
 
     int result;
     if (answerIndex == -1) {
-        result = -1;  // input invalid
+        result = -1;
     } else {
         const char* userAnswer = currentQuestion->data.correctAnswers[answerIndex];
         result = checkAnswer(userAnswer) ? 1 : 0;
     }
 
     apply_question_result(snake, score, result);
+
+    food = spawn_food(snake);
+
     *state = STATE_RUNNING;
 }
+
+// aplică rezultat întrebare
 void apply_question_result(SNAKE *snake, int *score, int result)
 {
     switch (result) {
-        case 1: // right answer
+        case 1:
             *score += 10;
             grow_snake(snake);
             snprintf(feedbackMessage, sizeof(feedbackMessage), "Raspuns corect! +10 puncte.");
             feedbackColor = GREEN;
-            feedbackTimer = 2.0f;
             break;
-        case 0: // wrong answer
+        case 0:
             *score -= 5;
             snprintf(feedbackMessage, sizeof(feedbackMessage), "Raspuns gresit! -5 puncte.");
             feedbackColor = RED;
-            feedbackTimer = 2.0f;
             break;
-        case -1: // invalid input
+        case -1:
             *score -= 5;
             snprintf(feedbackMessage, sizeof(feedbackMessage), "Raspuns invalid. -5 puncte.");
             feedbackColor = ORANGE;
-            feedbackTimer = 2.0f;
             break;
     }
 
     if (*score < 0) *score = 0;
+    feedbackTimer = 2.0f;
 }
-
