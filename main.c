@@ -7,6 +7,9 @@
 #include <stddef.h>
 #include <stdio.h>   
 
+bool askingQuestion = false;
+char questionText[512]; // To store formatted question
+
 int score = 0;
 int foodsEaten = 0;  // Număr mâncăruri mâncate
 
@@ -60,6 +63,9 @@ int main(void)
 
     bool showExitConfirmation = false; 
     bool foodJustEaten = false;  // Flag pentru a preveni dublarea mâncării
+
+     initQuestions();              // Initializes all questions
+    showRandomQuestion();         // Displays one random question
 
     updateColorsBasedOnTheme();
     while (!WindowShouldClose())
@@ -180,80 +186,92 @@ int main(void)
             draw_instructions(&state); 
         }
         // ------------------ GAME ------------------
-        else if (state == STATE_RUNNING)
+       else if (state == STATE_RUNNING || state == STATE_QUESTION)
+{
+    // Movement + Game Logic Only Happens When RUNNING
+    if (state == STATE_RUNNING) {
+        if (IsKeyPressed(KEY_P)) {
+            state = STATE_PAUSED;
+        }
+
+        Rectangle pausebutton = {SCREEN_WIDTH - 110, 10, 100, 40};
+        if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && CheckCollisionPointRec(GetMousePosition(), pausebutton))
         {
-            if (IsKeyPressed(KEY_P))
+            state = STATE_PAUSED;
+        }
+
+        if (IsKeyPressed(KEY_W) && snake->direction != DOWN) set_snake_direction(snake, UP);
+        if (IsKeyPressed(KEY_S) && snake->direction != UP) set_snake_direction(snake, DOWN);
+        if (IsKeyPressed(KEY_A) && snake->direction != RIGHT) set_snake_direction(snake, LEFT);
+        if (IsKeyPressed(KEY_D) && snake->direction != LEFT) set_snake_direction(snake, RIGHT);
+
+        moveTimer += GetFrameTime();
+        if (moveTimer >= moveInterval)
+        {
+            move_snake(snake, food.x, food.y);
+
+            if (check_food_collision(snake, food.x, food.y) && !foodJustEaten)
             {
-                state = STATE_PAUSED;
+                grow_snake(snake);
+                score += 10;
+                foodsEaten++;
+
+                // 🟡 KEY CHANGE: Instead of spawning food immediately, switch to QUESTION
+                state = STATE_QUESTION;
+
+                get_random_question();  // This sets global currentQuestion
+                foodJustEaten = true;
+            }
+            else if (!check_food_collision(snake, food.x, food.y))
+            {
+                foodJustEaten = false;
             }
 
-            Rectangle pausebutton = {SCREEN_WIDTH - 110, 10, 100, 40};
-            if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && CheckCollisionPointRec(GetMousePosition(), pausebutton))
-            {
-                state = STATE_PAUSED;
-            }
+            update_game(snake, &score, &state, &food); // Might do collision checks etc.
+            moveTimer = 0.0f;
 
-            if (IsKeyPressed(KEY_W) && snake->direction != DOWN) set_snake_direction(snake, UP);
-            if (IsKeyPressed(KEY_S) && snake->direction != UP) set_snake_direction(snake, DOWN);
-            if (IsKeyPressed(KEY_A) && snake->direction != RIGHT) set_snake_direction(snake, LEFT);
-            if (IsKeyPressed(KEY_D) && snake->direction != LEFT) set_snake_direction(snake, RIGHT);
-
-            moveTimer += GetFrameTime();
-            if (moveTimer >= moveInterval)
-            {
-                move_snake(snake, food.x, food.y);
-
-                // Verificare și procesare coliziune mâncare cu flag corect
-                if(check_food_collision(snake, food.x, food.y) && !foodJustEaten)
-                {
-                    grow_snake(snake);
-                    score += 10;
-                    foodsEaten++;           // Incrementare număr mâncăruri mâncate
-                    food = spawn_food(snake);
-
-                    foodJustEaten = true;   // Blocăm dubla detectare până la următoarea mișcare
+            if (feedbackTimer > 0.0f) {
+                feedbackTimer -= GetFrameTime();
+                if (feedbackTimer <= 0.0f) {
+                    feedbackMessage[0] = '\0';
                 }
-                else if (!check_food_collision(snake, food.x, food.y))
-                {
-                    // Resetăm flagul doar când nu mai suntem pe mâncare, pentru a putea detecta următoarea coliziune
-                    foodJustEaten = false;
-                }
-
-                update_game(snake, &score, &state, &food);
-                moveTimer = 0.0f;
-
-                // Countdown the feedback message timer
-                if (feedbackTimer > 0.0f) {
-                    feedbackTimer -= GetFrameTime();
-                    if (feedbackTimer <= 0.0f) {
-                        feedbackMessage[0] = '\0'; // Clear the message
-                    }
-                }
-            }
-
-            draw_pause_button();
-            draw_snake(snake);
-            draw_food(food);
-
-            // Afișează scorul și numărul de mâncăruri mâncate în colțul din stânga sus
-            char scoreText[32];
-            sprintf(scoreText, "Score: %d", score);
-            DrawText(scoreText, 10, 10, 25, scoreColor); // Font size increased to 25
-
-            char foodText[32];
-            sprintf(foodText, "Foods eaten: %d", foodsEaten);
-            DrawText(foodText, 10, 40, 20, ORANGE);
-
-            if (feedbackTimer > 0.0f && feedbackMessage[0] != '\0') {
-                int fontSize = 24;
-                int textWidth = MeasureText(feedbackMessage, fontSize);
-                DrawText(feedbackMessage,
-                    SCREEN_WIDTH / 2 - textWidth / 2,
-                    SCREEN_HEIGHT - 60,
-                    fontSize,
-                    feedbackColor);
             }
         }
+    }
+
+    // ADD THIS: Handle question input when in STATE_QUESTION
+    if (state == STATE_QUESTION) {
+       handle_question_input(snake, &state, &score);
+    }
+
+    // Draw always runs, but adapt it:
+    draw_pause_button();
+    draw_snake(snake);
+    draw_food(food);
+
+    char scoreText[32];
+    sprintf(scoreText, "Score: %d", score);
+    DrawText(scoreText, 10, 10, 25, scoreColor);
+
+    char foodText[32];
+    sprintf(foodText, "Foods eaten: %d", foodsEaten);
+    DrawText(foodText, 10, 40, 20, ORANGE);
+
+    if (feedbackTimer > 0.0f && feedbackMessage[0] != '\0') {
+        int fontSize = 24;
+        int textWidth = MeasureText(feedbackMessage, fontSize);
+        DrawText(feedbackMessage,
+            SCREEN_WIDTH / 2 - textWidth / 2,
+            SCREEN_HEIGHT - 60,
+            fontSize,
+            feedbackColor);
+    }
+
+    //OVERLAY THE QUESTION IF ACTIVE
+    if (state == STATE_QUESTION && currentQuestion != NULL) {
+        draw_question(*currentQuestion);
+    }
+}
         // ------------------ PAUSED ------------------
         else if (state == STATE_PAUSED)
         {
