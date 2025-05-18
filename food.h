@@ -31,5 +31,6 @@ int check_food(SNAKE *snake, int x, int y, int *grow_value);
 void spawn_food_random_points(SNAKE *snake);
 void spawn_food(SNAKE *snake);
 void draw_food();
+void clear_food();
 
 #endif
