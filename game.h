@@ -41,7 +41,7 @@ typedef struct {
 void init_game(SNAKE **snake, int *score);
 
 // Updates the game state (movement, collisions, etc.)
-void update_game(SNAKE *snake, int *score, GAME_STATE *state, int *food_x, int *food_y);
+void update_game(SNAKE *snake, int *score, GAME_STATE *state);
 
 // Resets the game after Game Over
 void reset_game(SNAKE **snake, int *score);
