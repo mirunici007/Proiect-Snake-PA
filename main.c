@@ -96,8 +96,8 @@ int main(void)
                     snake = create_snake((midX / 20), (midY / 20));
                     for (int i = 0; i < 20; i++) grow_snake(snake);
 
-                    food_x = GetRandomValue(0, 39) * 20;
-                    food_y = GetRandomValue(0, 22) * 20;
+                    // food_x = GetRandomValue(0, 39) * 20;
+                    // food_y = GetRandomValue(0, 22) * 20;
                     score = 0;
                     state = STATE_RUNNING;
                     moveTimer = 0.0f;
@@ -196,10 +196,20 @@ int main(void)
             moveTimer += GetFrameTime();
             if (moveTimer >= moveInterval)
             {
+                spawn_food(snake);
                 move_snake(snake, food_x, food_y);
+                int grow = 0;
+                if (check_food(snake, snake->head->coord_x, snake->head->coord_y, &grow)) {
+                    for (int i = 0; i < grow; i++) {
+                        grow_snake(snake);
+                        score += 10; // Sau cât vrei tu să crești scorul
+
+                    }
+                }
+
                 update_game(snake, &score, &state, &food_x, &food_y);
                 moveTimer = 0.0f;
-
+                
                 // Countdown the feedback message timer
                 if (feedbackTimer > 0.0f) {
                     feedbackTimer -= GetFrameTime();
@@ -210,6 +220,7 @@ int main(void)
             }
 
             draw_pause_button();
+            draw_food();
             draw_snake(snake);
 
             // Afișează scorul în colțul din stânga sus
@@ -279,8 +290,8 @@ int main(void)
             {
                 reset_game(&snake, &score);
                 for (int i = 0; i < 20; i++) grow_snake(snake);
-                food_x = GetRandomValue(0, 39) * 20;
-                food_y = GetRandomValue(0, 22) * 20;
+                // food_x = GetRandomValue(0, 39) * 20;
+                // food_y = GetRandomValue(0, 22) * 20;
                 state = STATE_RUNNING;
                 moveTimer = 0.0f;
             }
