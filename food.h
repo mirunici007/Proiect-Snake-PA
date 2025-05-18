@@ -15,7 +15,7 @@ typedef struct Food {
 
 // Funcții pentru manipularea mâncării
 FOOD spawn_food(SNAKE *snake);
-void draw_food(FOOD food);
+void draw_food(FOOD food, Texture2D food_texture);
 int food_on_snake(FOOD food,SNAKE *snake);
 
 #endif // FOOD_H

@@ -12,6 +12,25 @@
 #define SEGMENT_SIZE 20 // Dimensiunea segmentelor șarpelui
 
 //declaring the variables
+
+typedef struct {
+    const char* head_up;
+    const char* head_down;
+    const char* head_left;
+    const char* head_right;
+    const char* body_horizontal;
+    const char* body_vertical;
+    const char* corner_top_left;
+    const char* corner_top_right;
+    const char* corner_bottom_left;
+    const char* corner_bottom_right;
+    const char* tail_up;
+    const char* tail_down;
+    const char* tail_left;
+    const char* tail_right;
+} SnakeTexturePaths;
+
+
 typedef struct segment
 {
     int coord_x;
@@ -40,6 +59,11 @@ typedef struct snake
     Texture2D corner_top_right_texture;    // colț dreapta sus
     Texture2D corner_bottom_left_texture;  // colț stânga jos
     Texture2D corner_bottom_right_texture; // colț dreapta jos
+
+    Texture2D tail_up_texture;    // Textura pentru coada (sus)
+    Texture2D tail_down_texture;  // Textura pentru coada (jos)
+    Texture2D tail_left_texture;  // Textura pentru coada (stânga)
+    Texture2D tail_right_texture; // Textura pentru coada (dreapta)
 }SNAKE;
 
 //function prtotypes

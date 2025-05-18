@@ -68,6 +68,9 @@ int main(void)
     showRandomQuestion();         // Displays one random question
 
     updateColorsBasedOnTheme();
+    load_highscores();
+    Texture2D foodTexture = LoadTexture("textures/apple.png");
+
     while (!WindowShouldClose())
     {
         int currentWidth = GetScreenWidth();
@@ -216,7 +219,7 @@ int main(void)
                 score += 10;
                 foodsEaten++;
 
-                // 🟡 KEY CHANGE: Instead of spawning food immediately, switch to QUESTION
+                // KEY CHANGE: Instead of spawning food immediately, switch to QUESTION
                 state = STATE_QUESTION;
 
                 get_random_question();  // This sets global currentQuestion
@@ -235,6 +238,41 @@ int main(void)
                 if (feedbackTimer <= 0.0f) {
                     feedbackMessage[0] = '\0';
                 }
+            }
+=======
+                update_game(snake, &score, &state, &food);
+                moveTimer = 0.0f;
+                
+                // Countdown the feedback message timer
+                if (feedbackTimer > 0.0f) {
+                    feedbackTimer -= GetFrameTime();
+                    if (feedbackTimer <= 0.0f) {
+                        feedbackMessage[0] = '\0'; // Clear the message
+                    }
+                }
+            }
+
+            draw_pause_button();
+            draw_food(food, foodTexture);
+            draw_snake(snake);
+
+            // Afișează scorul și numărul de mâncăruri mâncate în colțul din stânga sus
+            char scoreText[32];
+            sprintf(scoreText, "Score: %d", score);
+            DrawText(scoreText, 10, 10, 25, scoreColor); // Font size increased to 25
+
+            char foodText[32];
+            sprintf(foodText, "Foods eaten: %d", foodsEaten);
+            DrawText(foodText, 10, 40, 20, ORANGE);
+
+            if (feedbackTimer > 0.0f && feedbackMessage[0] != '\0') {
+                int fontSize = 24;
+                int textWidth = MeasureText(feedbackMessage, fontSize);
+                DrawText(feedbackMessage,
+                    SCREEN_WIDTH / 2 - textWidth / 2,
+                    SCREEN_HEIGHT - 60,
+                    fontSize,
+                    feedbackColor);
             }
         }
     }
@@ -309,10 +347,15 @@ int main(void)
                 moveTimer = 0.0f;
             }
         }
+        else if (state == STATE_HIGHSCORES)
+        {
+            draw_highscores(&state);
+        }
         // ------------------ GAME OVER ------------------
         else if (state == STATE_GAME_OVER)
         {
             update_highscores(score);
+            save_highscores();
 
             DrawText("Game Over", currentWidth / 2 - MeasureText("Game Over", 30) / 2, currentHeight / 2 - 30, 30, RED);
 
@@ -347,6 +390,7 @@ int main(void)
 
     if (snake != NULL) free_snake(snake);
 
+    UnloadTexture(foodTexture);
     CloseWindow();
 
     return 0;

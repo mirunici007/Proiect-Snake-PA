@@ -5,8 +5,8 @@
 
 typedef struct Question {
     char question[MAX_TEXT];
-    char correctAnswer[MAX_TEXT];
-    char correctAnswers[5][MAX_TEXT]; // maxim 5 variante corecte per întrebare
+    int correctAnswer;
+    //char correctAnswers[5][MAX_TEXT]; // maxim 5 variante corecte per întrebare
     int answerCount;
 } Question;
 
@@ -19,7 +19,9 @@ extern QuestionNode* currentQuestion;
 
 void initQuestions();                      // Inițializează întrebările (din fișier)
 void showRandomQuestion();                // Afișează o întrebare aleatoare
-int checkAnswer(const char* userAnswer);  // Verifică răspunsul
+void showRandomEasyQuestion();
+void showRandomHardQuestion();
+int checkAnswer(int userAnswer);  // Verifică răspunsul
 void freeQuestions();                     // Eliberează memoria întrebărilor
 
 #endif
