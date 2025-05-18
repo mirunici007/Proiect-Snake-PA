@@ -62,6 +62,9 @@ int main(void)
     bool foodJustEaten = false;  // Flag pentru a preveni dublarea mâncării
 
     updateColorsBasedOnTheme();
+    load_highscores();
+    Texture2D foodTexture = LoadTexture("textures/apple.png");
+
     while (!WindowShouldClose())
     {
         int currentWidth = GetScreenWidth();
@@ -232,9 +235,8 @@ int main(void)
             }
 
             draw_pause_button();
-            draw_food();
+            draw_food(food, foodTexture);
             draw_snake(snake);
-            draw_food(food);
 
             // Afișează scorul și numărul de mâncăruri mâncate în colțul din stânga sus
             char scoreText[32];
@@ -292,10 +294,15 @@ int main(void)
                 moveTimer = 0.0f;
             }
         }
+        else if (state == STATE_HIGHSCORES)
+        {
+            draw_highscores(&state);
+        }
         // ------------------ GAME OVER ------------------
         else if (state == STATE_GAME_OVER)
         {
             update_highscores(score);
+            save_highscores();
 
             DrawText("Game Over", currentWidth / 2 - MeasureText("Game Over", 30) / 2, currentHeight / 2 - 30, 30, RED);
 
@@ -330,6 +337,7 @@ int main(void)
 
     if (snake != NULL) free_snake(snake);
 
+    UnloadTexture(foodTexture);
     CloseWindow();
 
     return 0;

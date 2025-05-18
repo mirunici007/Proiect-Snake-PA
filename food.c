@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "game.h"
 #include <math.h>
+#include "raylib.h"
 
 #define FOOD_HISTORY_SIZE 5
 #define MIN_FOOD_DISTANCE 4 * CELL_SIZE // distanța minimă între mâncăruri
@@ -60,6 +61,6 @@ FOOD spawn_food(SNAKE *snake) {
 }
 
 // Desenează mâncarea
-void draw_food(FOOD food) {
-    DrawCircle(food.x + CELL_SIZE / 2, food.y + CELL_SIZE / 2, CELL_SIZE / 2, RED);
+void draw_food(FOOD food, Texture2D food_texture) {
+    DrawTexture(food_texture, food.x, food.y, WHITE);
 }
