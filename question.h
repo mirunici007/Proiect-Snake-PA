@@ -18,10 +18,11 @@ typedef struct QuestionNode {
 extern QuestionNode* currentQuestion;
 
 void initQuestions();                      // Inițializează întrebările (din fișier)
-void showRandomQuestion();                // Afișează o întrebare aleatoare
-void showRandomEasyQuestion();
-void showRandomHardQuestion();
+void selectRandomQuestion();                // Afișează o întrebare aleatoare
+void selectRandomEasyQuestion();
+void selectRandomHardQuestion();
 int checkAnswer(int userAnswer);  // Verifică răspunsul
 void freeQuestions();                     // Eliberează memoria întrebărilor
+void draw_question(QuestionNode* questionNode); // Afișează întrebarea pe ecran
 
 #endif
