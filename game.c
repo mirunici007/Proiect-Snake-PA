@@ -216,7 +216,7 @@ void update_game(SNAKE *snake, int *score, GAME_STATE *state, FOOD *food)
             grow_snake(snake);
             *score += 10;
             *food = spawn_food(snake);
-            showRandomQuestion(); 
+            selectRandomQuestion(); 
             // aici te oprești până răspunde userul -> vezi handle_input()
         }
 
@@ -306,6 +306,22 @@ void handle_input(SNAKE *snake, GAME_STATE *state, int *score) {
     food = spawn_food(snake);
 
     *state = STATE_RUNNING;
+}
+
+void validate_answer(int result, int* score, SNAKE* snake, FOOD* food) {
+    if (result == 1) {
+        *score += 10;
+        grow_snake(snake);
+        snprintf(feedbackMessage, sizeof(feedbackMessage), "Raspuns corect! +10 puncte.");
+        feedbackColor = GREEN;
+    } else {
+        *score -= 5;
+        if (*score < 0) *score = 0;
+        snprintf(feedbackMessage, sizeof(feedbackMessage), "Raspuns gresit! -5 puncte.");
+        feedbackColor = RED;
+    }
+    *food = spawn_food(snake);
+    feedbackTimer = 2.0f;
 }
 
 // aplică rezultat întrebare
