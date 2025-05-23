@@ -17,12 +17,12 @@ typedef struct QuestionNode {
 
 extern QuestionNode* currentQuestion;
 
+static void addQuestion(const char* q, const char* a);
 void initQuestions();                      // Inițializează întrebările (din fișier)
 void selectRandomQuestion();                // Afișează o întrebare aleatoare
-void selectRandomEasyQuestion();
-void selectRandomHardQuestion();
 int checkAnswer(int userAnswer);  // Verifică răspunsul
 void freeQuestions();                     // Eliberează memoria întrebărilor
-void draw_question(QuestionNode* questionNode); // Afișează întrebarea pe ecran
+//void showRandomQuestion(); // Afișează întrebarea pe ecran
+void draw_question(QuestionNode* q);
 
 #endif

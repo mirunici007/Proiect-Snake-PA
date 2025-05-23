@@ -64,4 +64,6 @@ void draw_pause_button();
 // // Handles user input for controlling the snake
 void handle_input(SNAKE *snake, GAME_STATE *state, int *score);
 
+void validate_answer(int result, int* score, SNAKE* snake, FOOD* food);
+
 #endif // GAME_H
