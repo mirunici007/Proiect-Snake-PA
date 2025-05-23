@@ -5,6 +5,7 @@
 #include "question.h"
 #include <stddef.h>
 #include <stdio.h>   
+#include <math.h>
 
 int score = 0;
 int foodsEaten = 0;  // Număr mâncăruri mâncate
@@ -66,6 +67,7 @@ int main(void)
     load_highscores();
     initQuestions();
     Texture2D foodTexture = LoadTexture("textures/apple.png");
+    Texture2D startBg = LoadTexture("textures/snake.jpg");
     while (!WindowShouldClose())
     {
         int currentWidth = GetScreenWidth();
@@ -77,6 +79,10 @@ int main(void)
         // ------------------ START PAGE ------------------
         if (state == STATE_START_PAGE)
         {
+            float scaleX = (float)currentWidth / startBg.width;
+            float scaleY = (float)currentHeight / startBg.height;
+            DrawTextureEx(startBg, (Vector2){0,0}, 0.0f, fmaxf(scaleX, scaleY), WHITE);
+
             DrawText("Snake Game", currentWidth / 2 - MeasureText("Snake Game", 40) / 2, 100, 40, textColor);
 
             Rectangle startBtn = {currentWidth / 2 - 150, 320, 300, 50};
@@ -377,7 +383,7 @@ int main(void)
     }
 
     if (snake != NULL) free_snake(snake);
-
+    UnloadTexture(startBg); // Unload the texture before closing
     CloseWindow();
 
     return 0;
