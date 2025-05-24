@@ -181,7 +181,7 @@ extern float feedbackTimer;
 extern FOOD food;
 Texture2D foodTexture;  
 
-void apply_question_result(SNAKE *snake, int *score, int result);
+//void apply_question_result(SNAKE *snake, int *score, int result);
 
 // Init
 void init_game(SNAKE **snake, int *score)
@@ -213,9 +213,9 @@ void update_game(SNAKE *snake, int *score, GAME_STATE *state, FOOD *food)
         if (check_food_collision(snake, (*food).x, (*food).y))
         {
             *state = STATE_QUESTION;
-            grow_snake(snake);
-            *score += 10;
-            *food = spawn_food(snake);
+            // grow_snake(snake);
+            // *score += 10;
+            // *food = spawn_food(snake);
             selectRandomQuestion(); 
             // aici te oprești până răspunde userul -> vezi handle_input()
         }
@@ -297,13 +297,14 @@ void handle_input(SNAKE *snake, GAME_STATE *state, int *score) {
     if (answerIndex == -1) {
         result = -1;
     } else {
-        int userAnswer = currentQuestion->data.correctAnswer;
-        result = checkAnswer(userAnswer) ? 1 : 0;
+        //int userAnswer = currentQuestion->data.correctAnswer;
+        result = checkAnswer(answerIndex + 1) ? 1 : 0;
     }
 
-    apply_question_result(snake, score, result);
+    //apply_question_result(snake, score, result);
+    validate_answer(result, score, snake, &food); 
 
-    food = spawn_food(snake);
+    //food = spawn_food(snake);
 
     *state = STATE_RUNNING;
 }
@@ -317,6 +318,7 @@ void validate_answer(int result, int* score, SNAKE* snake, FOOD* food) {
     } else {
         *score -= 5;
         if (*score < 0) *score = 0;
+        shrink_snake(snake);
         snprintf(feedbackMessage, sizeof(feedbackMessage), "Raspuns gresit! -5 puncte.");
         feedbackColor = RED;
     }
@@ -325,30 +327,30 @@ void validate_answer(int result, int* score, SNAKE* snake, FOOD* food) {
 }
 
 // aplică rezultat întrebare
-void apply_question_result(SNAKE *snake, int *score, int result)
-{
-    switch (result) {
-        case 1:
-            *score += 10;
-            grow_snake(snake);
-            snprintf(feedbackMessage, sizeof(feedbackMessage), "Raspuns corect! +10 puncte.");
-            feedbackColor = GREEN;
-            break;
-        case 0:
-            *score -= 5;
-            snprintf(feedbackMessage, sizeof(feedbackMessage), "Raspuns gresit! -5 puncte.");
-            feedbackColor = RED;
-            break;
-        case -1:
-            *score -= 5;
-            snprintf(feedbackMessage, sizeof(feedbackMessage), "Raspuns invalid. -5 puncte.");
-            feedbackColor = ORANGE;
-            break;
-    }
+// void apply_question_result(SNAKE *snake, int *score, int result)
+// {
+//     switch (result) {
+//         case 1:
+//             *score += 10;
+//             grow_snake(snake);
+//             snprintf(feedbackMessage, sizeof(feedbackMessage), "Raspuns corect! +10 puncte.");
+//             feedbackColor = GREEN;
+//             break;
+//         case 0:
+//             *score -= 5;
+//             snprintf(feedbackMessage, sizeof(feedbackMessage), "Raspuns gresit! -5 puncte.");
+//             feedbackColor = RED;
+//             break;
+//         case -1:
+//             *score -= 5;
+//             snprintf(feedbackMessage, sizeof(feedbackMessage), "Raspuns invalid. -5 puncte.");
+//             feedbackColor = ORANGE;
+//             break;
+//     }
 
-    if (*score < 0) *score = 0;
-    feedbackTimer = 2.0f;
-}
+//     if (*score < 0) *score = 0;
+//     feedbackTimer = 2.0f;
+// }
 
 // void draw_game(SNAKE *snake, FOOD *food, int score, GAME_STATE state) {
 //     BeginDrawing();

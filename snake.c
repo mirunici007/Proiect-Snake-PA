@@ -116,9 +116,10 @@ void move_snake(SNAKE *snake, int food_x, int food_y) {
     snake->head = new_head;
 
     // Dacă mănâncă mâncarea, crește lungimea
-    if (check_food_collision(snake, food_x, food_y)) {
-        snake->length++;
-    } else {
+    // if (check_food_collision(snake, food_x, food_y)) {
+    //     snake->length++;
+    // } 
+    if (!check_food_collision(snake, food_x, food_y)){
         // Elimină coada DOAR dacă numărul de segmente depășește snake->length
         int count = 1;
         SEGM *temp = snake->head;

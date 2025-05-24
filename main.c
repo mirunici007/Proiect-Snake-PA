@@ -216,9 +216,9 @@ int main(void)
                 // Verificare și procesare coliziune mâncare cu flag corect
                 if(check_food_collision(snake, food.x, food.y) && !foodJustEaten)
                 {
-                    grow_snake(snake);
-                    score += 10;
-                    foodsEaten++;           // Incrementare număr mâncăruri mâncate
+                    // grow_snake(snake);
+                    // score += 10;
+                    // foodsEaten++;           // Incrementare număr mâncăruri mâncate
                     // food = spawn_food(snake);
                     state = STATE_QUESTION;         // <-- Treci în starea de întrebare!
                     selectRandomQuestion();
@@ -311,7 +311,7 @@ int main(void)
 
                 // Extrage răspunsurile pentru hitboxuri
                 int screenWidth = GetScreenWidth();
-                int y = 160, boxWidth = 600, boxHeight = 50, spacing = 20;
+                int y = 160, boxWidth = 800, boxHeight = 70, spacing = 30;
                 Rectangle answerBoxes[4];
                 for (int i = 0; i < 4; i++) {
                     answerBoxes[i].x = screenWidth / 2 - boxWidth / 2;
@@ -332,14 +332,14 @@ int main(void)
                 }
 
                 // Tastatură: A/B/C/D sau 1/2/3/4
-                for (int i = 0; i < 4; i++) {
-                    if (IsKeyPressed(KEY_A + i) || IsKeyPressed(KEY_ONE + i) || IsKeyPressed(KEY_KP_1 + i)) {
-                        int result = ((i + 1) == currentQuestion->data.correctAnswer) ? 1 : 0;
-                        validate_answer(result, &score, snake, &food);
-                        state = STATE_RUNNING;
-                        break;
-                    }
-                }
+                // for (int i = 0; i < 4; i++) {
+                //     if (IsKeyPressed(KEY_A + i) || IsKeyPressed(KEY_ONE + i) || IsKeyPressed(KEY_KP_1 + i)) {
+                //         int result = ((i + 1) == currentQuestion->data.correctAnswer) ? 1 : 0;
+                //         validate_answer(result, &score, snake, &food);
+                //         state = STATE_RUNNING;
+                //         break;
+                //     }
+                // }
             }
         }
         else if (state == STATE_HIGHSCORES)

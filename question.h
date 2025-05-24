@@ -1,5 +1,6 @@
 #ifndef QUESTIONS_H
 #define QUESTIONS_H
+#include"raylib.h"
 
 #define MAX_TEXT 256
 
@@ -18,11 +19,19 @@ typedef struct QuestionNode {
 extern QuestionNode* currentQuestion;
 
 static void addQuestion(const char* q, const char* a);
+
 void initQuestions();                      // Inițializează întrebările (din fișier)
+
 void selectRandomQuestion();                // Afișează o întrebare aleatoare
+
 int checkAnswer(int userAnswer);  // Verifică răspunsul
+
 void freeQuestions();                     // Eliberează memoria întrebărilor
+
 //void showRandomQuestion(); // Afișează întrebarea pe ecran
+
+void DrawTextManualWrap(const char* text, int x, int y, int maxWidth, int fontSize, Color color);
+
 void draw_question(QuestionNode* q);
 
 #endif
