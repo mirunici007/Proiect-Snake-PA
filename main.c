@@ -74,6 +74,13 @@ int main(void)
     Texture2D foodTexture = LoadTexture("textures/apple.png");
     Texture2D startBg = LoadTexture("textures/BACKGROUND.jpg");
     Texture2D grassBg = LoadTexture("textures/GRASS.jpg");
+    
+    InitAudioDevice();
+    Sound rightSound = LoadSound("textures/RIGHT.wav");
+    Sound wrongSound = LoadSound("textures/WRONG.wav");
+    Sound gameOverSound = LoadSound("textures/GAME_OVER.wav");
+    
+    static bool playedGameOverSound = false;
     while (!WindowShouldClose())
     {
         int currentWidth = GetScreenWidth();
@@ -380,6 +387,13 @@ int main(void)
                 for (int i = 0; i < 4; i++) {
                     if (CheckCollisionPointRec(mouse, answerBoxes[i]) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
                         int result = ((i + 1) == currentQuestion->data.correctAnswer) ? 1 : 0;
+                        if (result == 1) {
+                            PlaySound(rightSound);
+                            // ... restul codului pentru răspuns corect ...
+                        } else {
+                            PlaySound(wrongSound);
+                            // ... restul codului pentru răspuns greșit ...
+                        }
                         validate_answer(result, &score, snake, &food); // vezi mai jos funcția
                         state = STATE_RUNNING;
                         break;
@@ -404,6 +418,11 @@ int main(void)
         // ------------------ GAME OVER ------------------
         else if (state == STATE_GAME_OVER)
         {
+            if (!playedGameOverSound) {
+        PlaySound(gameOverSound);
+        playedGameOverSound = true;
+    }
+
             update_highscores(score);
 
             DrawText("Game Over", currentWidth / 2 - MeasureText("Game Over", 30) / 2, currentHeight / 2 - 30, 30, RED);
@@ -434,12 +453,20 @@ int main(void)
                 }
             }
         }
+        else
+        {
+            playedGameOverSound = false;
+        }
         EndDrawing();
     }
 
     if (snake != NULL) free_snake(snake);
     UnloadTexture(startBg); // Unload the texture before closing
     UnloadTexture(grassBg);
+    UnloadSound(rightSound);
+UnloadSound(wrongSound);
+UnloadSound(gameOverSound);
+CloseAudioDevice();
     CloseWindow();
 
     return 0;
