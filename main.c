@@ -76,6 +76,7 @@ int main(void)
     Texture2D grassBg = LoadTexture("textures/GRASS.jpg");
     
     InitAudioDevice();
+    Music bgMusic = LoadMusicStream("textures/MUSIC.mp3");
     Sound rightSound = LoadSound("textures/RIGHT.wav");
     Sound wrongSound = LoadSound("textures/WRONG.wav");
     Sound gameOverSound = LoadSound("textures/GAME_OVER.wav");
@@ -111,50 +112,7 @@ int main(void)
             DrawRectangleRec(exitBtn, RED);
             DrawText("EXIT", exitBtn.x + exitBtn.width / 2 - MeasureText("EXIT", 20) / 2, exitBtn.y + 15, 20, RAYWHITE);
 
-            // --- Text sub butoane ---
-            int fontSize = 22;
-            Color borderColor = LIGHTGRAY;
-            Color textCol = BLACK;
-
-            const char* members[] = {
-                "Members:",
-                "Sardaru Andreea-Miruna",
-                "Paraschiv Georgiana-Simona",
-                "Dumitrescu Laura",
-                "Flores-Botezatu Edyra-Alexia",
-                "Mitea Roberta-Elena",
-                "Stancu Patricia-Ioana",
-                "",
-                "Coordinating teacher",
-                "Conf. Dr. Ing Caramihai Mihail"
-            };
-            int lines = sizeof(members)/sizeof(members[0]);
-            int spacing = 8;
-            int baseY = exitBtn.y + exitBtn.height + 30;
-            int centerX = currentWidth / 2;
-
-            // Calculează lățimea maximă a textului
-            int maxTextWidth = 0;
-            for (int i = 0; i < lines; i++) {
-                int w = MeasureText(members[i], fontSize);
-                if (w > maxTextWidth) maxTextWidth = w;
-            }
-            int rectWidth = maxTextWidth + 40; // padding stânga/dreapta
-            int rectHeight = lines * fontSize + (lines - 1) * spacing + 24; // padding sus/jos
-
-            int rectX = centerX - rectWidth / 2;
-            int rectY = baseY - 16;
-
-            // Dreptunghi mare, comun, în spatele textului
-            DrawRectangle(rectX, rectY, rectWidth, rectHeight, LIGHTGREEN);
-
-            // Acum desenează textul peste dreptunghi
-            for (int i = 0; i < lines; i++) {
-                int textWidth = MeasureText(members[i], fontSize);
-                int textX = centerX - textWidth / 2;
-                int textY = baseY + i * (fontSize + spacing);
-                DrawText(members[i], textX, textY, fontSize, textCol);
-            }
+            
 
             if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
             {
@@ -457,6 +415,18 @@ int main(void)
         {
             playedGameOverSound = false;
         }
+
+        if (state != STATE_RUNNING) {
+    if (!IsMusicStreamPlaying(bgMusic)) {
+        PlayMusicStream(bgMusic);
+    }
+} else {
+    if (IsMusicStreamPlaying(bgMusic)) {
+        PauseMusicStream(bgMusic);
+    }
+}
+UpdateMusicStream(bgMusic); // Pune asta la fiecare frame!
+
         EndDrawing();
     }
 
@@ -466,6 +436,7 @@ int main(void)
     UnloadSound(rightSound);
 UnloadSound(wrongSound);
 UnloadSound(gameOverSound);
+UnloadMusicStream(bgMusic);
 CloseAudioDevice();
     CloseWindow();
 
