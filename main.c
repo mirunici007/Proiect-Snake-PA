@@ -10,6 +10,11 @@
 int score = 0;
 int foodsEaten = 0;  // Număr mâncăruri mâncate
 
+Color LIGHTGREEN = (Color){152, 237, 66, 255};  
+ 
+
+
+
 FOOD food;
 
 char feedbackMessage[64] = "";
@@ -67,7 +72,8 @@ int main(void)
     load_highscores();
     initQuestions();
     Texture2D foodTexture = LoadTexture("textures/apple.png");
-    Texture2D startBg = LoadTexture("textures/snake.jpg");
+    Texture2D startBg = LoadTexture("textures/BACKGROUND.jpg");
+    Texture2D grassBg = LoadTexture("textures/GRASS.jpg");
     while (!WindowShouldClose())
     {
         int currentWidth = GetScreenWidth();
@@ -83,20 +89,65 @@ int main(void)
             float scaleY = (float)currentHeight / startBg.height;
             DrawTextureEx(startBg, (Vector2){0,0}, 0.0f, fmaxf(scaleX, scaleY), WHITE);
 
-            DrawText("Snake Game", currentWidth / 2 - MeasureText("Snake Game", 40) / 2, 100, 40, textColor);
+            DrawText("Snake Game", currentWidth / 2 - MeasureText("Snake Game", 40) / 2, 100, 40, BLACK);
 
-            Rectangle startBtn = {currentWidth / 2 - 150, 320, 300, 50};
-            Rectangle menuBtn  = {currentWidth / 2 - 150, 390, 300, 50};
-            Rectangle exitBtn  = {currentWidth / 2 - 150, 460, 300, 50};
+            Rectangle startBtn = {currentWidth / 2 - 150, 160, 300, 50};
+            Rectangle menuBtn  = {currentWidth / 2 - 150, 230, 300, 50};
+            Rectangle exitBtn  = {currentWidth / 2 - 150, 300, 300, 50};
 
             DrawRectangleRec(startBtn, buttonColor);
             DrawText("START", startBtn.x + startBtn.width / 2 - MeasureText("START", 20) / 2, startBtn.y + 15, 20, textColor);
 
-            DrawRectangleRec(menuBtn, menuButtonColor); // Use fixed menu button color
+            DrawRectangleRec(menuBtn, menuButtonColor);
             DrawText("MENU", menuBtn.x + menuBtn.width / 2 - MeasureText("MENU", 20) / 2, menuBtn.y + 15, 20, textColor);
 
             DrawRectangleRec(exitBtn, RED);
             DrawText("EXIT", exitBtn.x + exitBtn.width / 2 - MeasureText("EXIT", 20) / 2, exitBtn.y + 15, 20, RAYWHITE);
+
+            // --- Text sub butoane ---
+            int fontSize = 22;
+            Color borderColor = LIGHTGRAY;
+            Color textCol = BLACK;
+
+            const char* members[] = {
+                "Members:",
+                "Sardaru Andreea-Miruna",
+                "Paraschiv Georgiana-Simona",
+                "Dumitrescu Laura",
+                "Flores-Botezatu Edyra-Alexia",
+                "Mitea Roberta-Elena",
+                "Stancu Patricia-Ioana",
+                "",
+                "Coordinating teacher",
+                "Conf. Dr. Ing Caramihai Mihail"
+            };
+            int lines = sizeof(members)/sizeof(members[0]);
+            int spacing = 8;
+            int baseY = exitBtn.y + exitBtn.height + 30;
+            int centerX = currentWidth / 2;
+
+            // Calculează lățimea maximă a textului
+            int maxTextWidth = 0;
+            for (int i = 0; i < lines; i++) {
+                int w = MeasureText(members[i], fontSize);
+                if (w > maxTextWidth) maxTextWidth = w;
+            }
+            int rectWidth = maxTextWidth + 40; // padding stânga/dreapta
+            int rectHeight = lines * fontSize + (lines - 1) * spacing + 24; // padding sus/jos
+
+            int rectX = centerX - rectWidth / 2;
+            int rectY = baseY - 16;
+
+            // Dreptunghi mare, comun, în spatele textului
+            DrawRectangle(rectX, rectY, rectWidth, rectHeight, LIGHTGREEN);
+
+            // Acum desenează textul peste dreptunghi
+            for (int i = 0; i < lines; i++) {
+                int textWidth = MeasureText(members[i], fontSize);
+                int textX = centerX - textWidth / 2;
+                int textY = baseY + i * (fontSize + spacing);
+                DrawText(members[i], textX, textY, fontSize, textCol);
+            }
 
             if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
             {
@@ -192,6 +243,10 @@ int main(void)
         // ------------------ GAME ------------------
         else if (state == STATE_RUNNING)
         {
+            float scaleX = (float)currentWidth / grassBg.width;
+            float scaleY = (float)currentHeight / grassBg.height;
+            DrawTextureEx(grassBg, (Vector2){0,0}, 0.0f, fmaxf(scaleX, scaleY), WHITE);
+
             if (IsKeyPressed(KEY_P))
             {
                 state = STATE_PAUSED;
@@ -384,6 +439,7 @@ int main(void)
 
     if (snake != NULL) free_snake(snake);
     UnloadTexture(startBg); // Unload the texture before closing
+    UnloadTexture(grassBg);
     CloseWindow();
 
     return 0;
