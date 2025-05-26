@@ -269,3 +269,5 @@ void draw_question(QuestionNode* q) {
 
     // Poți returna answerBoxes dacă vrei să le folosești pentru input cu mouse-ul
 }
+
+//cf
