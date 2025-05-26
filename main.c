@@ -67,6 +67,7 @@ int main(void)
 
     bool showExitConfirmation = false; 
     bool foodJustEaten = false;  // Flag pentru a preveni dublarea mâncării
+    bool showCredentials = false;
 
     updateColorsBasedOnTheme();
     load_highscores();
@@ -101,13 +102,17 @@ int main(void)
 
             Rectangle startBtn = {currentWidth / 2 - 150, 160, 300, 50};
             Rectangle menuBtn  = {currentWidth / 2 - 150, 230, 300, 50};
-            Rectangle exitBtn  = {currentWidth / 2 - 150, 300, 300, 50};
+            Rectangle credentialsBtn = {currentWidth / 2 - 150, 300, 300, 50};
+            Rectangle exitBtn  = {currentWidth / 2 - 150, 370, 300, 50};
 
             DrawRectangleRec(startBtn, buttonColor);
             DrawText("START", startBtn.x + startBtn.width / 2 - MeasureText("START", 20) / 2, startBtn.y + 15, 20, textColor);
 
             DrawRectangleRec(menuBtn, menuButtonColor);
             DrawText("MENU", menuBtn.x + menuBtn.width / 2 - MeasureText("MENU", 20) / 2, menuBtn.y + 15, 20, textColor);
+
+            DrawRectangleRec(credentialsBtn, GRAY);
+            DrawText("CREDENTIALS", credentialsBtn.x + credentialsBtn.width / 2 - MeasureText("CREDENTIALS", 20) / 2, credentialsBtn.y + 15, 20, BLACK);
 
             DrawRectangleRec(exitBtn, RED);
             DrawText("EXIT", exitBtn.x + exitBtn.width / 2 - MeasureText("EXIT", 20) / 2, exitBtn.y + 15, 20, RAYWHITE);
@@ -136,6 +141,10 @@ int main(void)
                 else if (CheckCollisionPointRec(mouse, menuBtn))
                 {
                     state = STATE_MENU;
+                }
+                else if (CheckCollisionPointRec(mouse, credentialsBtn))
+                {
+                    showCredentials = true;
                 }
                 else if (CheckCollisionPointRec(mouse, exitBtn))
                 {
@@ -173,6 +182,60 @@ int main(void)
                     }
                 }
             }
+
+            if (state == STATE_START_PAGE && showCredentials)
+{
+    // Overlay semitransparent
+    DrawRectangle(0, 0, currentWidth, currentHeight, Fade(BLACK, 0.4f));
+
+    // Caseta mărită
+    Rectangle modal = {currentWidth / 2 - 275, currentHeight / 2 - 210, 550, 420};
+    DrawRectangleRec(modal, RAYWHITE);
+    DrawRectangleLinesEx(modal, 2, DARKGRAY);
+
+    // Titlu (font mai mare)
+    const char* title = "Credentials";
+    int titleFontSize = 28;
+    int titleWidth = MeasureText(title, titleFontSize);
+    DrawText(title, modal.x + modal.width/2 - titleWidth/2, modal.y + 20, titleFontSize, DARKBLUE);
+
+    // Textul (font mărit la 20px, spacing 6px)
+    const char* credentialsText[] = {
+        "Members:",
+        "Sardaru Andreea-Miruna",
+        "Paraschiv Georgiana-Simona",
+        "Dumitrescu Laura",
+        "Flores-Botezatu Edyra-Alexia",
+        "Mitea Roberta-Elena",
+        "Stancu Patricia-Ioana",
+        "",
+        "Coordinating teacher:",
+        "Conf. Dr. Ing. Dan Mihail Caramihai"
+    };
+    int lines = sizeof(credentialsText)/sizeof(credentialsText[0]);
+    int fontSize = 20;
+    int spacing = 6;
+    int startY = modal.y + 60;
+    for (int i = 0; i < lines; i++) {
+        int textWidth = MeasureText(credentialsText[i], fontSize);
+        DrawText(credentialsText[i], modal.x + modal.width/2 - textWidth/2, startY + i*(fontSize+spacing), fontSize, BLACK);
+    }
+
+    // Buton BACK – rămâne centrat, puțin mai jos acum
+    Rectangle backBtn = {modal.x + modal.width/2 - 60, modal.y + modal.height - 50, 120, 34};
+    DrawRectangleRec(backBtn, LIGHTGRAY);
+    DrawRectangleLinesEx(backBtn, 2, DARKGRAY);
+    DrawText("BACK", backBtn.x + backBtn.width/2 - MeasureText("BACK", 18)/2, backBtn.y + 8, 18, BLACK);
+
+    // Închidere la click pe BACK
+    if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        Vector2 mouse = GetMousePosition();
+        if (CheckCollisionPointRec(mouse, backBtn)) {
+            showCredentials = false;
+        }
+    }
+}
+
         }
 
         // ------------------ MENU ------------------
