@@ -313,13 +313,13 @@ void validate_answer(int result, int* score, SNAKE* snake, FOOD* food) {
     if (result == 1) {
         *score += 10;
         grow_snake(snake);
-        snprintf(feedbackMessage, sizeof(feedbackMessage), "Raspuns corect! +10 puncte.");
+        snprintf(feedbackMessage, sizeof(feedbackMessage), "Right answer! +10 points.");
         feedbackColor = GREEN;
     } else {
         *score -= 5;
         if (*score < 0) *score = 0;
         shrink_snake(snake);
-        snprintf(feedbackMessage, sizeof(feedbackMessage), "Raspuns gresit! -5 puncte.");
+        snprintf(feedbackMessage, sizeof(feedbackMessage), "Wrong answer! -5 points.");
         feedbackColor = RED;
     }
     *food = spawn_food(snake);

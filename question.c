@@ -223,7 +223,7 @@ void draw_question(QuestionNode* q) {
     char* saveptr;
     char* firstLine = strtok_r(questionCopy, "\n", &saveptr);
     //DrawText(firstLine, screenWidth / 2 - MeasureText(firstLine, 22) / 2, 100, 22, DARKGRAY);
-    DrawTextManualWrap(firstLine, screenWidth / 2 - 400, 100, 800, 30, RAYWHITE);
+    DrawTextManualWrap(firstLine, screenWidth / 2 - 400, 100, 800, 30, GOLD);
 
     // Extrage și afișează răspunsurile cu butoane A, B, C, D
     int y = 250;
@@ -263,7 +263,7 @@ void draw_question(QuestionNode* q) {
         DrawText(letter, letterBox.x + (boxWidth - letterWidth) / 2, letterBox.y + (boxHeight - 28) / 2, 28, DARKBLUE);
 
         // Desenează textul răspunsului lângă buton
-        DrawTextManualWrap(line, letterBox.x + boxWidth + 20, letterBox.y + 5, 700, 20, RAYWHITE);
+        DrawTextManualWrap(line, letterBox.x + boxWidth + 20, letterBox.y + 5, 700, 20, GOLD);
     }
 
     // Poți returna answerBoxes dacă vrei să le folosești pentru input cu mouse-ul

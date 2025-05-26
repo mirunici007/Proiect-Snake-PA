@@ -84,16 +84,16 @@ void draw_menu(GAME_STATE *state)
     Rectangle back_to_start_page = {width / 2 - 150, 600, 300, 50};
 
     DrawRectangleRec(instructions_button, DARKBLUE);
-    DrawText("Instructions", instructions_button.x + instructions_button.width / 2 - MeasureText("Instructions", 20) / 2, instructions_button.y + 15, 20, RAYWHITE);
+    DrawText("Instructions", instructions_button.x + instructions_button.width / 2 - MeasureText("Instructions", 20) / 2, instructions_button.y + 15, 20, GOLD);
 
     DrawRectangleRec(highscores_button, ORANGE);
-    DrawText("Highscores", highscores_button.x + highscores_button.width / 2 - MeasureText("Highscores", 20) / 2, highscores_button.y + 15, 20, RAYWHITE);
+    DrawText("Highscores", highscores_button.x + highscores_button.width / 2 - MeasureText("Highscores", 20) / 2, highscores_button.y + 15, 20, BLACK);
 
     DrawRectangleRec(settings_button, DARKGRAY);
-    DrawText("Settings", settings_button.x + settings_button.width / 2 - MeasureText("Settings", 20) / 2, settings_button.y + 15, 20, RAYWHITE);
+    DrawText("Settings", settings_button.x + settings_button.width / 2 - MeasureText("Settings", 20) / 2, settings_button.y + 15, 20, GOLD);
 
     DrawRectangleRec(back_to_start_page, RED);
-    DrawText("Back to Start Page", back_to_start_page.x + back_to_start_page.width / 2 - MeasureText("Back to Start Page", 20) / 2, back_to_start_page.y + 15, 20, RAYWHITE);
+    DrawText("Back to Start Page", back_to_start_page.x + back_to_start_page.width / 2 - MeasureText("Back to Start Page", 20) / 2, back_to_start_page.y + 15, 20, GOLD);
 }
 
 void draw_instructions(GAME_STATE *state)
@@ -108,7 +108,7 @@ void draw_instructions(GAME_STATE *state)
 
     Rectangle back_button = {width / 2 - 75, height / 2 + 100, 150, 40};
     DrawRectangleRec(back_button, DARKBLUE);
-    DrawText("Back to Menu", back_button.x + back_button.width / 2 - MeasureText("Back to Menu", 20) / 2, back_button.y + 10, 20, RAYWHITE);
+    DrawText("Back to Menu", back_button.x + back_button.width / 2 - MeasureText("Back to Menu", 20) / 2, back_button.y + 10, 20, GOLD);
 
     if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && CheckCollisionPointRec(GetMousePosition(), back_button))
     {
@@ -141,7 +141,7 @@ void draw_highscores(GAME_STATE *state)
 
     Rectangle back_button = {width / 2 - 75, height / 2 + 100, 150, 40};
     DrawRectangleRec(back_button, DARKBLUE);
-    DrawText("Back to Menu", back_button.x + back_button.width / 2 - MeasureText("Back to Menu", 20) / 2, back_button.y + 10, 20, RAYWHITE);
+    DrawText("Back to Menu", back_button.x + back_button.width / 2 - MeasureText("Back to Menu", 20) / 2, back_button.y + 10, 20, GOLD);
 
     if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && CheckCollisionPointRec(GetMousePosition(), back_button))
     {
@@ -182,7 +182,7 @@ void handle_menu_input(GAME_STATE *state)
 
 void draw_congrats_if_milestone(int score, int milestone, int screenWidth, int screenHeight) {
     if (score > milestone) {
-        const char *message = "what a shame=((( but congrats! over 100 points for you '0' You're the biggest nerd!";
+        const char *message = "what a shame=((( but congrats! over 100 points for you.";
         int fontSize = 20;
         int textWidth = MeasureText(message, fontSize);
         int x = screenWidth / 2 - textWidth / 2;
@@ -224,7 +224,7 @@ void draw_settings(GAME_STATE *state, float *volume)
     // Buton back
     Rectangle back_button = {width / 2 - 75, height / 2 + 100, 150, 40};
     DrawRectangleRec(back_button, DARKGRAY);
-    DrawText("Back to Menu", back_button.x + back_button.width / 2 - MeasureText("Back to Menu", 20) / 2, back_button.y + 10, 20, RAYWHITE);
+    DrawText("Back to Menu", back_button.x + back_button.width / 2 - MeasureText("Back to Menu", 20) / 2, back_button.y + 10, 20, GOLD);
 
     if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && CheckCollisionPointRec(mouse, back_button)) {
         *state = STATE_MENU;
