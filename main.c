@@ -154,6 +154,7 @@ int main(void)
                 }
             }
 
+
             // Exit confirmation tab
             if (showExitConfirmation)
             {
@@ -467,6 +468,9 @@ int main(void)
             // Actualizare culoare pentru textul "Press R to restart" și "Press ESC to return to menu"
             DrawText("Press R to restart", currentWidth / 2 - MeasureText("Press R to restart", 20) / 2, currentHeight / 2 + 10, 20, scoreColor);
             DrawText("Press ESC to return to menu", currentWidth / 2 - MeasureText("Press ESC to return to menu", 20) / 2, currentHeight / 2 + 40, 20, scoreColor);
+
+            //afisare mesaj la depasire 100 de puncte
+            draw_congrats_if_milestone(score, 100, currentWidth, currentHeight);
 
             if (IsKeyPressed(KEY_R))
             {
