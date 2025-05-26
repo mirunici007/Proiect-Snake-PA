@@ -170,3 +170,15 @@ void handle_menu_input(GAME_STATE *state)
         }
     }
 }
+
+void draw_congrats_if_milestone(int score, int milestone, int screenWidth, int screenHeight) {
+    if (score > milestone) {
+        const char *message = "what a shame=((( but congrats! over 100 points for you '0' You're the biggest nerd!";
+        int fontSize = 20;
+        int textWidth = MeasureText(message, fontSize);
+        int x = screenWidth / 2 - textWidth / 2;
+        int y = screenHeight / 2 + 70;
+
+        DrawText(message, x, y, fontSize, GOLD);
+    }
+}
