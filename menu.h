@@ -19,4 +19,6 @@ void draw_highscores(GAME_STATE *state);
 
 void draw_congrats_if_milestone(int score, int milestone, int screenWidth, int screenHeight);
 
+void draw_settings(GAME_STATE *state, float *volume);
+
 #endif

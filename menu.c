@@ -80,13 +80,17 @@ void draw_menu(GAME_STATE *state)
 
     Rectangle instructions_button = {width / 2 - 150, 320, 300, 50};
     Rectangle highscores_button = {width / 2 - 150, 390, 300, 50};
-    Rectangle back_to_start_page = {width / 2 - 150, 530, 300, 50};
+    Rectangle settings_button = {width / 2 - 150, 530, 300, 50};
+    Rectangle back_to_start_page = {width / 2 - 150, 600, 300, 50};
 
     DrawRectangleRec(instructions_button, DARKBLUE);
     DrawText("Instructions", instructions_button.x + instructions_button.width / 2 - MeasureText("Instructions", 20) / 2, instructions_button.y + 15, 20, RAYWHITE);
 
     DrawRectangleRec(highscores_button, ORANGE);
     DrawText("Highscores", highscores_button.x + highscores_button.width / 2 - MeasureText("Highscores", 20) / 2, highscores_button.y + 15, 20, RAYWHITE);
+
+    DrawRectangleRec(settings_button, DARKGRAY);
+    DrawText("Settings", settings_button.x + settings_button.width / 2 - MeasureText("Settings", 20) / 2, settings_button.y + 15, 20, RAYWHITE);
 
     DrawRectangleRec(back_to_start_page, RED);
     DrawText("Back to Start Page", back_to_start_page.x + back_to_start_page.width / 2 - MeasureText("Back to Start Page", 20) / 2, back_to_start_page.y + 15, 20, RAYWHITE);
@@ -152,7 +156,8 @@ void handle_menu_input(GAME_STATE *state)
 
     Rectangle instructions_button = {width / 2 - 150, 320, 300, 50};
     Rectangle highscores_button = {width / 2 - 150, 390, 300, 50};
-    Rectangle back_to_start_page = {width / 2 - 150, 530, 300, 50};
+    Rectangle settings_button = {width / 2 - 150, 530, 300, 50};
+    Rectangle back_to_start_page = {width / 2 - 150, 600, 300, 50};
 
     if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
     {
@@ -163,6 +168,10 @@ void handle_menu_input(GAME_STATE *state)
         else if (CheckCollisionPointRec(mouse, highscores_button))
         {
             *state = STATE_HIGHSCORES;
+        }
+        else if(CheckCollisionPointRec(mouse, settings_button))
+        {
+            *state = STATE_SETTINGS;
         }
         else if (CheckCollisionPointRec(mouse, back_to_start_page))
         {
@@ -180,5 +189,44 @@ void draw_congrats_if_milestone(int score, int milestone, int screenWidth, int s
         int y = screenHeight / 2 + 70;
 
         DrawText(message, x, y, fontSize, GOLD);
+    }
+}
+
+void draw_settings(GAME_STATE *state, float *volume)
+{
+    int width = GetScreenWidth();
+    int height = GetScreenHeight();
+
+    DrawText("Settings", width / 2 - MeasureText("Settings", 40) / 2, height / 2 - 100, 40, textColor);
+
+    // Bară volum
+    Rectangle volumeBar = {width / 2 - 100, height / 2, 200, 20};
+    float handleRadius = 12;
+    float handleX = volumeBar.x + (*volume) * volumeBar.width;
+
+    DrawRectangleRec(volumeBar, LIGHTGRAY);
+    DrawRectangle(volumeBar.x, volumeBar.y, (*volume) * volumeBar.width, volumeBar.height, GREEN);
+    DrawCircle((int)handleX, volumeBar.y + volumeBar.height / 2, handleRadius, DARKGREEN);
+
+    // Drag volum
+    Vector2 mouse = GetMousePosition();
+    if (IsMouseButtonDown(MOUSE_LEFT_BUTTON) && CheckCollisionPointRec(mouse, volumeBar)) {
+        float percent = (mouse.x - volumeBar.x) / volumeBar.width;
+        if (percent < 0.0f) percent = 0.0f;
+        if (percent > 1.0f) percent = 1.0f;
+        *volume = percent;
+    }
+
+    char volumeText[32];
+    sprintf(volumeText, "Volume: %d%%", (int)(*volume * 100));
+    DrawText(volumeText, width / 2 - MeasureText(volumeText, 20) / 2, height / 2 + 40, 20, textColor);
+
+    // Buton back
+    Rectangle back_button = {width / 2 - 75, height / 2 + 100, 150, 40};
+    DrawRectangleRec(back_button, DARKGRAY);
+    DrawText("Back to Menu", back_button.x + back_button.width / 2 - MeasureText("Back to Menu", 20) / 2, back_button.y + 10, 20, RAYWHITE);
+
+    if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && CheckCollisionPointRec(mouse, back_button)) {
+        *state = STATE_MENU;
     }
 }

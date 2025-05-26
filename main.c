@@ -9,6 +9,7 @@
 
 int score = 0;
 int foodsEaten = 0;  // Număr mâncăruri mâncate
+float volume = 1.0f; // Volum implicit 100%
 
 Color LIGHTGREEN = (Color){152, 237, 66, 255};  
  
@@ -49,6 +50,7 @@ void updateColorsBasedOnTheme()
         scoreColor = BLACK; // Black score for light theme
     }
 }
+
 
 int main(void)
 {
@@ -98,8 +100,8 @@ int main(void)
             float scaleX = (float)currentWidth / startBg.width;
             float scaleY = (float)currentHeight / startBg.height;
             DrawTextureEx(startBg, (Vector2){0,0}, 0.0f, fmaxf(scaleX, scaleY), WHITE);
-            
-// Poziționare pentru colțul din dreapta sus
+
+            // Poziționare pentru colțul din dreapta sus
 int cx = currentWidth - 80;
 int cy = 80;
 
@@ -144,13 +146,13 @@ if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
 }
 
             // Eliminat titlul "Snake Game"
+
             // Mută butoanele mai jos
             int btnY = 260; // valoare mai mare pentru a le coborî
             Rectangle startBtn = {currentWidth / 2 - 150, btnY, 300, 50};
             Rectangle menuBtn  = {currentWidth / 2 - 150, btnY + 70, 300, 50};
             Rectangle credentialsBtn = {currentWidth / 2 - 150, btnY + 140, 300, 50};
-            Rectangle settingsBtn = {currentWidth / 2 - 150, btnY + 210, 300, 50}; // NOUL BUTON
-            Rectangle exitBtn  = {currentWidth / 2 - 150, btnY + 280, 300, 50};
+            Rectangle exitBtn  = {currentWidth / 2 - 150, btnY + 210, 300, 50};
 
             DrawRectangleRec(startBtn, buttonColor);
             DrawText("START", startBtn.x + startBtn.width / 2 - MeasureText("START", 20) / 2, startBtn.y + 15, 20, textColor);
@@ -160,9 +162,6 @@ if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
 
             DrawRectangleRec(credentialsBtn, YELLOW);
             DrawText("CREDENTIALS", credentialsBtn.x + credentialsBtn.width / 2 - MeasureText("CREDENTIALS", 20) / 2, credentialsBtn.y + 15, 20, BLACK);
-
-            DrawRectangleRec(settingsBtn, ORANGE); // Poți alege orice culoare
-            DrawText("SETTINGS", settingsBtn.x + settingsBtn.width / 2 - MeasureText("SETTINGS", 20) / 2, settingsBtn.y + 15, 20, BLACK);
 
             DrawRectangleRec(exitBtn, RED);
             DrawText("EXIT", exitBtn.x + exitBtn.width / 2 - MeasureText("EXIT", 20) / 2, exitBtn.y + 15, 20, RAYWHITE);
@@ -199,10 +198,6 @@ if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
                 else if (CheckCollisionPointRec(mouse, exitBtn))
                 {
                     showExitConfirmation = true; // Show confirmation tab
-                }
-                else if (CheckCollisionPointRec(mouse, settingsBtn))
-                {
-                    state = STATE_SETTINGS;
                 }
             }
 
@@ -350,7 +345,10 @@ if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
             if (moveTimer >= moveInterval)
             {
                 move_snake(snake, food.x, food.y);
-
+                if (snake->head->coord_x < 0 || snake->head->coord_x >= SCREEN_WIDTH ||
+                    snake->head->coord_y < 0 || snake->head->coord_y >= SCREEN_HEIGHT) {
+                    state = STATE_GAME_OVER;
+                }
                 // Verificare și procesare coliziune mâncare cu flag corect
                 if(check_food_collision(snake, food.x, food.y) && !foodJustEaten)
                 {
@@ -362,6 +360,7 @@ if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
                     selectRandomQuestion();
                     foodJustEaten = true;   // Blocăm dubla detectare până la următoarea mișcare
 
+                    
                 }
                 else if (!check_food_collision(snake, food.x, food.y))
                 {
@@ -505,6 +504,15 @@ if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
         {
             draw_highscores(&state);
         }
+else if (state == STATE_SETTINGS)
+{
+    draw_settings(&state, &volume);
+    SetMusicVolume(bgMusic, muted ? 0.0f : volume); // Dacă e pe mute, volumul e 0, altfel e cel ales
+    SetSoundVolume(rightSound, muted ? 0.0f : volume);
+    SetSoundVolume(wrongSound, muted ? 0.0f : volume);
+    SetSoundVolume(gameOverSound, muted ? 0.0f : volume);
+}
+
         // ------------------ GAME OVER ------------------
         else if (state == STATE_GAME_OVER)
         {
@@ -561,10 +569,10 @@ if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
     }
 }
 UpdateMusicStream(bgMusic); // Pune asta la fiecare frame!
-SetMusicVolume(bgMusic, muted ? 0.0f : 1.0f);
-SetSoundVolume(rightSound, muted ? 0.0f : 1.0f);
-SetSoundVolume(wrongSound, muted ? 0.0f : 1.0f);
-SetSoundVolume(gameOverSound, muted ? 0.0f : 1.0f);
+SetMusicVolume(bgMusic, muted ? 0.0f : volume);
+SetSoundVolume(rightSound, muted ? 0.0f : volume);
+SetSoundVolume(wrongSound, muted ? 0.0f : volume);
+SetSoundVolume(gameOverSound, muted ? 0.0f : volume);
 
         EndDrawing();
     }
