@@ -10,6 +10,11 @@
 int score = 0;
 int foodsEaten = 0;  // Număr mâncăruri mâncate
 
+Color LIGHTGREEN = (Color){152, 237, 66, 255};  
+ 
+
+
+
 FOOD food;
 
 char feedbackMessage[64] = "";
@@ -67,7 +72,16 @@ int main(void)
     load_highscores();
     initQuestions();
     Texture2D foodTexture = LoadTexture("textures/apple.png");
-    Texture2D startBg = LoadTexture("textures/snake.jpg");
+    Texture2D startBg = LoadTexture("textures/BACKGROUND.jpg");
+    Texture2D grassBg = LoadTexture("textures/GRASS.jpg");
+    
+    InitAudioDevice();
+    Music bgMusic = LoadMusicStream("textures/MUSIC.mp3");
+    Sound rightSound = LoadSound("textures/RIGHT.wav");
+    Sound wrongSound = LoadSound("textures/WRONG.wav");
+    Sound gameOverSound = LoadSound("textures/GAME_OVER.wav");
+    
+    static bool playedGameOverSound = false;
     while (!WindowShouldClose())
     {
         int currentWidth = GetScreenWidth();
@@ -83,20 +97,22 @@ int main(void)
             float scaleY = (float)currentHeight / startBg.height;
             DrawTextureEx(startBg, (Vector2){0,0}, 0.0f, fmaxf(scaleX, scaleY), WHITE);
 
-            DrawText("Snake Game", currentWidth / 2 - MeasureText("Snake Game", 40) / 2, 100, 40, textColor);
+            DrawText("Snake Game", currentWidth / 2 - MeasureText("Snake Game", 40) / 2, 100, 40, BLACK);
 
-            Rectangle startBtn = {currentWidth / 2 - 150, 320, 300, 50};
-            Rectangle menuBtn  = {currentWidth / 2 - 150, 390, 300, 50};
-            Rectangle exitBtn  = {currentWidth / 2 - 150, 460, 300, 50};
+            Rectangle startBtn = {currentWidth / 2 - 150, 160, 300, 50};
+            Rectangle menuBtn  = {currentWidth / 2 - 150, 230, 300, 50};
+            Rectangle exitBtn  = {currentWidth / 2 - 150, 300, 300, 50};
 
             DrawRectangleRec(startBtn, buttonColor);
             DrawText("START", startBtn.x + startBtn.width / 2 - MeasureText("START", 20) / 2, startBtn.y + 15, 20, textColor);
 
-            DrawRectangleRec(menuBtn, menuButtonColor); // Use fixed menu button color
+            DrawRectangleRec(menuBtn, menuButtonColor);
             DrawText("MENU", menuBtn.x + menuBtn.width / 2 - MeasureText("MENU", 20) / 2, menuBtn.y + 15, 20, textColor);
 
             DrawRectangleRec(exitBtn, RED);
             DrawText("EXIT", exitBtn.x + exitBtn.width / 2 - MeasureText("EXIT", 20) / 2, exitBtn.y + 15, 20, RAYWHITE);
+
+            
 
             if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
             {
@@ -192,6 +208,10 @@ int main(void)
         // ------------------ GAME ------------------
         else if (state == STATE_RUNNING)
         {
+            float scaleX = (float)currentWidth / grassBg.width;
+            float scaleY = (float)currentHeight / grassBg.height;
+            DrawTextureEx(grassBg, (Vector2){0,0}, 0.0f, fmaxf(scaleX, scaleY), WHITE);
+
             if (IsKeyPressed(KEY_P))
             {
                 state = STATE_PAUSED;
@@ -325,6 +345,13 @@ int main(void)
                 for (int i = 0; i < 4; i++) {
                     if (CheckCollisionPointRec(mouse, answerBoxes[i]) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
                         int result = ((i + 1) == currentQuestion->data.correctAnswer) ? 1 : 0;
+                        if (result == 1) {
+                            PlaySound(rightSound);
+                            // ... restul codului pentru răspuns corect ...
+                        } else {
+                            PlaySound(wrongSound);
+                            // ... restul codului pentru răspuns greșit ...
+                        }
                         validate_answer(result, &score, snake, &food); // vezi mai jos funcția
                         state = STATE_RUNNING;
                         break;
@@ -349,6 +376,11 @@ int main(void)
         // ------------------ GAME OVER ------------------
         else if (state == STATE_GAME_OVER)
         {
+            if (!playedGameOverSound) {
+        PlaySound(gameOverSound);
+        playedGameOverSound = true;
+    }
+
             update_highscores(score);
 
             DrawText("Game Over", currentWidth / 2 - MeasureText("Game Over", 30) / 2, currentHeight / 2 - 30, 30, RED);
@@ -379,11 +411,33 @@ int main(void)
                 }
             }
         }
+        else
+        {
+            playedGameOverSound = false;
+        }
+
+        if (state != STATE_RUNNING) {
+    if (!IsMusicStreamPlaying(bgMusic)) {
+        PlayMusicStream(bgMusic);
+    }
+} else {
+    if (IsMusicStreamPlaying(bgMusic)) {
+        PauseMusicStream(bgMusic);
+    }
+}
+UpdateMusicStream(bgMusic); // Pune asta la fiecare frame!
+
         EndDrawing();
     }
 
     if (snake != NULL) free_snake(snake);
     UnloadTexture(startBg); // Unload the texture before closing
+    UnloadTexture(grassBg);
+    UnloadSound(rightSound);
+UnloadSound(wrongSound);
+UnloadSound(gameOverSound);
+UnloadMusicStream(bgMusic);
+CloseAudioDevice();
     CloseWindow();
 
     return 0;
