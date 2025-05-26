@@ -330,33 +330,47 @@ int main(void)
                 draw_question(currentQuestion);
 
                 // Extrage răspunsurile pentru hitboxuri
-                int screenWidth = GetScreenWidth();
-                int y = 160, boxWidth = 800, boxHeight = 70, spacing = 30;
-                Rectangle answerBoxes[4];
-                for (int i = 0; i < 4; i++) {
-                    answerBoxes[i].x = screenWidth / 2 - boxWidth / 2;
-                    answerBoxes[i].y = y + i * (boxHeight + spacing);
-                    answerBoxes[i].width = boxWidth;
-                    answerBoxes[i].height = boxHeight;
-                }
+                // int screenWidth = GetScreenWidth();
+                // int y = 160, boxWidth = 800, boxHeight = 70, spacing = 30;
+                // Rectangle answerBoxes[4];
+                // for (int i = 0; i < 4; i++) {
+                //     answerBoxes[i].x = screenWidth / 2 - boxWidth / 2;
+                //     answerBoxes[i].y = y + i * (boxHeight + spacing);
+                //     answerBoxes[i].width = boxWidth;
+                //     answerBoxes[i].height = boxHeight;
+                // }
 
-                // Mouse input
-                Vector2 mouse = GetMousePosition();
-                for (int i = 0; i < 4; i++) {
-                    if (CheckCollisionPointRec(mouse, answerBoxes[i]) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-                        int result = ((i + 1) == currentQuestion->data.correctAnswer) ? 1 : 0;
-                        if (result == 1) {
-                            PlaySound(rightSound);
-                            // ... restul codului pentru răspuns corect ...
-                        } else {
-                            PlaySound(wrongSound);
-                            // ... restul codului pentru răspuns greșit ...
-                        }
-                        validate_answer(result, &score, snake, &food); // vezi mai jos funcția
-                        state = STATE_RUNNING;
-                        break;
-                    }
-                }
+                // // Mouse input
+                // Vector2 mouse = GetMousePosition();
+                // for (int i = 0; i < 4; i++) {
+                //     if (CheckCollisionPointRec(mouse, answerBoxes[i]) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                //         int result = ((i + 1) == currentQuestion->data.correctAnswer) ? 1 : 0;
+                //         if (result == 1) {
+                //             PlaySound(rightSound);
+                //             // ... restul codului pentru răspuns corect ...
+                //         } else {
+                //             PlaySound(wrongSound);
+                //             // ... restul codului pentru răspuns greșit ...
+                //         }
+                //         validate_answer(result, &score, snake, &food); // vezi mai jos funcția
+                //         state = STATE_RUNNING;
+                //         break;
+                //     }
+                // }
+
+                        if (selectedAnswer != -1) {
+            int result = (selectedAnswer == currentQuestion->data.correctAnswer) ? 1 : 0;
+            if (result == 1) {
+                PlaySound(rightSound);
+                // ... restul codului pentru răspuns corect ...
+            } else {
+                PlaySound(wrongSound);
+                // ... restul codului pentru răspuns greșit ...
+            }
+            validate_answer(result, &score, snake, &food);
+            state = STATE_RUNNING;
+            selectedAnswer = -1; // Reset pentru următoarea întrebare
+        }
 
                 // Tastatură: A/B/C/D sau 1/2/3/4
                 // for (int i = 0; i < 4; i++) {

@@ -2,7 +2,8 @@
 #define QUESTIONS_H
 #include"raylib.h"
 
-#define MAX_TEXT 256
+#define MAX_TEXT 3000
+extern int selectedAnswer;
 
 typedef struct Question {
     char question[MAX_TEXT];
