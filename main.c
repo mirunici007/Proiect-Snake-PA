@@ -98,12 +98,14 @@ int main(void)
             float scaleY = (float)currentHeight / startBg.height;
             DrawTextureEx(startBg, (Vector2){0,0}, 0.0f, fmaxf(scaleX, scaleY), WHITE);
 
-            DrawText("Snake Game", currentWidth / 2 - MeasureText("Snake Game", 40) / 2, 100, 40, BLACK);
+            // Eliminat titlul "Snake Game"
 
-            Rectangle startBtn = {currentWidth / 2 - 150, 160, 300, 50};
-            Rectangle menuBtn  = {currentWidth / 2 - 150, 230, 300, 50};
-            Rectangle credentialsBtn = {currentWidth / 2 - 150, 300, 300, 50};
-            Rectangle exitBtn  = {currentWidth / 2 - 150, 370, 300, 50};
+            // Mută butoanele mai jos
+            int btnY = 260; // valoare mai mare pentru a le coborî
+            Rectangle startBtn = {currentWidth / 2 - 150, btnY, 300, 50};
+            Rectangle menuBtn  = {currentWidth / 2 - 150, btnY + 70, 300, 50};
+            Rectangle credentialsBtn = {currentWidth / 2 - 150, btnY + 140, 300, 50};
+            Rectangle exitBtn  = {currentWidth / 2 - 150, btnY + 210, 300, 50};
 
             DrawRectangleRec(startBtn, buttonColor);
             DrawText("START", startBtn.x + startBtn.width / 2 - MeasureText("START", 20) / 2, startBtn.y + 15, 20, textColor);
@@ -202,12 +204,12 @@ int main(void)
     // Textul (font mărit la 20px, spacing 6px)
     const char* credentialsText[] = {
         "Members:",
-        "Sardaru Andreea-Miruna",
-        "Paraschiv Georgiana-Simona",
-        "Dumitrescu Laura",
-        "Flores-Botezatu Edyra-Alexia",
-        "Mitea Roberta-Elena",
-        "Stancu Patricia-Ioana",
+        "Sardaru Andreea-Miruna(314AC)",
+        "Paraschiv Georgiana-Simona(314AC)",
+        "Dumitrescu Laura(314AC)",
+        "Flores-Botezatu Edyra-Alexia(314AC)",
+        "Mitea Roberta-Elena(314AC)",
+        "Stancu Patricia-Ioana(312AC)",
         "",
         "Coordinating teacher:",
         "Conf. Dr. Ing. Dan Mihail Caramihai"
