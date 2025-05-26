@@ -83,6 +83,7 @@ int main(void)
     Sound gameOverSound = LoadSound("textures/GAME_OVER.wav");
     
     static bool playedGameOverSound = false;
+    static bool muted = false;
     while (!WindowShouldClose())
     {
         int currentWidth = GetScreenWidth();
@@ -97,9 +98,52 @@ int main(void)
             float scaleX = (float)currentWidth / startBg.width;
             float scaleY = (float)currentHeight / startBg.height;
             DrawTextureEx(startBg, (Vector2){0,0}, 0.0f, fmaxf(scaleX, scaleY), WHITE);
+            
+// Poziționare pentru colțul din dreapta sus
+int cx = currentWidth - 80;
+int cy = 80;
+
+// Corp difuzor (dreptunghi GRI ÎNCHIS)
+DrawRectangle(cx - 14, cy - 10, 12, 20, BLACK);
+
+// Gura difuzorului (triunghi GRI ÎNCHIS)
+Vector2 tri[3] = {
+    {cx - 2, cy - 12},
+    {cx + 14, cy},
+    {cx - 2, cy + 12}
+};
+DrawTriangle(tri[0], tri[1], tri[2], BLACK);
+
+// Unde sonore (arce groase GRI ÎNCHIS)
+for (int i = 0; i < 2; i++) {
+    int arcRadius = 12 + i * 6;
+    int arcThickness = 3;
+    for (int t = 0; t < arcThickness; t++) {
+        DrawCircleLines(cx + 18, cy, arcRadius + t, BLACK);
+    }
+}
+
+// Linie roșie groasă dacă e pe mute
+if (muted) {
+    DrawLineEx(
+        (Vector2){cx - 16, cy - 16},
+        (Vector2){cx + 28, cy + 16},
+        5.0f, 
+        RED
+    );
+}
+
+// Detectează click pe o zonă dreptunghiulară din jurul iconiței
+Rectangle volumeHitbox = {cx - 20, cy - 20, 48, 40};
+if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+    Vector2 mouse = GetMousePosition();
+    if (CheckCollisionPointRec(mouse, volumeHitbox)) {
+        muted = !muted;
+        SetMusicVolume(bgMusic, muted ? 0.0f : 1.0f);
+    }
+}
 
             // Eliminat titlul "Snake Game"
-
             // Mută butoanele mai jos
             int btnY = 260; // valoare mai mare pentru a le coborî
             Rectangle startBtn = {currentWidth / 2 - 150, btnY, 300, 50};
@@ -509,6 +553,10 @@ int main(void)
     }
 }
 UpdateMusicStream(bgMusic); // Pune asta la fiecare frame!
+SetMusicVolume(bgMusic, muted ? 0.0f : 1.0f);
+SetSoundVolume(rightSound, muted ? 0.0f : 1.0f);
+SetSoundVolume(wrongSound, muted ? 0.0f : 1.0f);
+SetSoundVolume(gameOverSound, muted ? 0.0f : 1.0f);
 
         EndDrawing();
     }
