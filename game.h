@@ -13,15 +13,16 @@ extern int score;
 extern Color feedbackColor;
 
 typedef enum{
-    STATE_RUNNING,      //game running
-    STATE_MENU,     //game menu
-    STATE_START_PAGE,         //game start page
-    STATE_GAME_OVER,     //game over
-    STATE_PAUSED,  
-    STATE_QUESTION,  //game paused
-    STATE_INSTRUCTIONS, //game instructions
-    STATE_HIGHSCORES //game highscores
-}GAME_STATE;
+    STATE_START_PAGE,
+    STATE_MENU,
+    STATE_INSTRUCTIONS,
+    STATE_RUNNING,
+    STATE_PAUSED,
+    STATE_QUESTION,
+    STATE_HIGHSCORES,
+    STATE_GAME_OVER,
+    STATE_SETTINGS // <-- adaugă acest state nou
+} GAME_STATE;
 
 typedef enum {
     DIR_UP,

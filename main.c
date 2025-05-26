@@ -149,7 +149,8 @@ if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
             Rectangle startBtn = {currentWidth / 2 - 150, btnY, 300, 50};
             Rectangle menuBtn  = {currentWidth / 2 - 150, btnY + 70, 300, 50};
             Rectangle credentialsBtn = {currentWidth / 2 - 150, btnY + 140, 300, 50};
-            Rectangle exitBtn  = {currentWidth / 2 - 150, btnY + 210, 300, 50};
+            Rectangle settingsBtn = {currentWidth / 2 - 150, btnY + 210, 300, 50}; // NOUL BUTON
+            Rectangle exitBtn  = {currentWidth / 2 - 150, btnY + 280, 300, 50};
 
             DrawRectangleRec(startBtn, buttonColor);
             DrawText("START", startBtn.x + startBtn.width / 2 - MeasureText("START", 20) / 2, startBtn.y + 15, 20, textColor);
@@ -157,8 +158,11 @@ if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
             DrawRectangleRec(menuBtn, menuButtonColor);
             DrawText("MENU", menuBtn.x + menuBtn.width / 2 - MeasureText("MENU", 20) / 2, menuBtn.y + 15, 20, textColor);
 
-            DrawRectangleRec(credentialsBtn, GRAY);
+            DrawRectangleRec(credentialsBtn, YELLOW);
             DrawText("CREDENTIALS", credentialsBtn.x + credentialsBtn.width / 2 - MeasureText("CREDENTIALS", 20) / 2, credentialsBtn.y + 15, 20, BLACK);
+
+            DrawRectangleRec(settingsBtn, ORANGE); // Poți alege orice culoare
+            DrawText("SETTINGS", settingsBtn.x + settingsBtn.width / 2 - MeasureText("SETTINGS", 20) / 2, settingsBtn.y + 15, 20, BLACK);
 
             DrawRectangleRec(exitBtn, RED);
             DrawText("EXIT", exitBtn.x + exitBtn.width / 2 - MeasureText("EXIT", 20) / 2, exitBtn.y + 15, 20, RAYWHITE);
@@ -195,6 +199,10 @@ if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
                 else if (CheckCollisionPointRec(mouse, exitBtn))
                 {
                     showExitConfirmation = true; // Show confirmation tab
+                }
+                else if (CheckCollisionPointRec(mouse, settingsBtn))
+                {
+                    state = STATE_SETTINGS;
                 }
             }
 
