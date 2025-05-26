@@ -8,7 +8,6 @@
 #include <math.h>
 
 int score = 0;
-int foodsEaten = 0;  // Număr mâncăruri mâncate
 
 Color LIGHTGREEN = (Color){152, 237, 66, 255};  
  
@@ -113,7 +112,7 @@ int main(void)
             DrawRectangleRec(menuBtn, menuButtonColor);
             DrawText("MENU", menuBtn.x + menuBtn.width / 2 - MeasureText("MENU", 20) / 2, menuBtn.y + 15, 20, textColor);
 
-            DrawRectangleRec(credentialsBtn, GRAY);
+            DrawRectangleRec(credentialsBtn, YELLOW);
             DrawText("CREDENTIALS", credentialsBtn.x + credentialsBtn.width / 2 - MeasureText("CREDENTIALS", 20) / 2, credentialsBtn.y + 15, 20, BLACK);
 
             DrawRectangleRec(exitBtn, RED);
@@ -135,7 +134,6 @@ int main(void)
                     food.x = GetRandomValue(0, 39) * 20;
                     food.y = GetRandomValue(0, 22) * 20;
                     score = 0;
-                    foodsEaten = 0;     // Resetare număr mâncăruri
                     state = STATE_RUNNING;
                     moveTimer = 0.0f;
                     foodJustEaten = false;  // Reset flag
@@ -220,7 +218,9 @@ int main(void)
     int startY = modal.y + 60;
     for (int i = 0; i < lines; i++) {
         int textWidth = MeasureText(credentialsText[i], fontSize);
-        DrawText(credentialsText[i], modal.x + modal.width/2 - textWidth/2, startY + i*(fontSize+spacing), fontSize, BLACK);
+        // Scrie cu roșu "Members:" și "Coordinating teacher:"
+        Color lineColor = ((i == 0) || (i == 8)) ? RED : BLACK;
+        DrawText(credentialsText[i], modal.x + modal.width/2 - textWidth/2, startY + i*(fontSize+spacing), fontSize, lineColor);
     }
 
     // Buton BACK – rămâne centrat, puțin mai jos acum
@@ -303,7 +303,7 @@ int main(void)
                 {
                     grow_snake(snake);
                     score += 10;
-                    foodsEaten++;           // Incrementare număr mâncăruri mâncate
+                    
                     // food = spawn_food(snake);
                     state = STATE_QUESTION;         // <-- Treci în starea de întrebare!
                     selectRandomQuestion();
@@ -336,10 +336,6 @@ int main(void)
             char scoreText[32];
             sprintf(scoreText, "Score: %d", score);
             DrawText(scoreText, 10, 10, 25, scoreColor); // Font size increased to 25
-
-            char foodText[32];
-            sprintf(foodText, "Foods eaten: %d", foodsEaten);
-            DrawText(foodText, 10, 40, 20, ORANGE);
 
             if (feedbackTimer > 0.0f && feedbackMessage[0] != '\0') {
                 int fontSize = 24;
@@ -457,7 +453,6 @@ int main(void)
             if (IsKeyPressed(KEY_R))
             {
                 reset_game(&snake, &score);
-                foodsEaten = 0;  // Reset număr mâncăruri
                 
                 food.x = GetRandomValue(0, 39) * 20;
                 food.y = GetRandomValue(0, 22) * 20;
