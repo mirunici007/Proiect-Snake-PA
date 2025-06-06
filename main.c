@@ -60,7 +60,7 @@ int main(void)
     food.y = 0;
 
     float moveTimer = 0.0f;
-    float moveInterval = 0.25f; 
+    float moveInterval = 0.20f; 
 
     bool showExitConfirmation = false; 
     bool foodJustEaten = false;
