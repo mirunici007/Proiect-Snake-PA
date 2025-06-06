@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "snake.h"
+#include "game.h"
 
 //declaring the functions
 
@@ -110,15 +111,18 @@ void move_snake(SNAKE *snake, int food_x, int food_y) {
         default: break;
     }
 
+    // Handle screen wrapping
+    if (prev_x < 0) prev_x = SCREEN_WIDTH - SEGMENT_SIZE;
+    if (prev_x >= SCREEN_WIDTH) prev_x = 0;
+    if (prev_y < 0) prev_y = SCREEN_HEIGHT - SEGMENT_SIZE;
+    if (prev_y >= SCREEN_HEIGHT) prev_y = 0;
+
     // Creează un nou cap
     SEGM *new_head = create_segment(prev_x, prev_y);
     new_head->next = snake->head;
     snake->head = new_head;
 
     // Dacă mănâncă mâncarea, crește lungimea
-    // if (check_food_collision(snake, food_x, food_y)) {
-    //     snake->length++;
-    // } 
     if (!check_food_collision(snake, food_x, food_y)){
         // Elimină coada DOAR dacă numărul de segmente depășește snake->length
         int count = 1;

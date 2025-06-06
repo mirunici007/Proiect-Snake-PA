@@ -3,14 +3,28 @@
 
 #include "snake.h"
 #include "food.h"
+#include <raylib.h>
 
 // screen size
 #define SCREEN_WIDTH 1000
 #define SCREEN_HEIGHT 700
 
+// Theme definitions
+typedef enum {
+    THEME_LIGHT,
+    THEME_DARK
+} THEME;
+
 //external variables
 extern int score;
 extern Color feedbackColor;
+extern char feedbackMessage[64];
+extern float feedbackTimer;
+extern THEME currentTheme;
+extern Color bgColor;
+extern Color textColor;
+extern Color buttonColor;
+extern Color menuButtonColor;
 
 typedef enum{
     STATE_START_PAGE,
@@ -19,9 +33,8 @@ typedef enum{
     STATE_RUNNING,
     STATE_PAUSED,
     STATE_QUESTION,
-    STATE_HIGHSCORES,
     STATE_GAME_OVER,
-    STATE_SETTINGS // <-- adaugă acest state nou
+    STATE_SETTINGS
 } GAME_STATE;
 
 typedef enum {
@@ -34,37 +47,17 @@ typedef enum {
 typedef struct {
     GAME_STATE state;
     Direction dir;
-    // add other fields like score, snake, etc.
 } Game;
 
-//function declarations
-
-//initializes the score to 0
+// Function declarations
 void init_game(SNAKE **snake, int *score);
-
-// Updates the game state (movement, collisions, etc.)
 void update_game(SNAKE *snake, int *score, GAME_STATE *state, FOOD *food);
-
-// Resets the game after Game Over
 void reset_game(SNAKE **snake, int *score);
-
-// Checks for collisions (self-collision or boundary collision)
 int check_collisions(SNAKE *snake);
-
-// Applies the result of a question (score changes, game state updates, etc.)
- //void apply_question_result(SNAKE *snake, int *score, int result);
-
-// // Generates food at a random position
-// void generate_food(SNAKE *snake, int *food_x, int *food_y);
-
-// // Renders the game state (snake, food, score, etc.)
-void draw_pause_page();
-
-void draw_pause_button();
-
-// // Handles user input for controlling the snake
+void draw_pause_page(void);
+void draw_pause_button(void);
 void handle_input(SNAKE *snake, GAME_STATE *state, int *score);
-
 void validate_answer(int result, int* score, SNAKE* snake, FOOD* food);
+void updateColorsBasedOnTheme(void);
 
 #endif // GAME_H
