@@ -174,7 +174,6 @@ if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
                     int midY = currentHeight / 2;
 
                     snake = create_snake((midX / 20)* CELL_SIZE, (midY / 20)*CELL_SIZE);
-                    
 
                     food.x = GetRandomValue(0, 39) * 20;
                     food.y = GetRandomValue(0, 22) * 20;
@@ -182,6 +181,8 @@ if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
                     state = STATE_RUNNING;
                     moveTimer = 0.0f;
                     foodJustEaten = false;  // Reset flag
+                    feedbackMessage[0] = '\0'; // Șterge feedback-ul la start joc nou
+                    feedbackTimer = 0.0f;
                 }
                 else if (CheckCollisionPointRec(mouse, menuBtn))
                 {
@@ -466,6 +467,8 @@ if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
                 state = STATE_RUNNING;
                 moveTimer = 0.0f;
                 foodJustEaten = false;
+                feedbackMessage[0] = '\0';   // Șterge textul de feedback la restart
+    feedbackTimer = 0.0f;        // Oprește timerul de feedback
             }
 
             if (IsKeyPressed(KEY_ESCAPE))
@@ -476,6 +479,8 @@ if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
                     free_snake(snake);
                     snake = NULL;
                 }
+                feedbackMessage[0] = '\0'; // Șterge feedback-ul la revenirea în meniu
+    feedbackTimer = 0.0f;
             }
         }
 
