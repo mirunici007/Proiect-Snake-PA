@@ -321,10 +321,10 @@ if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
             float scaleY = (float)currentHeight / grassBg.height;
             DrawTextureEx(grassBg, (Vector2){0,0}, 0.0f, fmaxf(scaleX, scaleY), WHITE);
 
-            if (IsKeyPressed(KEY_P))
-            {
-                state = STATE_PAUSED;
-            }
+            if (IsKeyPressed(KEY_P) || IsKeyPressed(KEY_ESCAPE))
+{
+    state = STATE_PAUSED;
+}
 
             Rectangle pausebutton = {SCREEN_WIDTH - 110, 10, 100, 40};
             if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && CheckCollisionPointRec(GetMousePosition(), pausebutton))
