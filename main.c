@@ -138,7 +138,7 @@ if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
     Vector2 mouse = GetMousePosition();
     if (CheckCollisionPointRec(mouse, volumeHitbox)) {
         muted = !muted;
-        SetMusicVolume(bgMusic, muted ? 0.0f : 1.0f);
+        // Nu mai seta volumul aici, se va seta la fiecare frame!
     }
 }
 
@@ -444,6 +444,8 @@ if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
         {
             draw_settings(&state, &volume);
             SetMusicVolume(bgMusic, muted ? 0.0f : volume);
+            SetMusicVolume(runningMusic, muted ? 0.0f : volume);
+            SetMusicVolume(questionMusic, muted ? 0.0f : volume);
             SetSoundVolume(rightSound, muted ? 0.0f : volume);
             SetSoundVolume(wrongSound, muted ? 0.0f : volume);
             SetSoundVolume(gameOverSound, muted ? 0.0f : volume);
@@ -514,6 +516,8 @@ if (state == STATE_QUESTION) {
         UpdateMusicStream(questionMusic);
 
         SetMusicVolume(bgMusic, muted ? 0.0f : volume);
+SetMusicVolume(runningMusic, muted ? 0.0f : volume);
+SetMusicVolume(questionMusic, muted ? 0.0f : volume);
 SetSoundVolume(rightSound, muted ? 0.0f : volume);
 SetSoundVolume(wrongSound, muted ? 0.0f : volume);
 SetSoundVolume(gameOverSound, muted ? 0.0f : volume);
