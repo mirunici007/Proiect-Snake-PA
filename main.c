@@ -74,6 +74,7 @@ int main(void)
     InitAudioDevice();
     Music bgMusic = LoadMusicStream("textures/MUSIC.mp3");
     Music runningMusic = LoadMusicStream("textures/RUNNING_MUSIC.mp3");
+    Music questionMusic = LoadMusicStream("textures/QUESTION.mp3");
     Sound rightSound = LoadSound("textures/RIGHT.wav");
     Sound wrongSound = LoadSound("textures/WRONG.mp3");
     Sound gameOverSound = LoadSound("textures/GAME_OVER.wav");
@@ -483,9 +484,12 @@ if (state == STATE_QUESTION) {
     if (IsMusicStreamPlaying(runningMusic)) PauseMusicStream(runningMusic);
 
     // Pornește doar questionMusic dacă nu rulează deja
-    
+    if (!IsMusicStreamPlaying(questionMusic)) {
+        PlayMusicStream(questionMusic);
+    }
 } else {
-    
+    // Pune pe pauză questionMusic dacă nu ești în STATE_QUESTION
+    if (IsMusicStreamPlaying(questionMusic)) PauseMusicStream(questionMusic);
 
     // Restul logicii pentru bgMusic și runningMusic
     if (state != STATE_RUNNING) {
@@ -507,6 +511,7 @@ if (state == STATE_QUESTION) {
 
         UpdateMusicStream(bgMusic);
         UpdateMusicStream(runningMusic);
+        UpdateMusicStream(questionMusic);
 
         SetMusicVolume(bgMusic, muted ? 0.0f : volume);
 SetSoundVolume(rightSound, muted ? 0.0f : volume);
@@ -524,6 +529,7 @@ UnloadSound(wrongSound);
 UnloadSound(gameOverSound);
 UnloadMusicStream(bgMusic);
 UnloadMusicStream(runningMusic);
+UnloadMusicStream(questionMusic);
     CloseAudioDevice();
     CloseWindow();
 
