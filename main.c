@@ -453,36 +453,45 @@ if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
         }
         else if (state == STATE_GAME_OVER)
         {
-            DrawText("Game Over", currentWidth / 2 - MeasureText("Game Over", 30) / 2, currentHeight / 2 - 30, 30, RED);
-            DrawText("Press R to restart", currentWidth / 2 - MeasureText("Press R to restart", 20) / 2, currentHeight / 2 + 10, 20, scoreColor);
-            DrawText("Press ESC to return to menu", currentWidth / 2 - MeasureText("Press ESC to return to menu", 20) / 2, currentHeight / 2 + 40, 20, scoreColor);
+            int gameOverFontSize = 54;
+    int finalScoreFontSize = 36;
 
-            draw_congrats_if_milestone(score, 100, currentWidth, currentHeight);
+    DrawText("Game Over", currentWidth / 2 - MeasureText("Game Over", gameOverFontSize) / 2, currentHeight / 2 - 90, gameOverFontSize, RED);
 
-            if (IsKeyPressed(KEY_R))
-            {
-                reset_game(&snake, &score);
-                food.x = GetRandomValue(0, 39) * 20;
-                food.y = GetRandomValue(0, 22) * 20;
-                state = STATE_RUNNING;
-                moveTimer = 0.0f;
-                foodJustEaten = false;
-                feedbackMessage[0] = '\0';   // Șterge textul de feedback la restart
-    feedbackTimer = 0.0f;        // Oprește timerul de feedback
-            }
+    // Afiseaza scorul final cu verde si font mare
+    char finalScoreText[32];
+    sprintf(finalScoreText, "Final score: %d", score);
+    DrawText(finalScoreText, currentWidth / 2 - MeasureText(finalScoreText, finalScoreFontSize) / 2, currentHeight / 2 - 20, finalScoreFontSize, GREEN);
 
-            if (IsKeyPressed(KEY_ESCAPE))
-            {
-                state = STATE_START_PAGE;
-                if (snake != NULL)
-                {
-                    free_snake(snake);
-                    snake = NULL;
-                }
-                feedbackMessage[0] = '\0'; // Șterge feedback-ul la revenirea în meniu
-    feedbackTimer = 0.0f;
-            }
+    DrawText("Press R to restart", currentWidth / 2 - MeasureText("Press R to restart", 20) / 2, currentHeight / 2 + 40, 20, scoreColor);
+    DrawText("Press ESC to return to menu", currentWidth / 2 - MeasureText("Press ESC to return to menu", 20) / 2, currentHeight / 2 + 70, 20, scoreColor);
+
+    draw_congrats_if_milestone(score, 100, currentWidth, currentHeight);
+
+    if (IsKeyPressed(KEY_R))
+    {
+        reset_game(&snake, &score);
+        food.x = GetRandomValue(0, 39) * 20;
+        food.y = GetRandomValue(0, 22) * 20;
+        state = STATE_RUNNING;
+        moveTimer = 0.0f;
+        foodJustEaten = false;
+        feedbackMessage[0] = '\0';   // Șterge textul de feedback la restart
+        feedbackTimer = 0.0f;        // Oprește timerul de feedback
+    }
+
+    if (IsKeyPressed(KEY_ESCAPE))
+    {
+        state = STATE_START_PAGE;
+        if (snake != NULL)
+        {
+            free_snake(snake);
+            snake = NULL;
         }
+        feedbackMessage[0] = '\0'; // Șterge feedback-ul la revenirea în meniu
+        feedbackTimer = 0.0f;
+    }
+}
 
         // Controlează muzica pentru fiecare stare:
 if (state == STATE_QUESTION) {
