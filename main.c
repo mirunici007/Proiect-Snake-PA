@@ -142,6 +142,12 @@ if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
     }
 }
 
+// Text mic sub iconița de volum
+int musicLabelFontSize = 16;
+const char* musicLabel = "Music";
+int musicLabelWidth = MeasureText(musicLabel, musicLabelFontSize);
+DrawText(musicLabel, cx - musicLabelWidth/2 + 7, cy + 22, musicLabelFontSize, BLACK);
+
             // Eliminat titlul "Snake Game"
 
             // Mută butoanele mai jos
