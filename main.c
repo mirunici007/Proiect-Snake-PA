@@ -339,9 +339,15 @@ DrawText(musicLabel, cx - musicLabelWidth/2 + 7, cy + 22, musicLabelFontSize, BL
             }
 
             if (IsKeyPressed(KEY_W) && snake->direction != DOWN) set_snake_direction(snake, UP);
-            if (IsKeyPressed(KEY_S) && snake->direction != UP) set_snake_direction(snake, DOWN);
-            if (IsKeyPressed(KEY_A) && snake->direction != RIGHT) set_snake_direction(snake, LEFT);
-            if (IsKeyPressed(KEY_D) && snake->direction != LEFT) set_snake_direction(snake, RIGHT);
+if (IsKeyPressed(KEY_S) && snake->direction != UP) set_snake_direction(snake, DOWN);
+if (IsKeyPressed(KEY_A) && snake->direction != RIGHT) set_snake_direction(snake, LEFT);
+if (IsKeyPressed(KEY_D) && snake->direction != LEFT) set_snake_direction(snake, RIGHT);
+
+// Șterge feedback-ul dacă se apasă orice tastă de mișcare
+if (IsKeyPressed(KEY_W) || IsKeyPressed(KEY_A) || IsKeyPressed(KEY_S) || IsKeyPressed(KEY_D)) {
+    feedbackMessage[0] = '\0';
+    feedbackTimer = 0.0f;
+}
 
             moveTimer += GetFrameTime();
             if (moveTimer >= moveInterval)
