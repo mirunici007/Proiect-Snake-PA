@@ -7,7 +7,7 @@
 
 //declaring the functions
 
-//function for creating a new snake segment
+//function for creating a new segment
 SEGM *create_segment(int x, int y)
 {
     SEGM *new_segment = (SEGM *)malloc(sizeof(SEGM));
@@ -16,7 +16,7 @@ SEGM *create_segment(int x, int y)
         printf("Memory allocation failed for segment\n");
         exit(1);
     }
-    
+
     new_segment->coord_x = x;
     new_segment->coord_y = y;
     new_segment->next = NULL;
@@ -37,23 +37,25 @@ SNAKE *create_snake(int start_x, int start_y)
     snake->head = create_segment(start_x, start_y);
     snake->tail = snake->head;
     snake->length = 1;
-    snake->direction = 'D'; // initial direction is right
+    //initial direction is right
+    snake->direction = 'D';
 
-    // Load the head texture based on the initial direction
+    //load the head texture based on the initial direction
     snake->head_up_texture = LoadTexture("textures/up.png");
     snake->head_down_texture = LoadTexture("textures/down.png");
     snake->head_left_texture = LoadTexture("textures/left.png");
     snake->head_right_texture = LoadTexture("textures/right.png");
-    // Load the body texture
+    //load the body texture
     snake->body_horizontal_texture = LoadTexture("textures/horizontal.png");
     snake->body_vertical_texture = LoadTexture("textures/vertical.png");
 
-    // Load corner textures
+    //load corner textures
     snake->corner_bottom_right_texture = LoadTexture("textures/top_left.png");
     snake->corner_bottom_left_texture = LoadTexture("textures/top_right.png");
     snake->corner_top_right_texture = LoadTexture("textures/bottom_left.png");
     snake->corner_top_left_texture = LoadTexture("textures/bottom_right.png");
 
+    //load tail textures
     snake->tail_up_texture = LoadTexture("textures/tail_up.png");
     snake->tail_down_texture = LoadTexture("textures/tail_down.png");
     snake->tail_left_texture = LoadTexture("textures/tail_left.png");
@@ -73,6 +75,7 @@ void grow_snake(SNAKE *snake)
     snake->length++;
 }
 
+//function for shrinking the snake
 void shrink_snake(SNAKE *snake)
 {
     if (snake->length <= 1)
@@ -92,46 +95,61 @@ void shrink_snake(SNAKE *snake)
     snake->length--;
 }
 
-//function to check if the sbake's head collides with the food
+//function to check if the snake's head collides with the food
 //1 for collision
-int check_food_collision(SNAKE *snake, int food_x, int food_y) {
+int check_food_collision(SNAKE *snake, int food_x, int food_y)
+{
     return (abs(snake->head->coord_x - food_x) <= SEGMENT_SIZE * 2 && abs(snake->head->coord_y - food_y) <= SEGMENT_SIZE * 2);
 }
 
-void move_snake(SNAKE *snake, int food_x, int food_y) {
+void move_snake(SNAKE *snake, int food_x, int food_y)
+{
     int prev_x = snake->head->coord_x;
     int prev_y = snake->head->coord_y;
 
-    // Mută capul
-    switch (snake->direction) {
-        case UP: prev_y -= SEGMENT_SIZE; break;
-        case DOWN: prev_y += SEGMENT_SIZE; break;
-        case LEFT: prev_x -= SEGMENT_SIZE; break;
-        case RIGHT: prev_x += SEGMENT_SIZE; break;
-        default: break;
+    //move the head in the current direction
+    switch (snake->direction)
+    {
+    case UP:
+        prev_y -= SEGMENT_SIZE;
+        break;
+    case DOWN:
+        prev_y += SEGMENT_SIZE;
+        break;
+    case LEFT:
+        prev_x -= SEGMENT_SIZE;
+        break;
+    case RIGHT:
+        prev_x += SEGMENT_SIZE;
+        break;
+    default:
+        break;
     }
 
-    // Handle screen wrapping
+    //handle screen wrapping
     if (prev_x < 0) prev_x = SCREEN_WIDTH - SEGMENT_SIZE;
     if (prev_x >= SCREEN_WIDTH) prev_x = 0;
     if (prev_y < 0) prev_y = SCREEN_HEIGHT - SEGMENT_SIZE;
     if (prev_y >= SCREEN_HEIGHT) prev_y = 0;
 
-    // Creează un nou cap
+    //create a new head segment and link it to the current head
     SEGM *new_head = create_segment(prev_x, prev_y);
     new_head->next = snake->head;
     snake->head = new_head;
 
-    // Dacă mănâncă mâncarea, crește lungimea
-    if (!check_food_collision(snake, food_x, food_y)){
-        // Elimină coada DOAR dacă numărul de segmente depășește snake->length
+    //if the snake's head collides with the food, grow the snake
+    if (!check_food_collision(snake, food_x, food_y))
+    {
+        //remove the last segment of the snake if the number of segments exceeds the snake's length
         int count = 1;
         SEGM *temp = snake->head;
-        while (temp->next && count < snake->length) {
+        while (temp->next && count < snake->length)
+        {
             temp = temp->next;
             count++;
         }
-        if (temp->next) {
+        if (temp->next)
+        {
             free(temp->next);
             temp->next = NULL;
             snake->tail = temp;
@@ -145,8 +163,8 @@ int check_self_collision(SNAKE *snake)
 
     while(current)
     {
-        if(snake->head->coord_x == current->coord_x && 
-            snake->head->coord_y == current->coord_y)
+        if(snake->head->coord_x == current->coord_x &&
+                snake->head->coord_y == current->coord_y)
         {
             return 1; //collision detected
         }
@@ -154,19 +172,19 @@ int check_self_collision(SNAKE *snake)
         current = current->next;
     }
 
-    return 0; // no collision
+    return 0; //no collision
 }
 
 //function for collision with the boundaries
 int check_boundary_collision(SNAKE *snake, int screen_width, int screen_height)
 {
-    return (snake->head->coord_x < 0 || 
-            snake->head->coord_x >= screen_width || 
-            snake->head->coord_y < 0 || 
+    return (snake->head->coord_x < 0 ||
+            snake->head->coord_x >= screen_width ||
+            snake->head->coord_y < 0 ||
             snake->head->coord_y >= screen_height);
 }
 
-//function for freeing the snake
+//function for freeing the memory allocated for the snake
 void free_snake(SNAKE *snake)
 {
     SEGM *current = snake->head;
@@ -178,6 +196,7 @@ void free_snake(SNAKE *snake)
         free(temp);
     }
 
+    //unload all textures associated with the snake
     UnloadTexture(snake->head_up_texture);
     UnloadTexture(snake->head_down_texture);
     UnloadTexture(snake->head_left_texture);
@@ -199,29 +218,41 @@ void free_snake(SNAKE *snake)
 
 void set_snake_direction(SNAKE *snake, char direction)
 {
-    if ((direction == 'W' && snake->direction != 'S') || 
-        (direction == 'S' && snake->direction != 'W') || 
-        (direction == 'A' && snake->direction != 'D') || 
-        (direction == 'D' && snake->direction != 'A'))
+    if ((direction == 'W' && snake->direction != 'S') ||
+            (direction == 'S' && snake->direction != 'W') ||
+            (direction == 'A' && snake->direction != 'D') ||
+            (direction == 'D' && snake->direction != 'A'))
     {
         snake->direction = direction;
     }
 }
 
-void draw_snake(SNAKE *snake) {
+void draw_snake(SNAKE *snake)
+{
     SEGM *current = snake->head;
 
-    // Alege textura capului în funcție de direcție
+    //choose the head texture based on the current direction
     Texture2D head_texture;
-    switch (snake->direction) {
-        case 'W': head_texture = snake->head_up_texture; break;    // sus
-        case 'S': head_texture = snake->head_down_texture; break;  // jos
-        case 'A': head_texture = snake->head_left_texture; break;  // stânga
-        case 'D': head_texture = snake->head_right_texture; break; // dreapta
-        default: head_texture = snake->head_right_texture; break;  // fallback
+    switch (snake->direction)
+    {
+    case 'W':
+        head_texture = snake->head_up_texture;
+        break;    //upb
+    case 'S':
+        head_texture = snake->head_down_texture;
+        break;  //down
+    case 'A':
+        head_texture = snake->head_left_texture;
+        break;  //left
+    case 'D':
+        head_texture = snake->head_right_texture;
+        break; //right
+    default:
+        head_texture = snake->head_right_texture;
+        break;  //fallback(default to right)
     }
 
-    // Desenează capul șarpelui
+    //draw the snake's head
     DrawTexture(
         head_texture,
         current->coord_x,
@@ -229,33 +260,40 @@ void draw_snake(SNAKE *snake) {
         WHITE
     );
 
-    // Treci la următorul segment
+    //move to the next segment
     SEGM *prev = current;
     current = current->next;
 
     SEGM *last = snake->head;
-    while (last->next && last->next->next != NULL) {
+    while (last->next && last->next->next != NULL)
+    {
         last = last->next;
     }
 
-    // Desenează corpul șarpelui
-    while (current != NULL) {
-        // Alege textura corpului în funcție de direcție
+    //draw the snake's body
+    while (current != NULL)
+    {
+        //choose the body texture based on the direction of the segment
         Texture2D body_texture;
         int drawn = 0;
 
-        if (current->coord_x != prev->coord_x) {
-            body_texture = snake->body_horizontal_texture; // orizontal (stânga/dreapta)
-        } else {
-            body_texture = snake->body_vertical_texture;   // vertical (sus/jos)
+        if (current->coord_x != prev->coord_x)
+        {
+            body_texture = snake->body_horizontal_texture; //horizontal
+        }
+        else
+        {
+            body_texture = snake->body_vertical_texture;   //vertical
         }
 
-        // Verifică dacă este un colț
-        if (current->next != NULL) {
+        //vheck if the current segment is a corner
+        if (current->next != NULL)
+        {
             SEGM *next = current->next;
 
-            if ((prev->coord_x < current->coord_x && next->coord_y < current->coord_y) || // dreapta sus
-                (prev->coord_y < current->coord_y && next->coord_x < current->coord_x)) { // sus stânga
+            if ((prev->coord_x < current->coord_x && next->coord_y < current->coord_y) || //right-up
+                    (prev->coord_y < current->coord_y && next->coord_x < current->coord_x))   //left-up
+            {
                 DrawTexture(
                     snake->corner_top_left_texture,
                     current->coord_x,
@@ -263,8 +301,10 @@ void draw_snake(SNAKE *snake) {
                     WHITE
                 );
                 drawn = 1;
-            } else if ((prev->coord_x > current->coord_x && next->coord_y < current->coord_y) || // stânga sus
-                       (prev->coord_y < current->coord_y && next->coord_x > current->coord_x)) { // sus dreapta
+            }
+            else if ((prev->coord_x > current->coord_x && next->coord_y < current->coord_y) ||   //left-up
+                     (prev->coord_y < current->coord_y && next->coord_x > current->coord_x))   //right-up
+            {
                 DrawTexture(
                     snake->corner_top_right_texture,
                     current->coord_x,
@@ -272,8 +312,10 @@ void draw_snake(SNAKE *snake) {
                     WHITE
                 );
                 drawn = 1;
-            } else if ((prev->coord_x < current->coord_x && next->coord_y > current->coord_y) || // dreapta jos
-                       (prev->coord_y > current->coord_y && next->coord_x < current->coord_x)) { // jos stânga
+            }
+            else if ((prev->coord_x < current->coord_x && next->coord_y > current->coord_y) ||   //right-down
+                     (prev->coord_y > current->coord_y && next->coord_x < current->coord_x))   //left-down
+            {
                 DrawTexture(
                     snake->corner_bottom_left_texture,
                     current->coord_x,
@@ -281,8 +323,10 @@ void draw_snake(SNAKE *snake) {
                     WHITE
                 );
                 drawn = 1;
-            } else if ((prev->coord_x > current->coord_x && next->coord_y > current->coord_y) || // stânga jos
-                       (prev->coord_y > current->coord_y && next->coord_x > current->coord_x)) { // jos dreapta
+            }
+            else if ((prev->coord_x > current->coord_x && next->coord_y > current->coord_y) ||   //left-down
+                     (prev->coord_y > current->coord_y && next->coord_x > current->coord_x))   //right-down
+            {
                 DrawTexture(
                     snake->corner_bottom_right_texture,
                     current->coord_x,
@@ -293,11 +337,15 @@ void draw_snake(SNAKE *snake) {
             }
         }
 
-         if (!drawn) {
-        // Desenează segmentul normal
-            if (current->coord_x != prev->coord_x) {
+        if (!drawn)
+        {
+            //draw the body segment based on its orientation
+            if (current->coord_x != prev->coord_x)
+            {
                 body_texture = snake->body_horizontal_texture;
-            } else {
+            }
+            else
+            {
                 body_texture = snake->body_vertical_texture;
             }
 
@@ -308,29 +356,24 @@ void draw_snake(SNAKE *snake) {
                 WHITE
             );
         }
-        
-        // Dacă suntem la segmentul dinaintea cozii
-if (current->next == NULL) {
-    Texture2D tail_texture;
 
-    // Ne uităm de unde vine coada (adică unde este segmentul anterior față de coadă)
-    if (prev->coord_x > current->coord_x)
-        tail_texture = snake->tail_left_texture;
-    else if (prev->coord_x < current->coord_x)
-        tail_texture = snake->tail_right_texture;
-    else if (prev->coord_y > current->coord_y)
-        tail_texture = snake->tail_up_texture;
-    else
-        tail_texture = snake->tail_down_texture;
+//if this is the last segment(the tail), draw the tail texture based on the direction of the previous segment
+        if (current->next == NULL)
+        {
+            Texture2D tail_texture;
+            if (prev->coord_x > current->coord_x)
+                tail_texture = snake->tail_left_texture;
+            else if (prev->coord_x < current->coord_x)
+                tail_texture = snake->tail_right_texture;
+            else if (prev->coord_y > current->coord_y)
+                tail_texture = snake->tail_up_texture;
+            else
+                tail_texture = snake->tail_down_texture;
 
-    DrawTexture(tail_texture, current->coord_x, current->coord_y, WHITE);
-    break;
-}
-
-
-
-
-        // Actualizează segmentul anterior
+            DrawTexture(tail_texture, current->coord_x, current->coord_y, WHITE);
+            break;
+        }
+        //update the previous and current segments for the next iteration
         prev = current;
         current = current->next;
     }

@@ -5,12 +5,12 @@
 #include "raylib.h"
 
 #define FOOD_HISTORY_SIZE 5
-#define MIN_FOOD_DISTANCE 4 * CELL_SIZE // distanța minimă între mâncăruri
+#define MIN_FOOD_DISTANCE 4 * CELL_SIZE //minimum distance between two food items(in pixels)
 
 static FOOD food_history[FOOD_HISTORY_SIZE];
 static int food_history_count = 0;
 
-// Verifică dacă mâncarea e pe șarpe
+//verify if the snake is on the food
 int food_on_snake(FOOD food, SNAKE *snake) {
     SEGM *current = snake->head;
     while (current != NULL) {
@@ -22,7 +22,7 @@ int food_on_snake(FOOD food, SNAKE *snake) {
     return 0;
 }
 
-// Verifică dacă mâncarea e prea aproape de o mâncare anterioară
+//check to see if the food is too close to a previous food
 int food_too_close_to_previous(FOOD food) {
     for (int i = 0; i < food_history_count; i++) {
         float dx = (float)(food.x - food_history[i].x);
@@ -30,13 +30,13 @@ int food_too_close_to_previous(FOOD food) {
         float distance = sqrtf(dx * dx + dy * dy);
 
         if (distance < MIN_FOOD_DISTANCE) {
-            return 1; // Prea aproape
+            return 1; //too close to previous food
         }
     }
-    return 0; // Distanță acceptabilă
+    return 0; //acceptable distance from previous food
 }
 
-// Generează mâncare într-un loc sigur
+//generate the new food position so that it is not on the snake and not too close to previous food
 FOOD spawn_food(SNAKE *snake) {
     FOOD food;
     int max_x = (SCREEN_WIDTH / CELL_SIZE) - 2;
@@ -47,7 +47,7 @@ FOOD spawn_food(SNAKE *snake) {
         food.y = (1 + rand() % max_y) * CELL_SIZE;
     } while (food_on_snake(food, snake) || food_too_close_to_previous(food));
 
-    // Salvăm în istoric
+    //save the food in the history
     if (food_history_count < FOOD_HISTORY_SIZE) {
         food_history[food_history_count++] = food;
     } else {
@@ -60,7 +60,7 @@ FOOD spawn_food(SNAKE *snake) {
     return food;
 }
 
-// Desenează mâncarea
+//draw the food on the screen using textures
 void draw_food(FOOD food, Texture2D food_texture) {
     DrawTexture(food_texture, food.x, food.y, WHITE);
 }

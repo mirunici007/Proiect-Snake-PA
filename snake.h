@@ -9,11 +9,12 @@
 
 #include "raylib.h"
 
-#define SEGMENT_SIZE 20 // Dimensiunea segmentelor șarpelui
+//segment size for the snake
+#define SEGMENT_SIZE 20
 
-//declaring the variables
-
-typedef struct {
+//declaring the variables(the parts for the textures of the snake)
+typedef struct
+{
     const char* head_up;
     const char* head_down;
     const char* head_left;
@@ -36,70 +37,77 @@ typedef struct segment
     int coord_x;
     int coord_y;
     struct segment *next;
-}SEGM;
+} SEGM;
 
 typedef struct snake
 {
     SEGM *head;
     SEGM *tail;
     int length;
-    char direction; //directions: UP, DOWN, LEFT, RIGHT
+    //directions: UP, DOWN, LEFT, RIGHT
+    char direction;
 
-    Texture2D head_up_texture;    // Textura pentru cap (sus)
-    Texture2D head_down_texture;  // Textura pentru cap (jos)
-    Texture2D head_left_texture;  // Textura pentru cap (stânga)
-    Texture2D head_right_texture; // Textura pentru cap (dreapta)
-    Texture2D body_texture; //texture for the body
+    //textures for the snake's head for each direction(up,down,left,right)
+    Texture2D head_up_texture;
+    Texture2D head_down_texture;
+    Texture2D head_left_texture;
+    Texture2D head_right_texture;
+    //texture for the body
+    Texture2D body_texture;
+    //textures for the snake's body for each horizontal direction(left,right)
+    Texture2D body_horizontal_texture;
+    //texture for the snake's body for each vertical direction(up,down)
+    Texture2D body_vertical_texture;
 
-    Texture2D body_horizontal_texture; // Textura pentru corp (orizontal: stânga/dreapta)
-    Texture2D body_vertical_texture;   // Textura pentru corp (vertical: sus/jos)
+    //textures for the snake's corners
+    Texture2D corner_top_left_texture;
+    Texture2D corner_top_right_texture;
+    Texture2D corner_bottom_left_texture;
+    Texture2D corner_bottom_right_texture;
 
-    // Texturi pentru colțuri
-    Texture2D corner_top_left_texture;     // colț stânga sus
-    Texture2D corner_top_right_texture;    // colț dreapta sus
-    Texture2D corner_bottom_left_texture;  // colț stânga jos
-    Texture2D corner_bottom_right_texture; // colț dreapta jos
-
-    Texture2D tail_up_texture;    // Textura pentru coada (sus)
-    Texture2D tail_down_texture;  // Textura pentru coada (jos)
-    Texture2D tail_left_texture;  // Textura pentru coada (stânga)
-    Texture2D tail_right_texture; // Textura pentru coada (dreapta)
-}SNAKE;
+    //textures for the snake's tail for each direction(up,down,left,right)
+    Texture2D tail_up_texture;
+    Texture2D tail_down_texture;
+    Texture2D tail_left_texture;
+    Texture2D tail_right_texture;
+} SNAKE;
 
 //function prtotypes
 
-// Creates a new snake segment with given coordinates
+//creates a new segment with given coordinates
 SEGM *create_segment(int x, int y);
 
-// Creates a new snake
+//creates a new snake
 SNAKE *create_snake(int start_x, int start_y);
 
-// Adds a new segment to the tail of the snake
+//adds a new segment to the tail of the snake
 void grow_snake(SNAKE *snake);
 
+//removes the last segment of the snake
 void shrink_snake(SNAKE *snake);
 
-// Checks if the snake's head collides with the food
+//checks if the snake's head collides with the food
 int check_food_collision(SNAKE *snake, int food_x, int food_y);
 
-// Moves the snake in the current direction 
+//moves the snake in the current direction
 void move_snake(SNAKE *snake, int food_x, int food_y);
 
-// Checks if the snake collides with itself
+//checks if the snake collides with itself
 int check_self_collision(SNAKE *snake);
 
-// Checks if the snake collides with the boundaries of the screen
+//checks if the snake collides with the boundaries of the screen
 int check_boundary_collision(SNAKE *snake, int width, int height);
 
-//Checks if the snake collides with the walls or itself
+//checks if the snake collides with the walls or itself
 int check_collisions(SNAKE *snake);
 
-//Sets the direction of the snake
+//sets the direction of the snake
 void set_snake_direction(SNAKE *snake, char direction);
 
-// Frees the memory allocated for the snake
+//frees the memory allocated for the snake
 void free_snake(SNAKE *snake);
+
 
 void draw_snake(SNAKE *snake);
 
-#endif //SNAKE_H
+#endif

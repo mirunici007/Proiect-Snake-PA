@@ -8,7 +8,6 @@ extern int selectedAnswer;
 typedef struct Question {
     char question[MAX_TEXT];
     int correctAnswer;
-    //char correctAnswers[5][MAX_TEXT]; // maxim 5 variante corecte per întrebare
     int answerCount;
 } Question;
 
@@ -19,17 +18,20 @@ typedef struct QuestionNode {
 
 extern QuestionNode* currentQuestion;
 
+//function that adds a new question to the linked list of questions
 static void addQuestion(const char* q, const char* a);
 
-void initQuestions();                      // Inițializează întrebările (din fișier)
+//function that initializes the questions by adding them to the linked list
+void initQuestions();
 
-void selectRandomQuestion();                // Afișează o întrebare aleatoare
+//function that selects a random question from the linked list of questions and sets it as the current question on the screen
+void selectRandomQuestion();
 
-int checkAnswer(int userAnswer);  // Verifică răspunsul
+//function that checks if the user's answer is correct
+int checkAnswer(int userAnswer);
 
-void freeQuestions();                     // Eliberează memoria întrebărilor
-
-//void showRandomQuestion(); // Afișează întrebarea pe ecran
+//function that frees the memory allocated for the linked list of questions
+void freeQuestions();
 
 void DrawTextManualWrap(const char* text, int x, int y, int maxWidth, int fontSize, Color color);
 

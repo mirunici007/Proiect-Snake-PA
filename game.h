@@ -5,11 +5,11 @@
 #include "food.h"
 #include <raylib.h>
 
-// screen size
+//screen size
 #define SCREEN_WIDTH 1000
 #define SCREEN_HEIGHT 700
 
-// Theme definitions
+//enumeration of the theme types
 typedef enum {
     THEME_LIGHT,
     THEME_DARK
@@ -26,6 +26,7 @@ extern Color textColor;
 extern Color buttonColor;
 extern Color menuButtonColor;
 
+//enumeration for the game states
 typedef enum{
     STATE_START_PAGE,
     STATE_MENU,
@@ -37,6 +38,7 @@ typedef enum{
     STATE_SETTINGS
 } GAME_STATE;
 
+//enumeration for the snake's direction
 typedef enum {
     DIR_UP,
     DIR_DOWN,
@@ -44,20 +46,34 @@ typedef enum {
     DIR_RIGHT
 } Direction;
 
+//the state of the game, including the snake's direction
 typedef struct {
     GAME_STATE state;
     Direction dir;
 } Game;
 
-// Function declarations
+//function declarations
+//function to initialize the game,create a new snake and set the score to 0
 void init_game(SNAKE **snake, int *score);
+
+//function to update the game state, including moving the snake, checking for collisions and handling user input
 void update_game(SNAKE *snake, int *score, GAME_STATE *state, FOOD *food);
+
+//function to reset the game, freeing the current snake and creating a new one and resetting the score to 0
 void reset_game(SNAKE **snake, int *score);
+
+//function to check for collisions
 int check_collisions(SNAKE *snake);
+
+//functions to draw the pause page and pause button
 void draw_pause_page(void);
 void draw_pause_button(void);
+
+//functiona to handle user input, including checking for answers to questions and updating the game state accordingly
 void handle_input(SNAKE *snake, GAME_STATE *state, int *score);
 void validate_answer(int result, int* score, SNAKE* snake, FOOD* food);
+
+//function to update the colors based on the current theme
 void updateColorsBasedOnTheme(void);
 
-#endif // GAME_H
+#endif

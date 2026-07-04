@@ -1,21 +1,21 @@
-#ifndef FOOD_H
+ #ifndef FOOD_H
 #define FOOD_H
 
 #include "raylib.h"
 #include "snake.h"
 
-// Dimensiunea unei celule din grid, în pixeli
+//the size of a cell in pixels
 #define CELL_SIZE 20
 
-// Structura pentru mâncare
+//the struct for the food
 typedef struct Food {
     int x;
     int y;
 } FOOD;
 
-// Funcții pentru manipularea mâncării
+//functions for food management
 FOOD spawn_food(SNAKE *snake);
 void draw_food(FOOD food, Texture2D food_texture);
 int food_on_snake(FOOD food,SNAKE *snake);
 
-#endif // FOOD_H
+#endif

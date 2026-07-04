@@ -4,13 +4,13 @@
 #include "game.h"
 #include <raylib.h>
 
-// External variables that need to be visible to menu functions
+//external variables that need to be visible to menu functions
 extern THEME currentTheme;
 extern Color buttonColor;
 extern Color textColor;
 extern void updateColorsBasedOnTheme(void);
 
-// Menu functions
+//menu functions
 void draw_menu(GAME_STATE *state);
 void draw_instructions(GAME_STATE *state);
 void handle_menu_input(GAME_STATE *state);
