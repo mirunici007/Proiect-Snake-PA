@@ -3,11 +3,10 @@
 #include "menu.h"
 #include "food.h"
 #include "question.h"
-#include <stddef.h>
 #include <stdio.h>
 #include <math.h>
 
-// Global variables
+//global variables
 int score = 0;
 float volume = 1.0f;
 FOOD food;
@@ -45,7 +44,7 @@ static void initializeColors(void)
 
 void updateColorsBasedOnTheme(void)
 {
-    printf("Switching to %s theme\n", currentTheme == THEME_DARK ? "dark" : "light");
+    //currentTheme == THEME_DARK ? "dark" : "light";
     initializeColors();
 }
 
@@ -55,7 +54,7 @@ int main(void)
     SetTargetFPS(60);
     SetExitKey(KEY_NULL);
 
-    // Initialize colors once at startup
+    //initialize colors once at startup
     initializeColors();
 
     GAME_STATE state = STATE_START_PAGE;
@@ -70,6 +69,7 @@ int main(void)
     bool foodJustEaten = false;
     bool showCredentials = false;
 
+    //initialize questions, audio, load textures, and music
     initQuestions();
     Texture2D foodTexture = LoadTexture("textures/apple.png");
     Texture2D startBg = LoadTexture("textures/BACKGROUND.jpg");
@@ -83,19 +83,42 @@ int main(void)
     Sound wrongSound = LoadSound("textures/WRONG.mp3");
     Sound gameOverSound = LoadSound("textures/GAME_OVER.wav");
 
+    if (foodTexture.id == 0 || startBg.id == 0 || grassBg.id == 0)
+    {
+        fprintf(stderr, "Failed to load one or more textures.\n");
+        CloseWindow();
+        return 1;
+    }
+
+    if (!IsAudioDeviceReady())
+    {
+        fprintf(stderr, "Audio device failed to initialize.\n");
+        UnloadTexture(foodTexture);
+        UnloadTexture(startBg);
+        UnloadTexture(grassBg);
+        CloseWindow();
+        return 1;
+    }
+    if (bgMusic.stream.buffer == NULL || runningMusic.stream.buffer == NULL || questionMusic.stream.buffer == NULL)
+    {
+        fprintf(stderr, "Failed to load one or more music streams.\n");
+        UnloadTexture(foodTexture);
+        UnloadTexture(startBg);
+        UnloadTexture(grassBg);
+        CloseAudioDevice();
+        CloseWindow();
+        return 1;
+    }
     static bool muted = false;
     while (!WindowShouldClose())
     {
         int currentWidth = GetScreenWidth();
         int currentHeight = GetScreenHeight();
 
-        // Check for theme changes
-        updateColorsBasedOnTheme();
-
         BeginDrawing();
-        ClearBackground(bgColor);  // Use the current theme's background color
+        ClearBackground(bgColor);
 
-        // ------------------ START PAGE ------------------
+        //START PAGE
         if (state == STATE_START_PAGE)
         {
             float scaleX = (float)currentWidth / startBg.width;
@@ -105,14 +128,12 @@ int main(void)
                 0,0
             }, 0.0f, fmaxf(scaleX, scaleY), WHITE);
 
-            // Poziționare pentru colțul din dreapta sus
+            //positioning the volume icon and label
             int cx = currentWidth - 80;
             int cy = 80;
 
-// Corp difuzor (dreptunghi GRI ÎNCHIS)
+            //draw the volume icon(speaker)
             DrawRectangle(cx - 14, cy - 10, 12, 20, BLACK);
-
-// Gura difuzorului (triunghi GRI ÎNCHIS)
             Vector2 tri[3] =
             {
                 {cx - 2, cy - 12},
@@ -121,7 +142,7 @@ int main(void)
             };
             DrawTriangle(tri[0], tri[1], tri[2], BLACK);
 
-// Unde sonore (arce groase GRI ÎNCHIS)
+            //draw the sound waves
             for (int i = 0; i < 2; i++)
             {
                 int arcRadius = 12 + i * 6;
@@ -132,24 +153,17 @@ int main(void)
                 }
             }
 
-// Linie roșie groasă dacă e pe mute
+            //draw a red line across the speaker if muted
             if (muted)
             {
-                DrawLineEx(
-                    (Vector2)
+                DrawLineEx((Vector2)
                 {
                     cx - 16, cy - 16
-                },
-                (Vector2)
+                },(Vector2)
                 {
                     cx + 28, cy + 16
-                },
-                5.0f,
-                RED
-                );
+                },5.0f,RED);
             }
-
-// Detectează click pe o zonă dreptunghiulară din jurul iconiței
             Rectangle volumeHitbox = {cx - 20, cy - 20, 48, 40};
             if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
             {
@@ -157,20 +171,17 @@ int main(void)
                 if (CheckCollisionPointRec(mouse, volumeHitbox))
                 {
                     muted = !muted;
-                    // Nu mai seta volumul aici, se va seta la fiecare frame!
                 }
             }
 
-// Text mic sub iconița de volum
+            //text label for the volume icon
             int musicLabelFontSize = 16;
             const char* musicLabel = "Music";
             int musicLabelWidth = MeasureText(musicLabel, musicLabelFontSize);
             DrawText(musicLabel, cx - musicLabelWidth/2 + 7, cy + 22, musicLabelFontSize, BLACK);
 
-            // Eliminat titlul "Snake Game"
-
-            // Mută butoanele mai jos
-            int btnY = 260; // valoare mai mare pentru a le coborî
+            //positions for the buttons
+            int btnY = 260;
             Rectangle startBtn = {currentWidth / 2 - 150, btnY, 300, 50};
             Rectangle menuBtn  = {currentWidth / 2 - 150, btnY + 70, 300, 50};
             Rectangle credentialsBtn = {currentWidth / 2 - 150, btnY + 140, 300, 50};
@@ -205,8 +216,9 @@ int main(void)
                     score = 0;
                     state = STATE_RUNNING;
                     moveTimer = 0.0f;
-                    foodJustEaten = false;  // Reset flag
-                    feedbackMessage[0] = '\0'; // Șterge feedback-ul la start joc nou
+                    foodJustEaten = false;
+                    //reset feedback message and timer
+                    feedbackMessage[0] = '\0';
                     feedbackTimer = 0.0f;
                 }
                 else if (CheckCollisionPointRec(mouse, menuBtn))
@@ -219,12 +231,13 @@ int main(void)
                 }
                 else if (CheckCollisionPointRec(mouse, exitBtn))
                 {
-                    showExitConfirmation = true; // Show confirmation tab
+                    //show confirmation tab
+                    showExitConfirmation = true;
                 }
             }
 
 
-            // Exit confirmation tab
+            //exit confirmation tab
             if (showExitConfirmation)
             {
                 Rectangle tab = {currentWidth / 2 - 150, currentHeight / 2 - 100, 340, 150};
@@ -245,33 +258,33 @@ int main(void)
                     Vector2 mouse = GetMousePosition();
                     if (CheckCollisionPointRec(mouse, yesBtn))
                     {
-                        CloseWindow(); // Exit the game
-                        return 0;
+                        //exit the game
+                        CloseWindow();
                     }
                     else if (CheckCollisionPointRec(mouse, noBtn))
                     {
-                        showExitConfirmation = false; // Hide confirmation tab
+                        //hide confirmation tab
+                        showExitConfirmation = false;
                     }
                 }
             }
 
             if (state == STATE_START_PAGE && showCredentials)
             {
-                // Overlay semitransparent
+                //overlay semitransparent for the credentials modal
                 DrawRectangle(0, 0, currentWidth, currentHeight, Fade(BLACK, 0.4f));
 
-                // Caseta mărită
                 Rectangle modal = {currentWidth / 2 - 275, currentHeight / 2 - 210, 550, 420};
                 DrawRectangleRec(modal, RAYWHITE);
                 DrawRectangleLinesEx(modal, 2, DARKGRAY);
 
-                // Titlu (font mai mare)
+                //title for the modal
                 const char* title = "Credentials";
                 int titleFontSize = 28;
                 int titleWidth = MeasureText(title, titleFontSize);
                 DrawText(title, modal.x + modal.width/2 - titleWidth/2, modal.y + 20, titleFontSize, DARKBLUE);
 
-                // Textul (font mărit la 20px, spacing 6px)
+                //list of credentials
                 const char* credentialsText[] =
                 {
                     "Members:",
@@ -294,13 +307,13 @@ int main(void)
                     DrawText(credentialsText[i], modal.x + modal.width/2 - textWidth/2, startY + i*(fontSize+spacing), fontSize, BLACK);
                 }
 
-                // Buton BACK – rămâne centrat, puțin mai jos acum
+                //draw the BACK button at the bottom of the modal
                 Rectangle backBtn = {modal.x + modal.width/2 - 60, modal.y + modal.height - 50, 120, 34};
                 DrawRectangleRec(backBtn, LIGHTGRAY);
                 DrawRectangleLinesEx(backBtn, 2, DARKGRAY);
                 DrawText("BACK", backBtn.x + backBtn.width/2 - MeasureText("BACK", 18)/2, backBtn.y + 8, 18, GOLD);
 
-                // Închidere la click pe BACK
+                //handle the BACK button click
                 if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
                 {
                     Vector2 mouse = GetMousePosition();
@@ -313,39 +326,28 @@ int main(void)
 
         }
 
-        // ------------------ MENU ------------------
+        //MENU PAGE
         else if (state == STATE_MENU)
         {
             draw_menu(&state);
 
             handle_menu_input(&state);
 
-            // Poziționarea butonului pentru schimbarea temei sub celelalte butoane
-            //  Rectangle themeBtn = {currentWidth / 2 - 150, 460, 300, 50}; // Aceeași dimensiune ca celelalte butoane
-            //  DrawRectangleRec(themeBtn, buttonColor);
-            //  DrawText(currentTheme == THEME_DARK ? "Switch to Light Mode" : "Switch to Dark Mode",
-            //      themeBtn.x + themeBtn.width / 2 - MeasureText(currentTheme == THEME_DARK ? "Switch to Light Mode" : "Switch to Dark Mode", 20) / 2,
-            //     themeBtn.y + 15, 20, textColor);
-
-            // Logica pentru schimbarea temei
-            //  if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
-            //   {
-            //       Vector2 mouse = GetMousePosition();
-            //       if (CheckCollisionPointRec(mouse, themeBtn))
-            //       {
-            //           currentTheme = (currentTheme == THEME_DARK) ? THEME_LIGHT : THEME_DARK;
-            //           updateColorsBasedOnTheme(); // <--- ACESTA ESTE OBLIGATORIU!
-            //       }
-            //   }
         }
-        // ------------------ INSTRUCTIONS ------------------
+        //INSTRUCTIONS PAGE
         else if (state == STATE_INSTRUCTIONS)
         {
             draw_instructions(&state);
         }
-        // ------------------ GAME ------------------
+        //GAME RUNNING PAGE
         else if (state == STATE_RUNNING)
         {
+            if (snake == NULL)
+            {
+                state = STATE_START_PAGE;
+                continue;
+            }
+
             float scaleX = (float)currentWidth / grassBg.width;
             float scaleY = (float)currentHeight / grassBg.height;
             DrawTextureEx(grassBg, (Vector2)
@@ -364,12 +366,14 @@ int main(void)
                 state = STATE_PAUSED;
             }
 
+            //set directions for the snake based on key presses, but prevent reversing direction
             if (IsKeyPressed(KEY_W) && snake->direction != DOWN) set_snake_direction(snake, UP);
             if (IsKeyPressed(KEY_S) && snake->direction != UP) set_snake_direction(snake, DOWN);
             if (IsKeyPressed(KEY_A) && snake->direction != RIGHT) set_snake_direction(snake, LEFT);
             if (IsKeyPressed(KEY_D) && snake->direction != LEFT) set_snake_direction(snake, RIGHT);
 
-// Șterge feedback-ul dacă se apasă orice tastă de mișcare
+
+            //delete the feedback message if any of the movement keys are pressed
             if (IsKeyPressed(KEY_W) || IsKeyPressed(KEY_A) || IsKeyPressed(KEY_S) || IsKeyPressed(KEY_D))
             {
                 feedbackMessage[0] = '\0';
@@ -381,7 +385,7 @@ int main(void)
             {
                 move_snake(snake, food.x, food.y);
 
-                // Verificare și procesare coliziune mâncare cu flag corect
+                //verify food collision and if the food was just eaten, then show a question
                 if(check_food_collision(snake, food.x, food.y) && !foodJustEaten)
                 {
                     state = STATE_QUESTION;
@@ -396,13 +400,13 @@ int main(void)
                 update_game(snake, &score, &state, &food);
                 moveTimer = 0.0f;
 
-                // Countdown the feedback message timer
+                //countdown the feedback message timer
                 if (feedbackTimer > 0.0f)
                 {
                     feedbackTimer -= GetFrameTime();
                     if (feedbackTimer <= 0.0f)
                     {
-                        feedbackMessage[0] = '\0'; // Clear the message
+                        feedbackMessage[0] = '\0'; //clear the message
                     }
                 }
             }
@@ -411,10 +415,10 @@ int main(void)
             draw_snake(snake);
             draw_food(food, foodTexture);
 
-            // Afișează scorul și numărul de mâncăruri mâncate în colțul din stânga sus
+            //display the score at the top left corner of the screen
             char scoreText[32];
             sprintf(scoreText, "Score: %d", score);
-            DrawText(scoreText, 10, 10, 25, scoreColor); // Font size increased to 25
+            DrawText(scoreText, 10, 10, 25, scoreColor);
 
 
             if (feedbackTimer > 0.0f && feedbackMessage[0] != '\0')
@@ -428,13 +432,14 @@ int main(void)
                          feedbackColor);
             }
         }
-        // ------------------ PAUSED ------------------
+        //PAUSE PAGE
         else if (state == STATE_PAUSED)
         {
             draw_pause_page();
 
             Rectangle triangleHitbox = {SCREEN_WIDTH - 40, 20, 20, 20};
 
+            //if the user clicks the triangle button, resume the game
             if (IsMouseButtonReleased(MOUSE_LEFT_BUTTON) && CheckCollisionPointRec(GetMousePosition(), triangleHitbox))
             {
                 state = STATE_RUNNING;
@@ -459,6 +464,7 @@ int main(void)
                 }
             }
 
+            //allow the user to resume the game by pressing ENTER, ESCAPE, or P
             if (IsKeyPressed(KEY_ENTER) || IsKeyPressed(KEY_ESCAPE) || IsKeyPressed(KEY_P))
             {
                 state = STATE_RUNNING;
@@ -484,7 +490,8 @@ int main(void)
                     }
                     validate_answer(result, &score, snake, &food);
                     state = STATE_RUNNING;
-                    selectedAnswer = -1; // Reset pentru următoarea întrebare
+                    //reset the selected answer for the next question
+                    selectedAnswer = -1;
                 }
             }
         }
@@ -505,7 +512,7 @@ int main(void)
 
             DrawText("Game Over", currentWidth / 2 - MeasureText("Game Over", gameOverFontSize) / 2, currentHeight / 2 - 90, gameOverFontSize, RED);
 
-            // Afiseaza scorul final cu verde si font mare
+            //display the final score in the center of the screen
             char finalScoreText[32];
             sprintf(finalScoreText, "Final score: %d", score);
             DrawText(finalScoreText, currentWidth / 2 - MeasureText(finalScoreText, finalScoreFontSize) / 2, currentHeight / 2 - 20, finalScoreFontSize, GREEN);
@@ -523,8 +530,9 @@ int main(void)
                 state = STATE_RUNNING;
                 moveTimer = 0.0f;
                 foodJustEaten = false;
-                feedbackMessage[0] = '\0';   // Șterge textul de feedback la restart
-                feedbackTimer = 0.0f;        // Oprește timerul de feedback
+                //delete the feedback message and reset the timer
+                feedbackMessage[0] = '\0';
+                feedbackTimer = 0.0f;
             }
 
             if (IsKeyPressed(KEY_ESCAPE))
@@ -535,19 +543,20 @@ int main(void)
                     free_snake(snake);
                     snake = NULL;
                 }
-                feedbackMessage[0] = '\0'; // Șterge feedback-ul la revenirea în meniu
+                //delete the feedback message when returning to the menu
+                feedbackMessage[0] = '\0';
                 feedbackTimer = 0.0f;
             }
         }
 
-        // Controlează muzica pentru fiecare stare:
+        //control the music based on the current state
         if (state == STATE_QUESTION)
         {
-            // Pune pe pauză orice altă muzică
+            //stop bgMusic and runningMusic if they are playing
             if (IsMusicStreamPlaying(bgMusic)) PauseMusicStream(bgMusic);
             if (IsMusicStreamPlaying(runningMusic)) PauseMusicStream(runningMusic);
 
-            // Pornește doar questionMusic dacă nu rulează deja
+            //start playing questionMusic if it's not already playing
             if (!IsMusicStreamPlaying(questionMusic))
             {
                 PlayMusicStream(questionMusic);
@@ -555,10 +564,10 @@ int main(void)
         }
         else
         {
-            // Pune pe pauză questionMusic dacă nu ești în STATE_QUESTION
+            //stop questionMusic if it's playing
             if (IsMusicStreamPlaying(questionMusic)) PauseMusicStream(questionMusic);
 
-            // Restul logicii pentru bgMusic și runningMusic
+            //control bgMusic and runningMusic based on the current state
             if (state != STATE_RUNNING)
             {
                 if (!IsMusicStreamPlaying(bgMusic))
@@ -587,6 +596,7 @@ int main(void)
         UpdateMusicStream(runningMusic);
         UpdateMusicStream(questionMusic);
 
+        //set the volume for all music and sound effects based on the muted state and volume level
         SetMusicVolume(bgMusic, muted ? 0.0f : volume);
         SetMusicVolume(runningMusic, muted ? 0.0f : volume);
         SetMusicVolume(questionMusic, muted ? 0.0f : volume);
@@ -598,7 +608,8 @@ int main(void)
     }
 
     if (snake != NULL) free_snake(snake);
-    UnloadTexture(startBg); // Unload the texture before closing
+    //unload textures before closing
+    UnloadTexture(startBg);
     UnloadTexture(grassBg);
     UnloadSound(rightSound);
     UnloadSound(wrongSound);
