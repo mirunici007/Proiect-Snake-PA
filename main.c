@@ -20,6 +20,9 @@ Color textColor;
 Color buttonColor;
 Color menuButtonColor;
 
+GAME_MODE currentGameMode = CLASSIC;
+bool hitWallFrame = false;
+
 static void initializeColors(void)
 {
     if (currentTheme == THEME_DARK)
@@ -110,6 +113,7 @@ int main(void)
         return 1;
     }
     static bool muted = false;
+    static bool playWrongSoundOnGameOver = false;
     while (!WindowShouldClose())
     {
         int currentWidth = GetScreenWidth();
@@ -259,7 +263,7 @@ int main(void)
                     if (CheckCollisionPointRec(mouse, yesBtn))
                     {
                         //exit the game
-                        CloseWindow();
+                        break;
                     }
                     else if (CheckCollisionPointRec(mouse, noBtn))
                     {
@@ -330,9 +334,15 @@ int main(void)
         else if (state == STATE_MENU)
         {
             draw_menu(&state);
-
             handle_menu_input(&state);
+            
 
+        }
+        //GAME MODE PAGE
+        else if (state == STATE_GAME_MODE)
+        {
+            draw_game_mode(&state);
+            handle_game_mode_input(&state);
         }
         //INSTRUCTIONS PAGE
         else if (state == STATE_INSTRUCTIONS)
@@ -367,14 +377,15 @@ int main(void)
             }
 
             //set directions for the snake based on key presses, but prevent reversing direction
-            if (IsKeyPressed(KEY_W) && snake->direction != DOWN) set_snake_direction(snake, UP);
-            if (IsKeyPressed(KEY_S) && snake->direction != UP) set_snake_direction(snake, DOWN);
-            if (IsKeyPressed(KEY_A) && snake->direction != RIGHT) set_snake_direction(snake, LEFT);
-            if (IsKeyPressed(KEY_D) && snake->direction != LEFT) set_snake_direction(snake, RIGHT);
+            if ((IsKeyPressed(KEY_W) || IsKeyPressed(KEY_UP)) && snake->direction != DOWN) set_snake_direction(snake, UP);
+            if ((IsKeyPressed(KEY_S) || IsKeyPressed(KEY_DOWN)) && snake->direction != UP) set_snake_direction(snake, DOWN);
+            if ((IsKeyPressed(KEY_A) || IsKeyPressed(KEY_LEFT)) && snake->direction != RIGHT) set_snake_direction(snake, LEFT);
+            if ((IsKeyPressed(KEY_D) || IsKeyPressed(KEY_RIGHT)) && snake->direction != LEFT) set_snake_direction(snake, RIGHT);
 
 
             //delete the feedback message if any of the movement keys are pressed
-            if (IsKeyPressed(KEY_W) || IsKeyPressed(KEY_A) || IsKeyPressed(KEY_S) || IsKeyPressed(KEY_D))
+            if (IsKeyPressed(KEY_W) || IsKeyPressed(KEY_A) || IsKeyPressed(KEY_S) || IsKeyPressed(KEY_D) ||
+                IsKeyPressed(KEY_UP) || IsKeyPressed(KEY_DOWN) || IsKeyPressed(KEY_LEFT) || IsKeyPressed(KEY_RIGHT))
             {
                 feedbackMessage[0] = '\0';
                 feedbackTimer = 0.0f;
@@ -384,6 +395,12 @@ int main(void)
             if (moveTimer >= moveInterval)
             {
                 move_snake(snake, food.x, food.y);
+                if(currentGameMode==CLASSIC && hitWallFrame)
+                {
+                    state = STATE_GAME_OVER;
+                    playWrongSoundOnGameOver = true;
+                    continue;
+                }
 
                 //verify food collision and if the food was just eaten, then show a question
                 if(check_food_collision(snake, food.x, food.y) && !foodJustEaten)
@@ -498,15 +515,21 @@ int main(void)
         else if (state == STATE_SETTINGS)
         {
             draw_settings(&state, &volume);
-            SetMusicVolume(bgMusic, muted ? 0.0f : volume);
+            /*SetMusicVolume(bgMusic, muted ? 0.0f : volume);
             SetMusicVolume(runningMusic, muted ? 0.0f : volume);
             SetMusicVolume(questionMusic, muted ? 0.0f : volume);
             SetSoundVolume(rightSound, muted ? 0.0f : volume);
             SetSoundVolume(wrongSound, muted ? 0.0f : volume);
-            SetSoundVolume(gameOverSound, muted ? 0.0f : volume);
+            SetSoundVolume(gameOverSound, muted ? 0.0f : volume);*/
         }
         else if (state == STATE_GAME_OVER)
         {
+            if (playWrongSoundOnGameOver)
+            {
+                PlaySound(wrongSound);
+                playWrongSoundOnGameOver = false;
+            }
+
             int gameOverFontSize = 54;
             int finalScoreFontSize = 36;
 
@@ -530,6 +553,7 @@ int main(void)
                 state = STATE_RUNNING;
                 moveTimer = 0.0f;
                 foodJustEaten = false;
+                playWrongSoundOnGameOver = false;
                 //delete the feedback message and reset the timer
                 feedbackMessage[0] = '\0';
                 feedbackTimer = 0.0f;
@@ -543,6 +567,7 @@ int main(void)
                     free_snake(snake);
                     snake = NULL;
                 }
+                playWrongSoundOnGameOver = false;
                 //delete the feedback message when returning to the menu
                 feedbackMessage[0] = '\0';
                 feedbackTimer = 0.0f;

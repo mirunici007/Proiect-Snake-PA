@@ -126,11 +126,31 @@ void move_snake(SNAKE *snake, int food_x, int food_y)
         break;
     }
 
-    //handle screen wrapping
+    hitWallFrame = false;
+
+    if(currentGameMode == WALLS_WRAP)
+    {
+        //handle screen wrapping
+        if (prev_x < 0) prev_x = SCREEN_WIDTH - SEGMENT_SIZE;
+        if (prev_x >= SCREEN_WIDTH) prev_x = 0;
+        if (prev_y < 0) prev_y = SCREEN_HEIGHT - SEGMENT_SIZE;
+        if (prev_y >= SCREEN_HEIGHT) prev_y = 0;
+    }
+    else
+    {
+        //classic mode: check for collision with the boundaries
+        if (prev_x < 0 || prev_x >= SCREEN_WIDTH || prev_y < 0 || prev_y >= SCREEN_HEIGHT)
+        {
+            hitWallFrame = true;
+            return;
+        }
+    }
+
+    /*//handle screen wrapping
     if (prev_x < 0) prev_x = SCREEN_WIDTH - SEGMENT_SIZE;
     if (prev_x >= SCREEN_WIDTH) prev_x = 0;
     if (prev_y < 0) prev_y = SCREEN_HEIGHT - SEGMENT_SIZE;
-    if (prev_y >= SCREEN_HEIGHT) prev_y = 0;
+    if (prev_y >= SCREEN_HEIGHT) prev_y = 0;*/
 
     //create a new head segment and link it to the current head
     SEGM *new_head = create_segment(prev_x, prev_y);

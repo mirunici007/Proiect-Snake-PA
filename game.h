@@ -25,6 +25,7 @@ extern Color bgColor;
 extern Color textColor;
 extern Color buttonColor;
 extern Color menuButtonColor;
+extern bool hitWallFrame;
 
 //enumeration for the game states
 typedef enum{
@@ -35,7 +36,8 @@ typedef enum{
     STATE_PAUSED,
     STATE_QUESTION,
     STATE_GAME_OVER,
-    STATE_SETTINGS
+    STATE_SETTINGS,
+    STATE_GAME_MODE
 } GAME_STATE;
 
 //enumeration for the snake's direction
@@ -45,6 +47,13 @@ typedef enum {
     DIR_LEFT,
     DIR_RIGHT
 } Direction;
+
+typedef enum{
+    CLASSIC = 0,
+    WALLS_WRAP = 1
+}GAME_MODE;
+
+extern GAME_MODE currentGameMode;
 
 //the state of the game, including the snake's direction
 typedef struct {

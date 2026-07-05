@@ -13,6 +13,8 @@ extern void updateColorsBasedOnTheme(void);
 //function that draws the menu screen
 void draw_menu(GAME_STATE *state)
 {
+    (void)state;
+
     //dimensions for the buttons and text
     int width = GetScreenWidth();
     int height = GetScreenHeight();
@@ -22,14 +24,23 @@ void draw_menu(GAME_STATE *state)
     //buttons for the menu options
     Rectangle instructions_button = {width / 2 - 150, 300, 300, 50};
     Rectangle settings_button = {width / 2 - 150, 390, 300, 50};
-    Rectangle theme_button = {width / 2 - 150, 460, 300, 50};
-    Rectangle back_to_start_page = {width / 2 - 150, 530, 300, 50};
+    Rectangle game_mode_button = {width / 2 - 150, 460, 300, 50};
+    Rectangle theme_button = {width / 2 - 150, 530, 300, 50};
+    Rectangle back_to_start_page = {width / 2 - 150, 600, 300, 50};
 
     DrawRectangleRec(instructions_button, DARKBLUE);
     DrawText("Instructions", instructions_button.x + instructions_button.width / 2 - MeasureText("Instructions", 20) / 2, instructions_button.y + 15, 20, GOLD);
 
     DrawRectangleRec(settings_button, DARKGRAY);
     DrawText("Settings", settings_button.x + settings_button.width / 2 - MeasureText("Settings", 20) / 2, settings_button.y + 15, 20, GOLD);
+
+    DrawRectangleRec(game_mode_button, YELLOW);
+    const char *gameModeText = (currentGameMode == CLASSIC) ? "Game Mode: Classic" : "Game Mode: Wrap Walls";
+    DrawText(gameModeText,
+             game_mode_button.x + game_mode_button.width / 2 - MeasureText(gameModeText, 20) / 2,
+             game_mode_button.y + 15,
+             20,
+             BLACK);
 
     DrawRectangleRec(theme_button, buttonColor);
     const char* themeText = (currentTheme == THEME_DARK) ? "Switch to Light Mode" : "Switch to Dark Mode";
@@ -44,6 +55,8 @@ void draw_menu(GAME_STATE *state)
 //function that draws the instructions screen
 void draw_instructions(GAME_STATE *state)
 {
+    (void)state;
+
     //dimensions for the text
     int width = GetScreenWidth();
     int height = GetScreenHeight();
@@ -77,8 +90,9 @@ void handle_menu_input(GAME_STATE *state)
     //buttons for the menu options
     Rectangle instructions_button = {width / 2 - 150, 320, 300, 50};
     Rectangle settings_button = {width / 2 - 150, 390, 300, 50};
-    Rectangle theme_button = {width / 2 - 150, 460, 300, 50};
-    Rectangle back_to_start_page = {width / 2 - 150, 530, 300, 50};
+    Rectangle game_mode_button = {width / 2 - 150, 460, 300, 50};
+    Rectangle theme_button = {width / 2 - 150, 530, 300, 50};
+    Rectangle back_to_start_page = {width / 2 - 150, 600, 300, 50};
 
     //changes the game state based on which button was clicked
     if (CheckCollisionPointRec(mouse, instructions_button))
@@ -88,6 +102,10 @@ void handle_menu_input(GAME_STATE *state)
     else if(CheckCollisionPointRec(mouse, settings_button))
     {
         *state = STATE_SETTINGS;
+    }
+    else if (CheckCollisionPointRec(mouse, game_mode_button))
+    {
+        *state = STATE_GAME_MODE;
     }
     else if (CheckCollisionPointRec(mouse, theme_button))
     {
@@ -126,6 +144,8 @@ void draw_congrats_if_milestone(int score, int milestone, int screenWidth, int s
 
 void draw_settings(GAME_STATE *state, float *volume)
 {
+    (void)state;
+
     int width = GetScreenWidth();
     int height = GetScreenHeight();
 
@@ -160,6 +180,63 @@ void draw_settings(GAME_STATE *state, float *volume)
     DrawText("Back to Menu", back_button.x + back_button.width / 2 - MeasureText("Back to Menu", 20) / 2, back_button.y + 10, 20, GOLD);
 
     if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && CheckCollisionPointRec(mouse, back_button))
+    {
+        *state = STATE_MENU;
+    }
+}
+
+void draw_game_mode(GAME_STATE *state)
+{
+    (void)state;
+
+    int width = GetScreenWidth();
+    int height = GetScreenHeight();
+
+    DrawText("Select Game Mode", width / 2 - MeasureText("Select Game Mode", 40) / 2, height / 2 - 120, 40, textColor);
+
+    const char *currentModeText = (currentGameMode == CLASSIC) ? "Current mode: Classic" : "Current mode: Wrap Walls";
+    DrawText(currentModeText, width / 2 - MeasureText(currentModeText, 20) / 2, height / 2 - 70, 20, textColor);
+
+    Rectangle classicButton = {width / 2 - 150, height / 2 - 10, 300, 50};
+    Rectangle wrapButton = {width / 2 - 150, height / 2 + 60, 300, 50};
+    Rectangle backButton = {width / 2 - 150, height / 2 + 130, 300, 50};
+
+    DrawRectangleRec(classicButton, (currentGameMode == CLASSIC) ? DARKGREEN : DARKBLUE);
+    DrawText("Classic Mode", classicButton.x + classicButton.width / 2 - MeasureText("Classic Mode", 20) / 2, classicButton.y + 15, 20, GOLD);
+
+    DrawRectangleRec(wrapButton, (currentGameMode == WALLS_WRAP) ? DARKGREEN : DARKBLUE);
+    DrawText("Wrap Walls Mode", wrapButton.x + wrapButton.width / 2 - MeasureText("Wrap Walls Mode", 20) / 2, wrapButton.y + 15, 20, GOLD);
+
+    DrawRectangleRec(backButton, DARKGRAY);
+    DrawText("Back to Menu", backButton.x + backButton.width / 2 - MeasureText("Back to Menu", 20) / 2, backButton.y + 15, 20, GOLD);
+}
+
+void handle_game_mode_input(GAME_STATE *state)
+{
+    if (!IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+    {
+        return;
+    }
+
+    int width = GetScreenWidth();
+    int height = GetScreenHeight();
+    Vector2 mouse = GetMousePosition();
+
+    Rectangle classicButton = {width / 2 - 150, height / 2 - 10, 300, 50};
+    Rectangle wrapButton = {width / 2 - 150, height / 2 + 60, 300, 50};
+    Rectangle backButton = {width / 2 - 150, height / 2 + 130, 300, 50};
+
+    if (CheckCollisionPointRec(mouse, classicButton))
+    {
+        currentGameMode = CLASSIC;
+        *state = STATE_MENU;
+    }
+    else if (CheckCollisionPointRec(mouse, wrapButton))
+    {
+        currentGameMode = WALLS_WRAP;
+        *state = STATE_MENU;
+    }
+    else if (CheckCollisionPointRec(mouse, backButton))
     {
         *state = STATE_MENU;
     }
